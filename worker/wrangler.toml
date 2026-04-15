@@ -1,0 +1,22 @@
+name = "beedle-proxy"
+main = "src/index.ts"
+compatibility_date = "2024-09-25"
+
+# TODO-USER: après création de ton compte Cloudflare :
+#   1. wrangler login
+#   2. wrangler kv:namespace create RATE_LIMIT_KV
+#   3. copier l'id dans la section [kv_namespaces] ci-dessous
+#   4. wrangler secret put OPENAI_API_KEY
+#   5. wrangler deploy
+
+# [[kv_namespaces]]
+# binding = "RATE_LIMIT_KV"
+# id = "YOUR_KV_NAMESPACE_ID"
+
+[env.production]
+name = "beedle-proxy"
+workers_dev = true
+
+[env.development]
+name = "beedle-proxy-dev"
+workers_dev = true

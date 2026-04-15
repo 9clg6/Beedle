@@ -1,0 +1,112 @@
+name: beedle
+description: "La veille qui se rappelle à toi — screenshots tech transformés en fiches IA."
+publish_to: 'none'
+version: 0.1.0
+
+environment:
+  sdk: ^3.10.3
+  flutter: ">=3.27.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  flutter_localizations:
+    sdk: flutter
+
+  # State management & DI
+  flutter_riverpod: ^3.1.0
+  riverpod_annotation: ^4.0.0
+
+  # Immutability & serialization
+  freezed_annotation: ^3.1.0
+  json_annotation: ^4.8.1
+
+  # Navigation
+  auto_route: ^11.1.0
+
+  # Localization
+  easy_localization: ^3.0.5
+
+  # HTTP / Worker client
+  dio: ^5.4.3+1
+
+  # Local persistence + vector search
+  objectbox: ^5.3.1
+  objectbox_flutter_libs: ^5.3.1
+  path_provider: ^2.1.2
+  path: ^1.9.0
+
+  # OCR on-device
+  google_mlkit_text_recognition: ^0.15.1
+
+  # Capture pipeline
+  image_picker: ^1.0.7
+  receive_sharing_intent: ^1.8.0
+  workmanager: ^0.9.0+3
+
+  # Notifications
+  flutter_local_notifications: ^21.0.0
+  timezone: ^0.11.0
+
+  # Monetization
+  purchases_flutter: ^9.16.1
+
+  # Analytics
+  posthog_flutter: ^5.23.1
+
+  # Secrets / local storage
+  flutter_secure_storage: ^10.0.0
+  shared_preferences: ^2.2.3
+
+  # Utilities
+  connectivity_plus: ^7.1.1
+  uuid: ^4.4.2
+  crypto: ^3.0.3
+  url_launcher: ^6.3.0
+  package_info_plus: ^9.0.1
+  rxdart: ^0.28.0
+  gap: ^3.0.1
+  intl: any
+
+  # UI & Design
+  figma_squircle: ^0.6.3
+  flutter_svg: ^2.0.10+1
+  flutter_markdown: ^0.7.4+3
+  google_fonts: ^6.2.1        # Hanken Grotesk + Geist Mono + Doto
+  liquid_glass_renderer: ^0.2.0-dev.4 # Apple Liquid Glass authentique (opt-in)
+
+  # Logging & crash reporting (optionnel)
+  logger: ^2.4.0
+  sentry_flutter: ^8.9.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # Lints
+  very_good_analysis: ^10.1.0
+
+  # Code generation
+  build_runner: ^2.4.13
+  freezed: ^3.2.3
+  json_serializable: ^6.8.0
+  riverpod_generator: ^4.0.0+1
+  auto_route_generator: ^10.4.0
+  objectbox_generator: ^5.3.1
+  flutter_gen_runner: ^5.6.0
+
+  # Testing
+  mocktail: ^1.0.4
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/translations/
+    - assets/images/
+    - assets/animations/
+
+flutter_gen:
+  output: lib/gen
+  integrations:
+    flutter_svg: true

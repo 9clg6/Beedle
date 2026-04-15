@@ -1,0 +1,234 @@
+{
+  "app": {
+    "name": "Beedle",
+    "tagline": "La veille qui se rappelle à toi"
+  },
+  "common": {
+    "error": {
+      "generic": "Une erreur est survenue",
+      "network": "Vérifie ta connexion internet",
+      "llm_unavailable": "L'IA n'a pas pu générer la fiche, on réessaie plus tard"
+    },
+    "action": {
+      "save": "Enregistrer",
+      "cancel": "Annuler",
+      "delete": "Supprimer",
+      "confirm": "Confirmer",
+      "retry": "Réessayer",
+      "close": "Fermer",
+      "continue": "Continuer",
+      "skip": "Passer",
+      "back": "Retour",
+      "next": "Suivant",
+      "done": "Terminé"
+    },
+    "loading": "Chargement...",
+    "empty": "Rien à afficher"
+  },
+  "onboarding": {
+    "step1": {
+      "title": "La veille qui se rappelle à toi",
+      "subtitle": "Tes screenshots tech transformés en fiches que tu consultes vraiment."
+    },
+    "step2": {
+      "title": "Tes screenshots meurent dans ta pellicule",
+      "subtitle": "On te fait sortir du cimetière."
+    },
+    "step3": {
+      "title": "Capture sans friction",
+      "subtitle": "Partage, importe, auto-collecte. Ton geste habituel, rien de plus."
+    },
+    "step4": {
+      "title": "L'IA digère à ta place",
+      "subtitle": "Titre, résumé, étapes, code. Plus rien à trier."
+    },
+    "step5": {
+      "title": "Des notifs qui ont du fond",
+      "subtitle": "On te ressort ce que t'as capturé, au bon moment, avec du contenu réel."
+    },
+    "step6": {
+      "title": "Qu'est-ce que tu captures ?",
+      "subtitle": "On personnalise l'app pour toi.",
+      "q1_label": "Type de contenu",
+      "q1_options": {
+        "techAi": "Tech / IA",
+        "design": "Design",
+        "business": "Business",
+        "productivity": "Productivité",
+        "creative": "Créatif",
+        "other": "Autre"
+      },
+      "q2_label": "Fréquence des rappels",
+      "q2_options": {
+        "none": "Aucun",
+        "one": "1 par jour",
+        "two": "2 par jour"
+      },
+      "q3_label": "Horaire de rappel d'import",
+      "q3_placeholder": "20:00"
+    },
+    "step7": {
+      "title": "Autorise les notifications",
+      "subtitle": "Beedle t'envoie 1-2 notifs par jour max, toujours avec du contenu utile.",
+      "cta": "Autoriser"
+    },
+    "step8": {
+      "title": "Autorise l'accès aux photos",
+      "subtitle": "Pour importer tes screenshots depuis ta pellicule.",
+      "cta": "Autoriser"
+    },
+    "step9": {
+      "title": "7 jours gratuits, puis 9€/mois",
+      "subtitle": "Ou 59€/an (- 45%).",
+      "cta_trial": "Démarrer l'essai",
+      "cta_free": "Continuer en plan gratuit"
+    },
+    "step10": {
+      "title": "Choisis ton plan",
+      "monthly": "Mensuel",
+      "yearly": "Annuel",
+      "yearly_badge": "Meilleure offre"
+    },
+    "step11": {
+      "title": "Importe ton premier screenshot",
+      "subtitle": "Essaie avec une capture de ta pellicule.",
+      "cta": "Importer"
+    },
+    "step12": {
+      "title": "Ta première fiche est prête",
+      "subtitle": "Bienvenue dans ta bibliothèque vivante.",
+      "cta": "Découvrir"
+    }
+  },
+  "home": {
+    "today": "Aujourd'hui",
+    "greeting_morning": "Bonjour ☀️",
+    "greeting_afternoon": "Bel après-midi 👋",
+    "greeting_evening": "Bonsoir 🌙",
+    "stats_total": "{count} fiches",
+    "stats_tested": "{count} testées",
+    "stats_streak": "{days}j de streak",
+    "suggestion_label": "POUR TOI AUJOURD'HUI",
+    "suggestion_title": "Suggestion du jour",
+    "rewatch_title": "Toutes tes fiches",
+    "browse_all": "Parcourir toutes mes fiches",
+    "empty": {
+      "title": "Rien à digérer pour l'instant",
+      "subtitle": "Importe ton premier screenshot pour commencer.",
+      "cta": "Importer"
+    }
+  },
+  "card": {
+    "level": {
+      "beginner": "Débutant",
+      "intermediate": "Intermédiaire",
+      "advanced": "Avancé"
+    },
+    "estimated_time": "~{minutes} min",
+    "actions": {
+      "copy_code": "Copier le code",
+      "open_source": "Ouvrir la source",
+      "open_with_ai": "Ouvrir avec l'IA",
+      "mark_tested": "Marquer comme testé",
+      "tested": "Testé",
+      "regenerate": "Régénérer",
+      "split": "Scinder",
+      "merge": "Fusionner",
+      "delete": "Supprimer"
+    },
+    "status": {
+      "pending": "Génération en cours...",
+      "failed": "Échec — réessayer"
+    }
+  },
+  "search": {
+    "placeholder": "Cherche par concept, vibe, idée...",
+    "empty": "Aucun résultat. Reformule autrement ?"
+  },
+  "capture": {
+    "import_title": "Importer",
+    "import_cta": "Choisir dans Photos",
+    "generating": "Génération de ta fiche...",
+    "success": "Fiche prête"
+  },
+  "notifications": {
+    "capture_reminder": {
+      "v1": "Tu as des contenus à importer aujourd'hui ?",
+      "v2": "Nouveau screenshot à digérer ?",
+      "v3": "Ta veille du jour attend d'être intégrée.",
+      "v4": "1 minute pour capitaliser ta veille du jour."
+    }
+  },
+  "settings": {
+    "title": "Réglages",
+    "sections": {
+      "general": "Général",
+      "notifications": "Notifications",
+      "subscription": "Abonnement",
+      "privacy": "Confidentialité",
+      "about": "À propos"
+    },
+    "language": "Langue",
+    "theme": "Thème",
+    "theme_options": {
+      "system": "Système",
+      "light": "Clair",
+      "dark": "Sombre"
+    },
+    "capture_hour": "Heure du rappel quotidien",
+    "teaser_count": "Notifications par jour",
+    "analytics_consent": "Partager les statistiques anonymes",
+    "manage_subscription": "Gérer mon abonnement",
+    "restore_purchases": "Restaurer les achats",
+    "export_data": "Exporter mes fiches (JSON)",
+    "wipe_data": "Supprimer toutes mes données",
+    "wipe_confirm": "Supprimer définitivement toutes tes fiches et préférences ?",
+    "privacy_policy": "Politique de confidentialité",
+    "terms": "Conditions d'utilisation",
+    "replay_onboarding": "Revoir l'onboarding",
+    "version": "Version {version}"
+  },
+  "paywall": {
+    "title": "Débloque Beedle Pro",
+    "subtitle": "Génération illimitée, recherche sans limite, notifications intelligentes.",
+    "benefits": {
+      "unlimited": "Fiches illimitées",
+      "search": "Recherche sémantique complète",
+      "notifications": "Jusqu'à 2 notifs intelligentes/jour",
+      "support": "Support prioritaire"
+    },
+    "trial_cta": "Démarrer 7 jours gratuits",
+    "per_month": "€/mois",
+    "per_year": "€/an"
+  },
+  "permissions": {
+    "denied_title": "Autorisation refusée",
+    "denied_subtitle": "Tu peux l'activer dans les réglages de ton téléphone.",
+    "open_settings": "Ouvrir les réglages"
+  },
+  "freemium": {
+    "cap_reached_title": "Cap mensuel atteint",
+    "cap_reached_subtitle": "Passe en Pro pour générer sans limite.",
+    "monthly_used": "{used}/{limit} fiches ce mois"
+  },
+  "gamification": {
+    "dashboard_title": "Ma progression",
+    "streak_current": "{days} jours d'affilée 🔥",
+    "streak_longest": "Record : {days} jours",
+    "challenge_title": "Défi de la semaine",
+    "activity_title": "Activité",
+    "badges_title": "Badges",
+    "level": {
+      "curator": "Curator",
+      "explorer": "Explorer",
+      "mapmaker": "Mapmaker",
+      "sensei": "Sensei",
+      "legend": "Legend"
+    }
+  },
+  "challenges": {
+    "testN": "Teste 2 astuces cette semaine",
+    "reviveOld": "Consulte 3 fiches oubliées",
+    "streakN": "Maintiens un streak de 5 jours"
+  }
+}

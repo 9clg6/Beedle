@@ -1,0 +1,121 @@
+version: "6.0.0"
+project_name: "Beedle"
+project_level: 2
+current_sprint: 0
+sprint_plan_path: "docs/sprint-plan-beedle-2026-04-15.md"
+last_updated: "2026-04-15T00:00:00Z"
+
+# Phase préalable — Jalon 0 (bloquant pour Sprint 1)
+preamble:
+  start_date: "2026-04-15"
+  end_date: "2026-04-21"
+  status: "not_started"
+  goal: "Valider la qualité du prompt de digestion hors Flutter avant dev Sprint 1"
+  stories:
+    - story_id: "STORY-J00"
+      title: "Prompt validation sur 15-20 screens réels"
+      points: 3
+      status: "not_started"
+
+sprints:
+  - sprint_number: 1
+    start_date: "2026-04-22"
+    end_date: "2026-05-05"
+    capacity_points: 35
+    committed_points: 34
+    completed_points: 0
+    status: "not_started"
+    goal: "Pipeline end-to-end : un screenshot manuel devient une fiche structurée visualisable en local"
+    stories:
+      - { story_id: "STORY-000", title: "Scaffolding Flutter project", points: 3, status: "not_started" }
+      - { story_id: "STORY-001", title: "ObjectBox setup + entities", points: 3, status: "not_started" }
+      - { story_id: "STORY-002", title: "Cloudflare Worker proxy", points: 3, status: "not_started" }
+      - { story_id: "STORY-003", title: "CI/CD basics", points: 2, status: "not_started" }
+      - { story_id: "STORY-010", title: "OCR service (MLKit + isolate)", points: 3, status: "not_started" }
+      - { story_id: "STORY-011", title: "LLM client + structured output + retry", points: 5, status: "not_started" }
+      - { story_id: "STORY-012", title: "Embedding client", points: 2, status: "not_started" }
+      - { story_id: "STORY-013", title: "Ingestion pipeline", points: 5, status: "not_started" }
+      - { story_id: "STORY-015", title: "Import manuel photo picker", points: 3, status: "not_started" }
+      - { story_id: "STORY-021", title: "Card detail basique + actions", points: 5, status: "not_started" }
+
+  - sprint_number: 2
+    start_date: "2026-05-06"
+    end_date: "2026-05-19"
+    capacity_points: 35
+    committed_points: 36
+    completed_points: 0
+    status: "not_started"
+    goal: "MVP perso — tous canaux de capture + surface + push de base, prêt pour 7 jours d'usage Clement"
+    stories:
+      - { story_id: "STORY-016", title: "Share sheet iOS + Android", points: 3, status: "not_started" }
+      - { story_id: "STORY-017", title: "Auto-import Android WorkManager", points: 5, status: "not_started" }
+      - { story_id: "STORY-014", title: "Fusion engine heuristique", points: 3, status: "not_started" }
+      - { story_id: "STORY-020", title: "Home éditoriale", points: 5, status: "not_started" }
+      - { story_id: "STORY-022", title: "Recherche sémantique", points: 5, status: "not_started" }
+      - { story_id: "STORY-023", title: "Parcourir toutes mes fiches", points: 2, status: "not_started" }
+      - { story_id: "STORY-030", title: "Push-teaser scheduler", points: 5, status: "not_started" }
+      - { story_id: "STORY-031", title: "Push-capture daily", points: 3, status: "not_started" }
+      - { story_id: "STORY-032", title: "Deep-link notif", points: 2, status: "not_started" }
+      - { story_id: "STORY-050", title: "Settings screen (version minimale)", points: 3, status: "not_started" }
+
+  - sprint_number: 3
+    start_date: "2026-05-20"
+    end_date: "2026-06-02"
+    capacity_points: 35
+    committed_points: 35
+    completed_points: 0
+    status: "not_started"
+    goal: "App publique-ready — onboarding 12 écrans + paywall + analytics + i18n"
+    stories:
+      - { story_id: "STORY-040a", title: "OB 1-5 storytelling + preview features", points: 5, status: "not_started" }
+      - { story_id: "STORY-040b", title: "OB 6-8 quiz + permission primers", points: 5, status: "not_started" }
+      - { story_id: "STORY-040c", title: "OB 9-12 paywall + aha moment", points: 5, status: "not_started" }
+      - { story_id: "STORY-041", title: "Quiz persist + prompt injection", points: 3, status: "not_started" }
+      - { story_id: "STORY-042", title: "Permission primers widgets", points: 3, status: "not_started" }
+      - { story_id: "STORY-043", title: "RevenueCat integration + paywall UI", points: 5, status: "not_started" }
+      - { story_id: "STORY-044", title: "Freemium cap enforcement (Option B)", points: 3, status: "not_started" }
+      - { story_id: "STORY-045", title: "PostHog SDK + consent", points: 3, status: "not_started" }
+      - { story_id: "STORY-053", title: "i18n FR + EN", points: 3, status: "not_started" }
+
+  - sprint_number: 4
+    start_date: "2026-06-03"
+    end_date: "2026-06-15"
+    capacity_points: 30
+    committed_points: 25
+    completed_points: 0
+    status: "not_started"
+    goal: "Launch public — soumissions App Store + Play Store"
+    stories:
+      - { story_id: "STORY-046", title: "Analytics events instrumentation", points: 3, status: "not_started" }
+      - { story_id: "STORY-051", title: "Export JSON + wipe complet", points: 2, status: "not_started" }
+      - { story_id: "STORY-052", title: "Privacy policy + Terms", points: 2, status: "not_started" }
+      - { story_id: "STORY-054", title: "Accessibilité pass", points: 2, status: "not_started" }
+      - { story_id: "STORY-055", title: "Assets OB illustrations", points: 3, status: "not_started" }
+      - { story_id: "STORY-056", title: "TestFlight + Internal Testing setup", points: 3, status: "not_started" }
+      - { story_id: "STORY-057", title: "Store submission prep", points: 3, status: "not_started" }
+      - { story_id: "STORY-050-finish", title: "Settings finalisation (delta)", points: 2, status: "not_started" }
+    buffer_points: 5  # pour retours review Apple/Google + bugs
+
+velocity:
+  sprint_1: null
+  sprint_2: null
+  sprint_3: null
+  sprint_4: null
+  rolling_average: null
+
+team:
+  size: 1
+  sprint_length_weeks: 2
+  capacity_per_sprint: 35
+  notes: "Solo dev avec assistance IA. 1 point ≈ 1,5-2h effective."
+
+milestones:
+  - name: "Jalon 0 validé"
+    target_date: "2026-04-21"
+    blocks: ["Sprint 1"]
+  - name: "MVP perso"
+    target_date: "2026-05-19"
+    description: "Clement démarre 7 jours d'usage réel pour valider les success criteria"
+  - name: "Launch public"
+    target_date: "2026-06-15"
+    description: "App disponible sur App Store + Play Store"
