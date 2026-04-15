@@ -1,0 +1,234 @@
+{
+  "app": {
+    "name": "Beedle",
+    "tagline": "The watchlist that pings you back"
+  },
+  "common": {
+    "error": {
+      "generic": "Something went wrong",
+      "network": "Check your internet connection",
+      "llm_unavailable": "AI couldn't generate this card, retrying later"
+    },
+    "action": {
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "confirm": "Confirm",
+      "retry": "Retry",
+      "close": "Close",
+      "continue": "Continue",
+      "skip": "Skip",
+      "back": "Back",
+      "next": "Next",
+      "done": "Done"
+    },
+    "loading": "Loading...",
+    "empty": "Nothing to show"
+  },
+  "onboarding": {
+    "step1": {
+      "title": "The watchlist that pings you back",
+      "subtitle": "Your tech screenshots turned into cards you actually read."
+    },
+    "step2": {
+      "title": "Your screenshots die in your camera roll",
+      "subtitle": "We get you out of the graveyard."
+    },
+    "step3": {
+      "title": "Capture without friction",
+      "subtitle": "Share, import, auto-collect. Your habitual gesture, nothing more."
+    },
+    "step4": {
+      "title": "AI digests for you",
+      "subtitle": "Title, summary, steps, code. No more sorting."
+    },
+    "step5": {
+      "title": "Notifications with substance",
+      "subtitle": "We resurface what you captured, at the right time, with real content."
+    },
+    "step6": {
+      "title": "What do you capture?",
+      "subtitle": "We'll personalize the app for you.",
+      "q1_label": "Content type",
+      "q1_options": {
+        "techAi": "Tech / AI",
+        "design": "Design",
+        "business": "Business",
+        "productivity": "Productivity",
+        "creative": "Creative",
+        "other": "Other"
+      },
+      "q2_label": "Reminder frequency",
+      "q2_options": {
+        "none": "None",
+        "one": "1 per day",
+        "two": "2 per day"
+      },
+      "q3_label": "Import reminder time",
+      "q3_placeholder": "8:00 PM"
+    },
+    "step7": {
+      "title": "Allow notifications",
+      "subtitle": "Beedle sends at most 1-2 notifications per day, always useful content.",
+      "cta": "Allow"
+    },
+    "step8": {
+      "title": "Allow Photos access",
+      "subtitle": "To import screenshots from your camera roll.",
+      "cta": "Allow"
+    },
+    "step9": {
+      "title": "7 days free, then €9/month",
+      "subtitle": "Or €59/year (-45%).",
+      "cta_trial": "Start trial",
+      "cta_free": "Continue on free plan"
+    },
+    "step10": {
+      "title": "Choose your plan",
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "yearly_badge": "Best value"
+    },
+    "step11": {
+      "title": "Import your first screenshot",
+      "subtitle": "Try with a capture from your photos.",
+      "cta": "Import"
+    },
+    "step12": {
+      "title": "Your first card is ready",
+      "subtitle": "Welcome to your living library.",
+      "cta": "Explore"
+    }
+  },
+  "home": {
+    "today": "Today",
+    "greeting_morning": "Good morning ☀️",
+    "greeting_afternoon": "Good afternoon 👋",
+    "greeting_evening": "Good evening 🌙",
+    "stats_total": "{count} cards",
+    "stats_tested": "{count} tested",
+    "stats_streak": "{days}-day streak",
+    "suggestion_label": "FOR YOU TODAY",
+    "suggestion_title": "Today's pick",
+    "rewatch_title": "All your cards",
+    "browse_all": "Browse all my cards",
+    "empty": {
+      "title": "Nothing to digest yet",
+      "subtitle": "Import your first screenshot to get started.",
+      "cta": "Import"
+    }
+  },
+  "card": {
+    "level": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    },
+    "estimated_time": "~{minutes} min",
+    "actions": {
+      "copy_code": "Copy code",
+      "open_source": "Open source",
+      "open_with_ai": "Open with AI",
+      "mark_tested": "Mark as tested",
+      "tested": "Tested",
+      "regenerate": "Regenerate",
+      "split": "Split",
+      "merge": "Merge",
+      "delete": "Delete"
+    },
+    "status": {
+      "pending": "Generating...",
+      "failed": "Failed — retry"
+    }
+  },
+  "search": {
+    "placeholder": "Search by concept, vibe, idea...",
+    "empty": "No results. Try rephrasing?"
+  },
+  "capture": {
+    "import_title": "Import",
+    "import_cta": "Choose from Photos",
+    "generating": "Generating your card...",
+    "success": "Card ready"
+  },
+  "notifications": {
+    "capture_reminder": {
+      "v1": "Any content to import today?",
+      "v2": "New screenshot to digest?",
+      "v3": "Today's watch awaits integration.",
+      "v4": "1 minute to capitalize on today's watch."
+    }
+  },
+  "settings": {
+    "title": "Settings",
+    "sections": {
+      "general": "General",
+      "notifications": "Notifications",
+      "subscription": "Subscription",
+      "privacy": "Privacy",
+      "about": "About"
+    },
+    "language": "Language",
+    "theme": "Theme",
+    "theme_options": {
+      "system": "System",
+      "light": "Light",
+      "dark": "Dark"
+    },
+    "capture_hour": "Daily reminder time",
+    "teaser_count": "Notifications per day",
+    "analytics_consent": "Share anonymous usage data",
+    "manage_subscription": "Manage subscription",
+    "restore_purchases": "Restore purchases",
+    "export_data": "Export my cards (JSON)",
+    "wipe_data": "Delete all my data",
+    "wipe_confirm": "Permanently delete all cards and preferences?",
+    "privacy_policy": "Privacy policy",
+    "terms": "Terms of service",
+    "replay_onboarding": "Replay onboarding",
+    "version": "Version {version}"
+  },
+  "paywall": {
+    "title": "Unlock Beedle Pro",
+    "subtitle": "Unlimited generation, unrestricted search, smart notifications.",
+    "benefits": {
+      "unlimited": "Unlimited cards",
+      "search": "Full semantic search",
+      "notifications": "Up to 2 smart notifications/day",
+      "support": "Priority support"
+    },
+    "trial_cta": "Start 7-day free trial",
+    "per_month": "€/month",
+    "per_year": "€/year"
+  },
+  "permissions": {
+    "denied_title": "Permission denied",
+    "denied_subtitle": "You can enable it in your phone settings.",
+    "open_settings": "Open settings"
+  },
+  "freemium": {
+    "cap_reached_title": "Monthly cap reached",
+    "cap_reached_subtitle": "Go Pro to generate without limits.",
+    "monthly_used": "{used}/{limit} cards this month"
+  },
+  "gamification": {
+    "dashboard_title": "My progress",
+    "streak_current": "{days}-day streak 🔥",
+    "streak_longest": "Best: {days} days",
+    "challenge_title": "Weekly challenge",
+    "activity_title": "Activity",
+    "badges_title": "Badges",
+    "level": {
+      "curator": "Curator",
+      "explorer": "Explorer",
+      "mapmaker": "Mapmaker",
+      "sensei": "Sensei",
+      "legend": "Legend"
+    }
+  },
+  "challenges": {
+    "testN": "Test 2 tips this week",
+    "reviveOld": "Revisit 3 forgotten cards",
+    "streakN": "Keep a 5-day streak"
+  }
+}

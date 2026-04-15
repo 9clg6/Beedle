@@ -107,6 +107,35 @@ unlinked_spec.ds
 # Coverage
 coverage/
 
+# Beedle specifics — generated files (ne JAMAIS commit)
+lib/gen/
+lib/generated/
+lib/objectbox.g.dart
+lib/objectbox-model.json
+**/*.g.dart
+**/*.freezed.dart
+**/*.gr.dart
+
+# Secrets & env
+.env
+.env.*
+!.env.example
+
+# Worker (Cloudflare)
+worker/node_modules/
+worker/.dev.vars
+worker/.wrangler/
+
+# Jalon 0 — ne pas commit les screens réels du porteur
+scripts/jalon_0_prompt_validation/screens/
+scripts/jalon_0_prompt_validation/results.md
+
+# Fastlane
+**/fastlane/report.xml
+**/fastlane/Preview.html
+**/fastlane/screenshots
+**/fastlane/test_output
+
 # Symbols
 app.*.symbols
 

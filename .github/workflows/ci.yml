@@ -1,0 +1,52 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  flutter:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Pub get
+        run: flutter pub get
+
+      - name: Build runner
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      - name: Generate locale keys
+        run: dart run easy_localization:generate -S assets/translations -f keys -O lib/generated -o locale_keys.g.dart
+
+      - name: Analyze
+        run: flutter analyze --no-fatal-infos
+
+      - name: Test
+        run: flutter test --coverage
+
+      - uses: codecov/codecov-action@v4
+        if: always()
+        with:
+          files: coverage/lcov.info
+          fail_ci_if_error: false
+
+  worker:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: worker
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install
+      - run: npx tsc --noEmit
