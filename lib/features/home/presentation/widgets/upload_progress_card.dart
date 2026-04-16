@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:ui';
 
 import 'package:beedle/core/providers/data_providers.dart';
 import 'package:beedle/domain/repositories/ingestion_job.repository.dart';
@@ -176,18 +175,25 @@ class _UploadCardShell extends StatelessWidget {
     final bool isDark = brightness == Brightness.dark;
     final TextTheme textTheme = Theme.of(context).textTheme;
 
+    // On utilise des couleurs 100% opaques pré-blendées plutôt qu'un
+    // BackdropFilter + alpha. Raison : pendant la fade-out de l'AnimatedSwitcher
+    // (success → idle), un BackdropFilter reste à 100% d'intensité même
+    // quand le widget fade — donc on voit le blur « nu » sous la card qui
+    // disparaît, ce qui donne un flash blanc laiteux bizarre. Avec une
+    // couleur opaque, la fade-out est propre.
+    final Color canvasBase = isDark ? AppColors.surfaceDark : AppColors.surface;
     final (Color background, Color border) = switch (variant) {
       _CardVariant.active => (
-        isDark ? AppColors.glassDarkMedium : AppColors.glassMedium,
-        isDark ? AppColors.glassDarkBorder : AppColors.glassBorder,
+        canvasBase,
+        isDark ? AppColors.neutral3Dark : AppColors.neutral3,
       ),
       _CardVariant.failed => (
-        AppColors.danger.withValues(alpha: 0.06),
-        AppColors.danger.withValues(alpha: 0.28),
+        Color.alphaBlend(AppColors.danger.withValues(alpha: 0.08), canvasBase),
+        AppColors.danger.withValues(alpha: 0.4),
       ),
       _CardVariant.success => (
-        AppColors.success.withValues(alpha: 0.06),
-        AppColors.success.withValues(alpha: 0.28),
+        Color.alphaBlend(AppColors.success.withValues(alpha: 0.08), canvasBase),
+        AppColors.success.withValues(alpha: 0.4),
       ),
     };
 
@@ -208,68 +214,62 @@ class _UploadCardShell extends StatelessWidget {
       side: BorderSide(color: border),
     );
 
-    final Widget content = ClipPath(
-      clipper: ShapeBorderClipper(shape: shape),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(
-          sigmaX: CalmBlur.floating,
-          sigmaY: CalmBlur.floating,
-        ),
-        child: AnimatedContainer(
-          duration: CalmDuration.quick,
-          curve: CalmCurves.standard,
-          decoration: ShapeDecoration(
-            shape: shape,
-            color: background,
-            shadows: compact ? const <BoxShadow>[] : CalmShadows.sm,
-          ),
-          padding: padding,
-          child: Row(
-            children: <Widget>[
-              SizedBox(width: 20, height: 20, child: Center(child: icon)),
-              const Gap(CalmSpace.s4),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text(
-                      title,
-                      style: textTheme.bodyMedium?.copyWith(
-                        fontWeight: FontWeight.w600,
-                        color: isDark
-                            ? AppColors.neutral8Dark
-                            : AppColors.neutral8,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+    final Widget content = AnimatedContainer(
+      duration: CalmDuration.quick,
+      curve: CalmCurves.standard,
+      decoration: ShapeDecoration(
+        shape: shape,
+        color: background,
+        shadows: compact ? const <BoxShadow>[] : CalmShadows.sm,
+      ),
+      padding: padding,
+      child: ClipPath(
+        clipper: ShapeBorderClipper(shape: shape),
+        child: Row(
+          children: <Widget>[
+            SizedBox(width: 20, height: 20, child: Center(child: icon)),
+            const Gap(CalmSpace.s4),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    title,
+                    style: textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      color: isDark
+                          ? AppColors.neutral8Dark
+                          : AppColors.neutral8,
                     ),
-                    if (!compact) ...<Widget>[
-                      const Gap(CalmSpace.s1),
-                      AnimatedSwitcher(
-                        duration: CalmDuration.quick,
-                        child: Text(
-                          subtitle,
-                          key: ValueKey<String>(subtitle),
-                          style: textTheme.labelSmall?.copyWith(
-                            color: isDark
-                                ? AppColors.neutral6Dark
-                                : AppColors.neutral6,
-                          ),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  if (!compact) ...<Widget>[
+                    const Gap(CalmSpace.s1),
+                    AnimatedSwitcher(
+                      duration: CalmDuration.quick,
+                      child: Text(
+                        subtitle,
+                        key: ValueKey<String>(subtitle),
+                        style: textTheme.labelSmall?.copyWith(
+                          color: isDark
+                              ? AppColors.neutral6Dark
+                              : AppColors.neutral6,
                         ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                    ],
+                    ),
                   ],
-                ),
+                ],
               ),
-              if (trailing != null) ...<Widget>[
-                const Gap(CalmSpace.s3),
-                trailing!,
-              ],
+            ),
+            if (trailing != null) ...<Widget>[
+              const Gap(CalmSpace.s3),
+              trailing!,
             ],
-          ),
+          ],
         ),
       ),
     );
