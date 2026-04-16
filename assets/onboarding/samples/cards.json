@@ -1,0 +1,37 @@
+[
+  {
+    "title": "Évalue n'importe quel LLM en 30 secondes",
+    "summary": "Cinq prompts standardisés pour comparer Claude, GPT et Gemini sur tes propres tâches sans build une suite d'évals complète.",
+    "actionLabel": "Tester maintenant",
+    "intent": "apply",
+    "tags": ["llm", "eval", "prompts"]
+  },
+  {
+    "title": "Claude Code Skills, mode d'emploi",
+    "summary": "Crée une skill réutilisable en 3 fichiers (SKILL.md + script + assets) pour automatiser tes workflows répétitifs.",
+    "actionLabel": "Lire les étapes",
+    "intent": "read",
+    "tags": ["claude-code", "skills", "automation"]
+  },
+  {
+    "title": "Figma Auto-layout : le pattern qui change tout",
+    "summary": "Combine wrap + min/max width pour des composants vraiment responsive sans constraints manuelles.",
+    "actionLabel": "Sauvegarder pour plus tard",
+    "intent": "reference",
+    "tags": ["figma", "design", "layout"]
+  },
+  {
+    "title": "Dart async : isolate vs compute()",
+    "summary": "compute() pour un job ponctuel, Isolate.spawn pour un long-running worker. Quand utiliser lequel.",
+    "actionLabel": "Tester maintenant",
+    "intent": "apply",
+    "tags": ["dart", "async", "isolate"]
+  },
+  {
+    "title": "Raycast : 5 commandes que tu utiliseras tous les jours",
+    "summary": "Window management, snippet expansion, clipboard history, calculator inline, AI commands. Setup en 10 min.",
+    "actionLabel": "Sauvegarder pour plus tard",
+    "intent": "reference",
+    "tags": ["raycast", "productivity", "macos"]
+  }
+]
