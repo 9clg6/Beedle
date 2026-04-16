@@ -103,6 +103,11 @@ dev_dependencies:
   # Usage: dart run flutter_launcher_icons
   flutter_launcher_icons: ^0.14.1
 
+  # Native splash screen (shown before Flutter engine boots).
+  # Replaces the generic Flutter launch screen with the Beedle Dot-b icon.
+  # Usage: dart run flutter_native_splash:create
+  flutter_native_splash: ^2.4.3
+
   # Testing
   mocktail: ^1.0.4
 
@@ -150,3 +155,32 @@ flutter_launcher_icons:
     background_color: "#FBF8F3"
     theme_color: "#FF6B2E"
   remove_alpha_ios: true
+
+# Native splash screen (shown before the Flutter engine boots, before
+# SplashScreen.dart takes over). Replaces the generic Flutter launch
+# placeholder with the Beedle Dot-b logo on the warm cream background.
+#
+# Command: `dart run flutter_native_splash:create`
+flutter_native_splash:
+  # Background color of the splash canvas — matches the top of the Aurora
+  # gradient so the Dot-b squircle image blends cleanly into the surface.
+  color: "#FFFBF5"
+  # Main image: the full Dot-b squircle logo (with its own gradient).
+  # iOS uses it as-is; Android < 12 uses it centered on `color`.
+  image: "assets/branding/icon-source-1024.png"
+  # Dark mode variant (iOS 13+, Android 10+)
+  color_dark: "#0A0A0A"
+  image_dark: "assets/branding/icon-dot-b-dark-1024.png"
+  # Android 12+ splash uses a circular icon mask imposed by the OS.
+  # We hand it the "adaptive foreground" (b + dot, transparent bg) so the
+  # glyph fits the circle without our squircle fighting with it.
+  android_12:
+    color: "#FFFBF5"
+    image: "assets/branding/icon-adaptive-foreground-1024.png"
+    icon_background_color: "#FFFBF5"
+    color_dark: "#0A0A0A"
+    image_dark: "assets/branding/icon-adaptive-foreground-1024.png"
+    icon_background_color_dark: "#0A0A0A"
+  ios: true
+  android: true
+  web: false  # our in-app SplashScreen.dart handles the web first paint
