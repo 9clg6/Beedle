@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Beedle — App Icon Master Source
+  Concept: The Dot-b
+  Reference: docs/brainstorming-app-icon-2026-04-16.md
+
+  Grid: 1024 × 1024 (base size before resampling)
+  Squircle: 22% corner radius (iOS-style), cornerSmoothing ≈ 0.6 (approximated)
+  Letter: lowercase 'b' in Hanken Grotesk Bold, skewX -8° (italicized)
+  Accent: ember dot above ascender
+
+  NOTE: For production assets (iOS xcassets, Android mipmap), render this SVG
+  through Figma/Sketch with a true iOS squircle path AND outline the 'b' to
+  paths (since system renderers won't have Hanken Grotesk embedded).
+  In-app usage: the Flutter widget `assets/branding/beedle_icon_asset.dart`
+  renders the exact same design at any size using `figma_squircle`.
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 1024 1024"
+  width="1024"
+  height="1024"
+>
+  <title>Beedle — Dot-b App Icon</title>
+  <desc>Italicized lowercase 'b' in ink on Aurora warm gradient squircle, with ember accent dot.</desc>
+
+  <defs>
+    <!-- Aurora Warm gradient (vertical): cream → peach → sunset -->
+    <linearGradient id="auroraWarm" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0"    stop-color="#FFFBF5"/>
+      <stop offset="0.4"  stop-color="#FFE9D0"/>
+      <stop offset="0.75" stop-color="#FFDBB0"/>
+      <stop offset="1"    stop-color="#FFC48A"/>
+    </linearGradient>
+
+    <!-- Soft drop shadow (~6% opacity, warm ink tint) -->
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceAlpha" stdDeviation="20"/>
+      <feOffset dx="0" dy="24"/>
+      <feComponentTransfer><feFuncA type="linear" slope="0.08"/></feComponentTransfer>
+      <feMerge>
+        <feMergeNode/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!--
+    Squircle background.
+    NOTE: this is a rounded-rectangle approximation (radius 225).
+    For a true iOS continuous-curvature squircle, replace with a Figma path.
+  -->
+  <rect
+    x="0"
+    y="0"
+    width="1024"
+    height="1024"
+    rx="225"
+    ry="225"
+    fill="url(#auroraWarm)"
+  />
+
+  <!--
+    Lowercase 'b' — italicized 8° via skewX
+    Font: Hanken Grotesk Bold (700)
+    Color: ink #0A0A0A
+    Size: ~560px (approx 55% of canvas height)
+    Positioned visually centered (accounting for italic lean)
+  -->
+  <g transform="translate(512, 720)">
+    <text
+      x="0"
+      y="0"
+      font-family="'Hanken Grotesk', 'Inter', 'SF Pro Display', sans-serif"
+      font-weight="700"
+      font-size="560"
+      fill="#0A0A0A"
+      text-anchor="middle"
+      transform="skewX(-8)"
+    >b</text>
+  </g>
+
+  <!--
+    Ember accent dot — the signature "ping back" signal
+    Color: ember #FF6B2E
+    Diameter: 72px (~13% of 'b' height)
+    Position: above the ascender of the 'b', slightly right of its stem
+  -->
+  <circle cx="520" cy="165" r="36" fill="#FF6B2E"/>
+</svg>

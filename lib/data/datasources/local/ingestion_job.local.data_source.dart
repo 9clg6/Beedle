@@ -6,6 +6,9 @@ abstract interface class IngestionJobLocalDataSource {
   Future<IngestionJobLocalModel?> nextQueued();
   Future<List<IngestionJobLocalModel>> pending();
   Stream<List<IngestionJobLocalModel>> watchPending();
+  Stream<List<IngestionJobLocalModel>> watchActiveAndFailed();
   Future<List<IngestionJobLocalModel>> failedJobs();
+  Future<List<IngestionJobLocalModel>> activeJobs();
+  Future<int> removeByUuids(List<String> uuids);
   Future<void> wipe();
 }

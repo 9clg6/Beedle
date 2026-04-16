@@ -102,9 +102,9 @@
   },
   "home": {
     "today": "Today",
-    "greeting_morning": "Good morning ☀️",
-    "greeting_afternoon": "Good afternoon 👋",
-    "greeting_evening": "Good evening 🌙",
+    "greeting_morning": "Good morning",
+    "greeting_afternoon": "Good afternoon",
+    "greeting_evening": "Good evening",
     "stats_total": "{count} cards",
     "stats_tested": "{count} tested",
     "stats_streak": "{days}-day streak",
@@ -112,11 +112,73 @@
     "suggestion_title": "Today's pick",
     "rewatch_title": "All your cards",
     "browse_all": "Browse all my cards",
+    "new_card": "New card: {title}",
+    "filter": {
+      "all": "All",
+      "apply": "To try",
+      "read": "To read",
+      "empty": "No card in this filter.",
+      "reset": "See all"
+    },
+    "ingestion": {
+      "label": "[INGEST]",
+      "single": "analysing 1 capture…",
+      "multiple": "analysing {count} captures…"
+    },
+    "upload": {
+      "active": {
+        "title": "Digesting…",
+        "subtitle_single": "1 capture processing",
+        "subtitle_multiple": "{count} captures processing",
+        "cancel_a11y": "Cancel import"
+      },
+      "failed": {
+        "title": "Digestion failed",
+        "subtitle_generic": "Something went wrong during digestion.",
+        "retry": "Retry",
+        "dismiss_a11y": "Dismiss error"
+      },
+      "success": {
+        "title": "Card ready",
+        "subtitle": "{title}"
+      }
+    },
+    "streak": {
+      "days": "DAYS",
+      "active": "Consecutive",
+      "inactive": "Start your streak",
+      "record": "Record · {days}d"
+    },
+    "today_lesson_label": "TODAY'S LESSON",
     "empty": {
       "title": "Nothing to digest yet",
       "subtitle": "Import your first screenshot to get started.",
       "cta": "Import"
     }
+  },
+  "today": {
+    "header": "[TODAY'S LESSON]",
+    "action_label": "ACTION",
+    "done": "Done",
+    "open_card": "Open the card",
+    "remind_later": "Remind me tomorrow",
+    "empty_title": "No lesson today.",
+    "empty_body": "All your \"to try\" cards are done. Import a new screenshot or come back tomorrow.",
+    "push_body": "Today: {title}"
+  },
+  "voice": {
+    "standby": "> standby. capture something.",
+    "log_header": "[VOICE LOG]",
+    "streak_line": "[STREAK] day {days}"
+  },
+  "intent": {
+    "apply": "TO TRY",
+    "read": "TO READ",
+    "reference": "DOC",
+    "sheet_title": "Classify this card",
+    "apply_description": "A concrete action you want to try.",
+    "read_description": "A concept or essay to understand.",
+    "reference_description": "Documentation to keep for reference."
   },
   "card": {
     "level": {
@@ -148,6 +210,8 @@
   "capture": {
     "import_title": "Import",
     "import_cta": "Choose from Photos",
+    "import_success_hint": "Digestion started",
+    "import_all_duplicates": "These captures have already been imported. Pick different ones.",
     "generating": "Generating your card...",
     "success": "Card ready"
   },
@@ -166,7 +230,11 @@
       "notifications": "Notifications",
       "subscription": "Subscription",
       "privacy": "Privacy",
-      "about": "About"
+      "about": "About",
+      "voice": "BEEDLE'S VOICE",
+      "daily_lesson": "DAILY LESSON",
+      "pipeline": "PIPELINE",
+      "data": "DATA"
     },
     "language": "Language",
     "theme": "Theme",
@@ -183,10 +251,24 @@
     "export_data": "Export my cards (JSON)",
     "wipe_data": "Delete all my data",
     "wipe_confirm": "Permanently delete all cards and preferences?",
+    "wipe_done": "All your data has been deleted.",
     "privacy_policy": "Privacy policy",
     "terms": "Terms of service",
     "replay_onboarding": "Replay onboarding",
-    "version": "Version {version}"
+    "version": "Version {version}",
+    "auto_import": "Auto-import (Android)",
+    "voice_terminal": "Terminal Card on Home",
+    "voice_push": "Push notifications",
+    "voice_quota": "Push quota / day",
+    "voice_quota_value": "{count} / day",
+    "voice_zen": "Zen mode (mute everything)",
+    "daily_lesson_push": "Morning push",
+    "daily_lesson_hour": "Time",
+    "daily_lesson_hour_value": "{hour}:00",
+    "replay_failed": "Retry failed imports",
+    "replay_none": "No job to retry.",
+    "replay_done": "{count} job(s) re-queued.",
+    "exported": "Exported: {path}"
   },
   "paywall": {
     "title": "Unlock Beedle Pro",

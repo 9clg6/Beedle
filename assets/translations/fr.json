@@ -102,9 +102,9 @@
   },
   "home": {
     "today": "Aujourd'hui",
-    "greeting_morning": "Bonjour ☀️",
-    "greeting_afternoon": "Bel après-midi 👋",
-    "greeting_evening": "Bonsoir 🌙",
+    "greeting_morning": "Bonjour",
+    "greeting_afternoon": "Bel après-midi",
+    "greeting_evening": "Bonsoir",
     "stats_total": "{count} fiches",
     "stats_tested": "{count} testées",
     "stats_streak": "{days}j de streak",
@@ -112,11 +112,73 @@
     "suggestion_title": "Suggestion du jour",
     "rewatch_title": "Toutes tes fiches",
     "browse_all": "Parcourir toutes mes fiches",
+    "new_card": "Nouvelle fiche : {title}",
+    "filter": {
+      "all": "Toutes",
+      "apply": "À tester",
+      "read": "À lire",
+      "empty": "Aucune card dans ce filtre.",
+      "reset": "Voir toutes"
+    },
+    "ingestion": {
+      "label": "[INGEST]",
+      "single": "analyse de 1 capture…",
+      "multiple": "analyse de {count} captures…"
+    },
+    "upload": {
+      "active": {
+        "title": "Digestion en cours",
+        "subtitle_single": "1 capture en traitement",
+        "subtitle_multiple": "{count} captures en traitement",
+        "cancel_a11y": "Annuler l'import"
+      },
+      "failed": {
+        "title": "Échec de digestion",
+        "subtitle_generic": "Une erreur est survenue pendant la digestion.",
+        "retry": "Réessayer",
+        "dismiss_a11y": "Fermer la notification d'erreur"
+      },
+      "success": {
+        "title": "Fiche créée",
+        "subtitle": "{title}"
+      }
+    },
+    "streak": {
+      "days": "JOURS",
+      "active": "Consécutifs",
+      "inactive": "Démarre ta streak",
+      "record": "Record · {days}j"
+    },
+    "today_lesson_label": "TODAY'S LESSON",
     "empty": {
       "title": "Rien à digérer pour l'instant",
       "subtitle": "Importe ton premier screenshot pour commencer.",
       "cta": "Importer"
     }
+  },
+  "today": {
+    "header": "[TODAY'S LESSON]",
+    "action_label": "ACTION",
+    "done": "C'est fait",
+    "open_card": "Ouvrir la card",
+    "remind_later": "Remettre à demain",
+    "empty_title": "Pas de leçon aujourd'hui.",
+    "empty_body": "Toutes tes cards \"à tester\" sont faites. Importe un nouveau screenshot ou reviens demain.",
+    "push_body": "Aujourd'hui : {title}"
+  },
+  "voice": {
+    "standby": "> standby. capture something.",
+    "log_header": "[VOICE LOG]",
+    "streak_line": "[STREAK] day {days}"
+  },
+  "intent": {
+    "apply": "À TESTER",
+    "read": "À LIRE",
+    "reference": "DOC",
+    "sheet_title": "Classer cette card",
+    "apply_description": "Une action concrète que tu veux tester.",
+    "read_description": "Un concept ou essai à comprendre.",
+    "reference_description": "Documentation à garder en référence."
   },
   "card": {
     "level": {
@@ -148,6 +210,8 @@
   "capture": {
     "import_title": "Importer",
     "import_cta": "Choisir dans Photos",
+    "import_success_hint": "Digestion lancée",
+    "import_all_duplicates": "Ces captures ont déjà été importées. Choisis-en d'autres.",
     "generating": "Génération de ta fiche...",
     "success": "Fiche prête"
   },
@@ -166,7 +230,11 @@
       "notifications": "Notifications",
       "subscription": "Abonnement",
       "privacy": "Confidentialité",
-      "about": "À propos"
+      "about": "À propos",
+      "voice": "BEEDLE'S VOICE",
+      "daily_lesson": "LEÇON DU JOUR",
+      "pipeline": "PIPELINE",
+      "data": "DONNÉES"
     },
     "language": "Langue",
     "theme": "Thème",
@@ -183,10 +251,24 @@
     "export_data": "Exporter mes fiches (JSON)",
     "wipe_data": "Supprimer toutes mes données",
     "wipe_confirm": "Supprimer définitivement toutes tes fiches et préférences ?",
+    "wipe_done": "Toutes tes données ont été supprimées.",
     "privacy_policy": "Politique de confidentialité",
     "terms": "Conditions d'utilisation",
     "replay_onboarding": "Revoir l'onboarding",
-    "version": "Version {version}"
+    "version": "Version {version}",
+    "auto_import": "Auto-import (Android)",
+    "voice_terminal": "Terminal Card sur Home",
+    "voice_push": "Notifications push",
+    "voice_quota": "Quota push / jour",
+    "voice_quota_value": "{count} / jour",
+    "voice_zen": "Zen mode (tout couper)",
+    "daily_lesson_push": "Push matinale",
+    "daily_lesson_hour": "Créneau",
+    "daily_lesson_hour_value": "{hour}h00",
+    "replay_failed": "Rejouer les imports échoués",
+    "replay_none": "Aucun job à rejouer.",
+    "replay_done": "{count} job(s) remis en queue.",
+    "exported": "Exporté : {path}"
   },
   "paywall": {
     "title": "Débloque Beedle Pro",

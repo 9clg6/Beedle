@@ -6,6 +6,7 @@ import 'package:beedle/domain/params/import_screenshot.param.dart';
 import 'package:beedle/domain/repositories/ingestion_job.repository.dart';
 import 'package:beedle/domain/repositories/screenshot.repository.dart';
 import 'package:beedle/domain/services/gamification_engine.service.dart';
+import 'package:beedle/foundation/exceptions/app_exceptions.dart';
 import 'package:beedle/foundation/interfaces/future.usecases.dart';
 import 'package:crypto/crypto.dart';
 import 'package:uuid/uuid.dart';
@@ -17,9 +18,9 @@ final class ImportScreenshotsUseCase
     required ScreenshotRepository screenshotRepository,
     required IngestionJobRepository ingestionJobRepository,
     required GamificationEngine gamificationEngine,
-  })  : _screenshotRepository = screenshotRepository,
-        _ingestionJobRepository = ingestionJobRepository,
-        _gamificationEngine = gamificationEngine;
+  }) : _screenshotRepository = screenshotRepository,
+       _ingestionJobRepository = ingestionJobRepository,
+       _gamificationEngine = gamificationEngine;
 
   final ScreenshotRepository _screenshotRepository;
   final IngestionJobRepository _ingestionJobRepository;
@@ -28,19 +29,19 @@ final class ImportScreenshotsUseCase
 
   @override
   Future<IngestionJobEntity> invoke(ImportScreenshotParam params) async {
-    final screenshotUuids = <String>[];
+    final List<String> screenshotUuids = <String>[];
 
-    for (final path in params.filePaths) {
-      final file = File(path);
+    for (final String path in params.filePaths) {
+      final File file = File(path);
       if (!file.existsSync()) continue;
 
       final List<int> bytes = await file.readAsBytes();
-      final sha = sha256.convert(bytes).toString();
+      final String sha = sha256.convert(bytes).toString();
 
-      final exists = await _screenshotRepository.existsBySha256(sha);
+      final bool exists = await _screenshotRepository.existsBySha256(sha);
       if (exists) continue;
 
-      final screenshot = ScreenshotEntity(
+      final ScreenshotEntity screenshot = ScreenshotEntity(
         uuid: _uuid.v4(),
         filePath: path,
         sha256: sha,
@@ -51,11 +52,14 @@ final class ImportScreenshotsUseCase
     }
 
     if (screenshotUuids.isEmpty) {
-      throw Exception('No new screenshots to import (all duplicates or invalid).');
+      // Use a typed exception so the UI can render a user-friendly translated
+      // message instead of the raw toString() ("Exception: No new…").
+      throw const AllDuplicatesException();
     }
 
-    final job =
-        await _ingestionJobRepository.enqueue(screenshotUuids);
+    final IngestionJobEntity job = await _ingestionJobRepository.enqueue(
+      screenshotUuids,
+    );
     await _gamificationEngine.onImport();
     return job;
   }

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:beedle/domain/repositories/ocr.repository.dart';
 import 'package:beedle/foundation/exceptions/app_exceptions.dart';
 import 'package:beedle/foundation/logging/logger.dart';
@@ -8,20 +10,30 @@ import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart
 /// Support multilingue : on utilise le script `TextRecognitionScript.latin`
 /// qui couvre français, anglais, espagnol, etc.
 final class OCRRepositoryImpl implements OCRRepository {
-  OCRRepositoryImpl()
-      : _recognizer = TextRecognizer();
+  OCRRepositoryImpl() : _recognizer = TextRecognizer();
 
   final TextRecognizer _recognizer;
   final Log _log = Log.named('OCRRepository');
 
   @override
   Future<OCRResult> extract(String filePath) async {
-    try {
-      final input = InputImage.fromFilePath(filePath);
-      final result = await _recognizer.processImage(input);
+    // Validation avant d'appeler ML Kit : si le fichier n'existe plus (ex: le
+    // path image_picker a été purgé par iOS après reboot/kill), ML Kit native
+    // throw un NSException `MLKInvalidImage` non-catchable côté Dart, ce qui
+    // crash le main thread. On short-circuit ici avec une Exception Dart
+    // propre que le pipeline saura convertir en job `failed`.
+    final File file = File(filePath);
+    if (!file.existsSync()) {
+      _log.warn('OCR source missing: $filePath');
+      throw OCRFailureException('Source image not found: $filePath');
+    }
 
-      final fullText = result.text;
-      final confidence = _computeConfidence(result);
+    try {
+      final InputImage input = InputImage.fromFilePath(filePath);
+      final RecognizedText result = await _recognizer.processImage(input);
+
+      final String fullText = result.text;
+      final double confidence = _computeConfidence(result);
 
       if (fullText.trim().length < 10) {
         _log.warn('OCR returned < 10 chars for $filePath');
@@ -39,7 +51,7 @@ final class OCRRepositoryImpl implements OCRRepository {
 
   double _computeConfidence(RecognizedText text) {
     if (text.blocks.isEmpty) return 0;
-    final totalChars = text.text.length;
+    final int totalChars = text.text.length;
     if (totalChars == 0) return 0;
     // Heuristique simple : on part du principe que plus il y a de texte extrait,
     // plus la confiance est haute. MLKit ne retourne pas de score par défaut.
