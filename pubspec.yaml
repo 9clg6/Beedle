@@ -123,6 +123,8 @@ flutter:
   assets:
     - assets/translations/
     - assets/branding/
+    - assets/onboarding/
+    - assets/onboarding/samples/
 
 flutter_gen:
   output: lib/gen
