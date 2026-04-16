@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Beedle — Adaptive Foreground (Android 8+)
+
+  Pour les adaptive icons Android, la plateforme compose ce foreground
+  PAR-DESSUS le `adaptive_icon_background` (cream #FFFBF5 défini dans
+  pubspec.yaml). Donc ce SVG a un FOND TRANSPARENT — seulement le 'b'
+  et le point ember.
+
+  Note : Android applique ensuite son propre masque (circle, squircle,
+  teardrop…) selon les préférences du launcher. Le safe zone est 66%
+  du canvas. On garde le 'b' dans ce safe zone.
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 1024 1024"
+  width="1024"
+  height="1024"
+>
+  <title>Beedle — Adaptive Foreground</title>
+  <desc>'b' glyph and ember dot on transparent background, for Android adaptive icons.</desc>
+
+  <!-- Aucun rect de fond — canvas transparent -->
+
+  <!-- Lowercase 'b' — ink, italicized 8° -->
+  <g transform="translate(512, 720)">
+    <text
+      x="0"
+      y="0"
+      font-family="'Hanken Grotesk', 'Inter', 'SF Pro Display', sans-serif"
+      font-weight="700"
+      font-size="560"
+      fill="#0A0A0A"
+      text-anchor="middle"
+      transform="skewX(-8)"
+    >b</text>
+  </g>
+
+  <!-- Ember accent dot -->
+  <circle cx="520" cy="165" r="36" fill="#FF6B2E"/>
+</svg>
