@@ -10,7 +10,7 @@ void main() {
     final OnboardingState empty = OnboardingState.initial();
 
     test('non-validated steps always advance', () {
-      for (final int i in <int>[0, 4, 5, 6, 8, 9, 10, 11, 13, 14]) {
+      for (final int i in <int>[0, 3, 4, 5, 6, 8, 9, 10, 11, 13, 14]) {
         expect(
           OnboardingStepValidator.canAdvance(i, empty),
           isTrue,
@@ -78,8 +78,8 @@ void main() {
       expect(kFullImmersionSteps, <int>{0, 11, 13});
     });
 
-    test('auto-advance steps are 3 (tinder)', () {
-      expect(kAutoAdvanceSteps, <int>{3});
+    test('auto-advance steps are 3 (tinder) and 14 (paywall)', () {
+      expect(kAutoAdvanceSteps, <int>{3, 14});
     });
 
     test('validated steps are 1, 2, 7, 12', () {

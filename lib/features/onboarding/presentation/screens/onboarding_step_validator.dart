@@ -7,11 +7,13 @@ import 'package:beedle/features/onboarding/presentation/screens/onboarding.state
 /// - 13 : Viral moment → CTAs Share / Continuer dans la page
 const Set<int> kFullImmersionSteps = <int>{0, 11, 13};
 
-/// Indices "auto-advance" — le widget navigue lui-même quand l'input
-/// est complet (l'utilisateur ne voit jamais le bouton *Continuer* grisé).
+/// Indices "auto-advance" — le widget gère lui-même la sortie de l'écran
+/// (auto-advance, CTAs internes…). La NavBar n'expose pas *Continuer*.
 ///
 /// - 3  : Tinder → next() quand les 5 cards ont été swipées
-const Set<int> kAutoAdvanceSteps = <int>{3};
+/// - 14 : Paywall → CTAs *Démarrer l'essai* / *Continuer en gratuit* /
+///        *Restaurer* sont dans le widget
+const Set<int> kAutoAdvanceSteps = <int>{3, 14};
 
 /// Indices à validation gate — le bouton *Continuer* reste grisé tant
 /// que l'input minimum n'est pas rempli.
