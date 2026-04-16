@@ -92,9 +92,10 @@ structure dans `assets/translations/en.json` (traduction simple, même ton).
 
 - **Headline (display.md, ink)** : *La veille qui se rappelle à toi.*
 - **Sub (body.lg, neutral6)** : *Tes screenshots tech deviennent des fiches exploitables. Et l'app te rappelle d'y revenir quand tu en as besoin.*
-- **Visual** : phone mockup squircle montrant la vraie `HomeScreen` Beedle avec `TerminalCard` ember + 2 `CardGlassTile`. Positionné 3/5 de la hauteur d'écran.
+- **Visual** : PNG statique `assets/onboarding/home-preview.png` (phone mockup squircle montrant la `HomeScreen` peuplée de cards démo). `// TODO-USER: capturer une fois via flutter screenshot ou Figma mockup, ratio 9:16, 1080×1920`
 - **CTA primary (SquircleButton primary, full width)** : *Commencer*
 - **Eyebrow doto ember au-dessus du CTA** : `[15 STEPS · 90 SEC]`
+- **NavBar masquée** (écran full-immersion)
 
 ### 02 · Goal question (single-select)
 
@@ -161,19 +162,25 @@ structure dans `assets/translations/en.json` (traduction simple, même ton).
   - 📵 *Jamais revu* → **Notifs teaser — 0 à 2/jour, calées sur tes habitudes.**
   - 🗂️ *Maintenance Notion* → **Zéro tag, zéro dossier, zéro tri. L'IA s'occupe de tout.**
 
-### 07 · Comparison table
+### 07 · Comparison (stack vertical, pas de table)
 
 - **Stat big** : **94 %** de la veille tech reste inappliquée sans outil actif. `// TODO-USER: confirm stat source`
 - **Sub** : *Voilà la différence.*
-- **Table 2 colonnes** (header glass, rows alternées) :
+- **Layout** : 2 GlassCards empilées verticalement (mobile-first — on évite une table horizontale qui scrolle mal sur petit écran) :
 
-  | | Sans Beedle | Avec Beedle |
-  |---|---|---|
-  | Digestion auto | ❌ | ✅ |
-  | Rappels contextuels | ❌ | ✅ |
-  | Recherche par concept | ❌ | ✅ |
-  | Maintenance manuelle | 😩 Obligatoire | ✅ Zéro |
-  | Veille appliquée | 6 % | **87 %** |
+  **Card 1 — Sans Beedle** (fond neutral2, icône ✗ neutral5) :
+  - Digestion manuelle ou aucune
+  - Pas de rappels — on oublie
+  - Recherche par date/nom de fichier
+  - Maintenance dossiers/tags obligatoire
+  - **6 %** de la veille appliquée
+
+  **Card 2 — Avec Beedle** (fond glassMedium, border ember 1.5px, icône ✓ ember) :
+  - Digestion auto en <30 sec
+  - Rappels contextuels 0-2/jour
+  - Recherche par concept flou
+  - **Zéro maintenance**
+  - **87 %** de la veille appliquée `// TODO-USER: confirm stat`
 
 - **CTA primary** : *Je veux ça* (ember)
 
@@ -232,12 +239,10 @@ structure dans `assets/translations/en.json` (traduction simple, même ton).
 
 - Full-screen centered, background gradient Aurora warm
 - `BeedleIconAsset(size: 128)` pulse via `AnimationController` (fade opacity 0.6→1.0 en boucle 1.2s)
-- Texte body.lg ink qui change toutes les **800 ms** :
-  1. *Calibrage du moteur IA...*
-  2. *Configuration de tes préférences...*
-  3. *Ta bibliothèque est prête.*
-- Durée totale **~2.4 s** → auto-advance
+- Texte body.lg ink unique : *Configuration de ta bibliothèque...* (simplifié — 1 message au lieu de 3 successifs)
+- Durée totale **~2.0 s** → auto-advance
 - Sous le texte, mini progress bar horizontale animée (pseudo-loading)
+- **NavBar masquée** (écran full-immersion)
 
 ### 13 · App demo (swipe 5, pick 3)
 
@@ -262,11 +267,23 @@ structure dans `assets/translations/en.json` (traduction simple, même ton).
 
 - **Header animé 1.5 s** : *Digestion en cours...* + spinner ember (même visuel que le vrai pipeline — cohérence)
 - **Reveal** : stack vertical des 3 fiches générées (pré-bakées dans `assets/onboarding/samples/cards.json`)
-  - Chaque fiche = `CardGlassTile` custom avec :
-    - Titre (headline.md)
-    - Résumé 2 lignes (body.md)
-    - Bouton action (ex: *Copier le prompt*, *Ouvrir le thread*, *Tester le snippet*)
-    - Eyebrow intent (`[À TESTER]`, `[À LIRE]`, `[DOC]`)
+  - Chaque fiche = `_OnboardingPreviewCard` widget dédié (**pas** `CardGlassTile` — pas de dépendance sur `CardEntity` qui exige un `embedding` de ~1500 floats)
+  - Data model : DTO freezed léger
+    ```dart
+    @freezed
+    class OnboardingSampleCard with _$OnboardingSampleCard {
+      const factory OnboardingSampleCard({
+        required String title,
+        required String summary,
+        required String actionLabel,  // ex: "Copier le prompt"
+        required String intent,        // ex: "apply" | "read" | "reference"
+        required List<String> tags,
+      }) = _OnboardingSampleCard;
+      factory OnboardingSampleCard.fromJson(Map<String, dynamic> json) =>
+          _$OnboardingSampleCardFromJson(json);
+    }
+    ```
+  - Chaque fiche affiche : titre (headline.md), résumé 2 lignes (body.md), bouton action, eyebrow intent (`[À TESTER]`, `[À LIRE]`, `[DOC]`)
 - **Message au-dessus** : *Tu viens de créer ta première bibliothèque. Ne la perds pas.*
 - **CTA primary** : *Continuer* → paywall
 - **CTA secondary (icône share)** : *Partager ces fiches* →
@@ -275,6 +292,7 @@ structure dans `assets/translations/en.json` (traduction simple, même ton).
   - `.toImage(pixelRatio: 3.0)` → `ByteData(PNG)` → fichier temp
   - `Share.shareXFiles([XFile(tempPath)], text: 'Mes 3 premières fiches Beedle 📓')`
   - Via package **`share_plus`** (à ajouter)
+- **NavBar masquée** (écran full-immersion — CTA primary/secondary tiennent la nav)
 
 ### 15 · Paywall
 
@@ -288,10 +306,22 @@ structure dans `assets/translations/en.json` (traduction simple, même ton).
 - **Plan card secondaire** (neutral border) :
   - *Mensuel* · **`{PRIX}` €/mois**
 - **Placeholders** : `// TODO-USER: remplacer {PRIX} et {PRIX_AN} par le pricing final (brief mentionne 9€/59-69€)`
-- **CTA primary (ember, full width)** : *Commencer mon essai gratuit — 7 jours*
+- **CTA primary (ember, full width)** : *Commencer mon essai gratuit — 7 jours* → **câbler via RevenueCat** (décision A du refine) :
+  ```dart
+  final Offerings offerings = await Purchases.getOfferings();
+  final Package? current = offerings.current?.annual; // OU .monthly selon plan sélectionné
+  if (current != null) {
+    await Purchases.purchasePackage(current);
+    await ref.read(onboardingViewModelProvider.notifier).finishOnboarding();
+    if (context.mounted) context.router.replace(const HomeRoute());
+  }
+  ```
+  - `// TODO-USER: créer les produits RevenueCat (beedle_pro_monthly, beedle_pro_annual) + remplacer les clés placeholder dans AppConfigProd/AppConfigDev`
+  - Error handling : try/catch `PlatformException` → `SnackBar("Impossible de finaliser l'achat. Réessaie.")` — pas de pénalisation, l'user peut retry ou skip
 - **Links secondary (ghost, inline)** : *Restaurer mes achats* · *Continuer en gratuit* · *CGU · Privacy*
+  - *Continuer en gratuit* — **câbler cette fois** sur `finishOnboarding()` + `context.router.replace(const HomeRoute())` (était `onPressed: () {}` vide dans l'implémentation précédente)
+  - *Restaurer mes achats* → `await Purchases.restorePurchases()` puis naviguer Home si entitlement actif
 - **Small print** : *7 jours gratuits. Annule à tout moment avant la fin du trial. Aucun débit automatique sans notification.*
-- **Important** : le bouton *Continuer en gratuit* doit être **câblé** (`ref.read(onboardingViewModelProvider.notifier).finishOnboarding()` → `context.router.replace(const HomeRoute())`) — il était `onPressed: () {}` vide dans l'implémentation précédente.
 
 ---
 
@@ -302,7 +332,22 @@ structure dans `assets/translations/en.json` (traduction simple, même ton).
 ```yaml
 dependencies:
   share_plus: ^10.0.0  # Viral moment — native share sheet avec fichier PNG
+  # purchases_flutter — DÉJÀ présent (^9.16.1), on câble juste l'appel
 ```
+
+**RevenueCat wiring** (décision A du refine) :
+- Le SDK `purchases_flutter` est déjà présent
+- Init dans `kernel.provider.dart` : `await Purchases.setLogLevel(LogLevel.debug);
+  await Purchases.configure(PurchasesConfiguration(config.revenueCatApiKeyIos))`
+  (idéalement déjà fait, sinon à ajouter)
+- Au paywall CTA : `Purchases.getOfferings()` → `purchasePackage(package)`
+  → `finishOnboarding()` → `router.replace(HomeRoute)`
+- **Clés placeholders** : `appl_DEV_IOS_KEY_TODO` / `goog_DEV_ANDROID_KEY_TODO`
+  dans `AppConfigDev` — `// TODO-USER: remplacer par vraies clés sandbox
+  RevenueCat post-création des produits dans le dashboard`
+- **Error handling** : try/catch `PlatformException` + `PurchasesErrorCode.purchaseCancelledError`
+  → aucun log sentry, juste `SnackBar("Achat annulé")` ou `SnackBar("Erreur,
+  réessaie")` selon code
 
 ### 4.2. Nouveaux enums (Dart)
 
@@ -396,9 +441,13 @@ void recordDemoSwipe(int index, {required bool picked}) {
 
 Adapter `next()` / `previous()` / `goTo()` : maintenant **15 écrans** (index 0-14) au lieu de 11.
 
-### 4.5. Nouveaux widgets Flutter
+### 4.5. Refonte **complète** de `onboarding.screen.dart`
 
-Fichiers à créer sous `lib/features/onboarding/presentation/widgets/` :
+Le code actuel met tous les steps en `Widget` inline dans `PageView.children`
+(`_OBHero`, `_OBQuizStep`, `_OBPermissionStep`, `_OBPaywallStep`, `_OBAhaStep`).
+La nouvelle structure extrait chaque écran dans un **fichier dédié** sous
+`lib/features/onboarding/presentation/widgets/` et supprime les anciens
+inline widgets :
 
 - `ob_welcome_step.dart`
 - `ob_goal_step.dart`
@@ -410,28 +459,63 @@ Fichiers à créer sous `lib/features/onboarding/presentation/widgets/` :
 - `ob_category_step.dart`
 - `ob_reminder_step.dart`
 - `ob_processing_step.dart`
-- `ob_demo_step.dart` (+ `demo_sample_card.dart`)
-- `ob_viral_moment_step.dart` (inclut export PNG + share)
+- `ob_demo_step.dart` (+ `demo_sample_card.dart` pour les cards tinder samples)
+- `ob_viral_moment_step.dart` (inclut export PNG + share_plus)
+- `ob_paywall_step.dart` (remplace `_OBPaywallStep` inline + absorbe step10 "Choisis ton plan")
 
-**Refonte** : `_OBPaywallStep` existant → consolidé à 1 seul écran (absorbe l'ancien step10 "Choisis ton plan") avec la structure du §15 ci-dessus.
+**Tinder cards implementation** : pas de dépendance externe — on utilise
+`Dismissible` natif Flutter + `Stack` de 2-3 cards visibles (artisanal,
+aligné esprit CalmSurface). Pas de `flutter_card_swiper` ajouté.
 
 ### 4.6. Assets pré-bakés
 
 Structure à créer :
 
 ```
-assets/onboarding/samples/
-├── sample-prompt-eval.png              # screenshot tweet @simonwillison éval LLM
-├── sample-claude-code-skills.png       # thread X skills Claude Code
-├── sample-figma-autolayout.png         # screenshot Figma auto-layout
-├── sample-dart-async.png               # snippet Dart async/await
-├── sample-raycast-cmd.png              # screenshot Raycast
-└── cards.json                          # 3 fiches générées pré-bakées
+assets/onboarding/
+├── home-preview.png                    # Welcome (écran 01) — HomeScreen mockup
+└── samples/
+    ├── sample-prompt-eval.png          # screenshot tweet @simonwillison éval LLM
+    ├── sample-claude-code-skills.png   # thread X skills Claude Code
+    ├── sample-figma-autolayout.png     # screenshot Figma auto-layout
+    ├── sample-dart-async.png           # snippet Dart async/await
+    ├── sample-raycast-cmd.png          # screenshot Raycast
+    └── cards.json                      # 3 fiches pré-bakées (OnboardingSampleCard[])
 ```
 
-`cards.json` contient les 3 cards générées qui s'afficheront dans le viral moment — titre, résumé, action, intent, tags. Schema à aligner sur `CardEntity` pour pouvoir réutiliser `CardGlassTile`.
+**Specs PNG** : ratio 9:16, dimensions **1080 × 1920 px**, format PNG
+(compression 8-bit), poids cible < 300 KB chacun (on compresse via
+`pngquant` ou `tinypng` à la main).
 
-`// TODO-USER: créer les 5 PNG screenshots samples — peut être fait en capturant de vrais contenus publics ou en générant des mockups via Stitch / Figma.`
+**`cards.json`** — schema aligné sur le DTO `OnboardingSampleCard` (§14) :
+
+```json
+[
+  {
+    "title": "Framework d'éval LLM en 5 prompts",
+    "summary": "Un template réutilisable pour benchmarker la qualité d'un modèle sur tes cas d'usage.",
+    "actionLabel": "Copier le prompt",
+    "intent": "apply",
+    "tags": ["llm", "éval", "prompting"]
+  },
+  {
+    "title": "Claude Code skills pour automatiser ton workflow",
+    "summary": "Comment créer et chaîner des skills custom pour toucher moins de souris.",
+    "actionLabel": "Ouvrir le thread",
+    "intent": "read",
+    "tags": ["claude-code", "skills", "automation"]
+  },
+  {
+    "title": "Figma Auto-layout — le mode oublié",
+    "summary": "Un raccourci pour contraindre un enfant à déborder proprement. Gagne 15 min par écran.",
+    "actionLabel": "Voir le GIF",
+    "intent": "apply",
+    "tags": ["figma", "auto-layout", "ui"]
+  }
+]
+```
+
+`// TODO-USER: créer les 5 PNG samples + home-preview.png — capturer via flutter screenshot sur des contenus publics, ou mockups Figma/Stitch.`
 
 Déclarer dans `pubspec.yaml` :
 
@@ -440,7 +524,8 @@ flutter:
   assets:
     - assets/translations/
     - assets/branding/
-    - assets/onboarding/samples/  # NEW
+    - assets/onboarding/          # NEW — couvre home-preview.png
+    - assets/onboarding/samples/  # NEW — couvre les 5 PNG + cards.json
 ```
 
 ### 4.7. Traductions
@@ -483,6 +568,123 @@ Fichier : `lib/features/onboarding/presentation/screens/onboarding.screen.dart`
 - ✅ Bouton "Continuer en gratuit" du paywall — à câbler cette fois sur `finishOnboarding()` + pop vers Home
 - ✅ `UploadProgressCard` sans `BackdropFilter` (pas directement impacté mais à ne pas régresser)
 
+### 4.10. Modèle de navigation
+
+Décision **A.b** du refine : NavBar visible partout **sauf** sur les 3 écrans
+full-immersion (`01 Welcome`, `12 Processing`, `14 Viral`) où les CTA in-page
+portent la navigation.
+
+**Structure** :
+
+```dart
+// Dans onboarding.screen.dart — Scaffold body
+Column(
+  children: [
+    _ProgressIndicator(currentIndex, total: 15),
+    Expanded(
+      child: PageView(
+        controller: _controller,
+        physics: const NeverScrollableScrollPhysics(),
+        children: [...15 step widgets],
+      ),
+    ),
+    // NavBar conditionnelle
+    if (!_fullImmersionSteps.contains(state.currentIndex))
+      _NavBar(state: state, validator: _validator),
+  ],
+)
+
+// En haut du fichier
+const Set<int> _fullImmersionSteps = <int>{0, 11, 13};
+```
+
+**Validator** pour gate le bouton *Next* selon le state :
+
+```dart
+// lib/features/onboarding/presentation/screens/onboarding_step_validator.dart
+class OnboardingStepValidator {
+  static bool canAdvance(int index, OnboardingState state) {
+    return switch (index) {
+      1  => state.goal != null,                              // Goal question
+      2  => state.painPoints.isNotEmpty,                     // Pain points
+      7  => state.contentCategories.isNotEmpty,              // Categories
+      12 => state.demoSwipedRightIndices.length >= 3,        // Demo
+      _  => true,                                            // Default: free
+    };
+  }
+}
+```
+
+**Auto-advance** : sur les écrans 3 (Tinder après dernière card), 11 (Processing
+après ~2s), 13 (Viral après animation 1.5s) — gérés en interne par le widget
+via `Future.delayed(...)` + `context.router.push(...)` ou simplement
+`ref.read(onboardingViewModelProvider.notifier).next()`.
+
+**Back preservation** : le state Riverpod est preservé tant que le
+`onboardingViewModelProvider` n'est pas invalidé. Donc back/forward
+préserve goal, painPoints, tinderAgreedIndices, etc. naturellement.
+
+**Skip button** : dans `_NavBar`, visible uniquement sur écrans
+optionnels — `canSkip = i >= 2 && i < 9` (soit : Pain points → Comparison,
+zone "investissement psycho" qu'on peut accélérer).
+
+### 4.11. Skip consequences (permissions)
+
+Si l'user tap *Plus tard* sur `10. Permission photos` ou `11. Permission notifs`,
+l'onboarding continue sans pénalité. Conséquences à gérer **hors onboarding** :
+
+- **Photos refusée** → au premier `ImportScreen.pickImages()`, re-prompt
+  in-context via `Permission.photos.request()`. Si toujours refusée :
+  `SnackBar("Active l'accès aux photos dans les réglages")` + bouton
+  *Ouvrir les réglages* (`permission_handler.openAppSettings()`).
+- **Notifs refusées** → afficher un banner dismissible sur `HomeScreen`
+  *"Active les rappels pour profiter pleinement de Beedle"* — dismissable
+  via un `StateProvider<bool>` session-only. Pas bloquant.
+
+Ces deux handlers sont **post-onboarding** — pas à implémenter ici, juste
+à documenter pour le prochain chantier.
+
+### 4.12. Accessibility (minimum V1)
+
+- Chaque option tappable (goals, pain points, categories) : `Semantics(
+  label: '{option label}', button: true, selected: {boolean}, child: ...)`
+- Cards testimonials : `Semantics(label: '{name}, {persona} : {quote}', child: ...)`
+- Tinder swipe cards : `Semantics(label: '{statement}, swipe droite pour
+  accepter, gauche pour rejeter', child: ...)`
+- Boutons permissions : `Semantics(button: true, hint: '{ce que ça fait}',
+  child: ...)`
+- Test manuel : VoiceOver iOS + TalkBack Android sur 3 écrans clés
+  (Goal, Permission Photos, Paywall)
+
+### 4.13. Stratégie traductions EN
+
+- **FR écrit intégralement** (source of truth)
+- **EN** : clés créées dans `en.json` avec **valeur identique au FR** puis
+  marquées `// TODO-TRANSLATE` (pattern : `"title": "Qu'est-ce que tu veux...? // TODO-TRANSLATE"`)
+- Easy_localization fallback sur FR si la clé EN n'existe pas — on reste
+  safe si on oublie
+- **Traduction EN effective en post-MVP** (session dédiée, reviewer EN-natif)
+
+### 4.14. Event log PostHog
+
+Au `finishOnboarding()`, envoyer un event unique pour analytics post-launch :
+
+```dart
+ref.read(analyticsServiceProvider).track('onboarding_completed', {
+  'goal': state.goal?.name,
+  'pain_points_count': state.painPoints.length,
+  'tinder_agreed_count': state.tinderAgreedIndices.length,
+  'categories': state.contentCategories.map((c) => c.name).toList(),
+  'teaser_count_per_day': state.teaserCountPerDay,
+  'notifications_granted': state.notificationsGranted,
+  'photos_granted': state.photosGranted,
+  'demo_picked_count': state.demoSwipedRightIndices.length,
+});
+```
+
+Les nouveaux champs OnboardingState ne sont PAS persistés dans
+`UserPreferencesEntity` — uniquement loggués analytics. Simplifie le schema.
+
 ### 4.10. Test plan
 
 - Fresh install iOS → onboarding complet → paywall trial → Home vide (pas de cards)
@@ -500,14 +702,21 @@ Fichier : `lib/features/onboarding/presentation/screens/onboarding.screen.dart`
 ## 5. Définition of Done
 
 - [ ] 15 écrans implémentés dans `lib/features/onboarding/presentation/widgets/`
-- [ ] `OnboardingState` étendu + ViewModel étendu, `build_runner` ok
-- [ ] `share_plus` ajouté, export PNG fonctionne sur iOS + Android
-- [ ] 5 PNG samples + `cards.json` dans `assets/onboarding/samples/`
-- [ ] ~70 clés de traduction FR + EN, `locale_keys.g.dart` régénéré
-- [ ] Tous les `// TODO-USER` marqués pour remplacement post-beta (testimonials, stats, pricing)
+- [ ] Ancien `onboarding.screen.dart` (widgets inline `_OBHero` / `_OBQuizStep` / etc.) remplacé par 15 fichiers dédiés
+- [ ] `OnboardingState` étendu + 2 nouveaux enums (`OnboardingGoal`, `PainPoint`) + ViewModel étendu, `build_runner` ok
+- [ ] `OnboardingSampleCard` DTO freezed créé + `cards.json` désérialisé
+- [ ] `share_plus` ajouté au pubspec, export PNG fonctionne sur iOS + Android
+- [ ] RevenueCat `Purchases.purchasePackage()` câblé (clés placeholders OK tant que TODO-USER est marqué)
+- [ ] 5 PNG samples + `home-preview.png` + `cards.json` dans `assets/onboarding/`
+- [ ] ~70 clés de traduction FR dans `fr.json` + EN en fallback FR avec `// TODO-TRANSLATE`, `locale_keys.g.dart` régénéré
+- [ ] Tous les `// TODO-USER` marqués pour remplacement post-beta (testimonials, stats, pricing, assets)
+- [ ] NavBar conditionnelle : masquée sur Welcome / Processing / Viral
+- [ ] `OnboardingStepValidator` gate les Continue buttons sur goal / pain points / categories / demo
+- [ ] Event PostHog `onboarding_completed` déclenché avec les métadonnées listées §4.14
+- [ ] Accessibility V1 : `Semantics` sur tappables + smoke test VoiceOver + TalkBack sur 3 écrans
 - [ ] `flutter analyze` : 0 error, warnings pré-session tolérés
 - [ ] `dart format` : 100% formatté
-- [ ] Test manuel iOS + Android : full flow sans crash
+- [ ] Test manuel iOS + Android : full flow sans crash, incluant skip permissions, back/forward preserve state
 - [ ] Preview PNG generation : file opens dans Photos/Files après share
 - [ ] Bouton "Continuer en gratuit" câblé + testé
 
