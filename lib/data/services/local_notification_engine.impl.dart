@@ -6,8 +6,7 @@ import 'package:timezone/timezone.dart' as tz;
 
 /// Implémentation LocalNotificationEngine via `flutter_local_notifications` 21.x.
 final class LocalNotificationEngineImpl implements LocalNotificationEngine {
-  LocalNotificationEngineImpl()
-      : _plugin = FlutterLocalNotificationsPlugin();
+  LocalNotificationEngineImpl() : _plugin = FlutterLocalNotificationsPlugin();
 
   final FlutterLocalNotificationsPlugin _plugin;
   final Log _log = Log.named('LocalNotificationEngine');
@@ -20,19 +19,29 @@ final class LocalNotificationEngineImpl implements LocalNotificationEngine {
     if (_initialized) return;
     tz_init.initializeTimeZones();
 
-    const android =
-        AndroidInitializationSettings('@mipmap/ic_launcher');
-    const ios = DarwinInitializationSettings();
+    const AndroidInitializationSettings android = AndroidInitializationSettings(
+      '@mipmap/ic_launcher',
+    );
+    // IMPORTANT : on désactive la demande de permissions à l'init pour que
+    // le popup natif iOS ne se déclenche PAS au cold start. La permission
+    // est demandée explicitement à l'étape 7 de l'onboarding via
+    // `requestPermission()` — sinon iOS considère la demande comme déjà
+    // résolue et ne ré-affiche jamais le popup au tap "Autoriser".
+    const DarwinInitializationSettings ios = DarwinInitializationSettings(
+      requestAlertPermission: false,
+      requestBadgePermission: false,
+      requestSoundPermission: false,
+    );
 
-    const settings = InitializationSettings(
+    const InitializationSettings settings = InitializationSettings(
       android: android,
       iOS: ios,
     );
 
     await _plugin.initialize(
       settings: settings,
-      onDidReceiveNotificationResponse: (resp) {
-        final payload = resp.payload;
+      onDidReceiveNotificationResponse: (NotificationResponse resp) {
+        final String? payload = resp.payload;
         if (payload != null) onTap(payload);
       },
     );
@@ -41,13 +50,15 @@ final class LocalNotificationEngineImpl implements LocalNotificationEngine {
 
   @override
   Future<bool> requestPermission() async {
-    final ios = await _plugin
+    final bool? ios = await _plugin
         .resolvePlatformSpecificImplementation<
-            IOSFlutterLocalNotificationsPlugin>()
+          IOSFlutterLocalNotificationsPlugin
+        >()
         ?.requestPermissions(alert: true, badge: true, sound: true);
-    final android = await _plugin
+    final bool? android = await _plugin
         .resolvePlatformSpecificImplementation<
-            AndroidFlutterLocalNotificationsPlugin>()
+          AndroidFlutterLocalNotificationsPlugin
+        >()
         ?.requestNotificationsPermission();
     return ios ?? android ?? false;
   }
@@ -60,18 +71,19 @@ final class LocalNotificationEngineImpl implements LocalNotificationEngine {
     required String body,
     required String payload,
   }) async {
-    final scheduled = tz.TZDateTime.from(at, tz.local);
+    final tz.TZDateTime scheduled = tz.TZDateTime.from(at, tz.local);
 
-    const androidDetails = AndroidNotificationDetails(
-      'beedle_default',
-      'Beedle',
-      channelDescription: 'Teasers et rappels quotidiens Beedle',
-      importance: Importance.high,
-      priority: Priority.high,
-    );
-    const iosDetails = DarwinNotificationDetails();
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+          'beedle_default',
+          'Beedle',
+          channelDescription: 'Teasers et rappels quotidiens Beedle',
+          importance: Importance.high,
+          priority: Priority.high,
+        );
+    const DarwinNotificationDetails iosDetails = DarwinNotificationDetails();
 
-    const details = NotificationDetails(
+    const NotificationDetails details = NotificationDetails(
       android: androidDetails,
       iOS: iosDetails,
     );
