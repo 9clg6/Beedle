@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Beedle — App Icon (Dark Mode)
+  Same anatomy as icon-dot-b.svg but with dark palette:
+  - Background: solid ink #0A0A0A (no gradient)
+  - Letter 'b': canvas cream #F0E3D0
+  - Dot: ember #FF6B2E (unchanged — signature accent survives)
+
+  Usage: iOS 18+ dark app icon (xcassets alternate image), Android themed
+  icons (Android 13+), in-app dark theme hero/splash.
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 1024 1024"
+  width="1024"
+  height="1024"
+>
+  <title>Beedle — Dot-b App Icon (Dark)</title>
+  <desc>Italicized lowercase 'b' in warm cream on ink squircle, with ember accent dot.</desc>
+
+  <!-- Solid ink squircle background -->
+  <rect
+    x="0"
+    y="0"
+    width="1024"
+    height="1024"
+    rx="225"
+    ry="225"
+    fill="#0A0A0A"
+  />
+
+  <!-- Lowercase 'b' — italicized 8° via skewX, rendered in warm cream -->
+  <g transform="translate(512, 720)">
+    <text
+      x="0"
+      y="0"
+      font-family="'Hanken Grotesk', 'Inter', 'SF Pro Display', sans-serif"
+      font-weight="700"
+      font-size="560"
+      fill="#F0E3D0"
+      text-anchor="middle"
+      transform="skewX(-8)"
+    >b</text>
+  </g>
+
+  <!-- Ember accent dot — same ember color in both light/dark modes -->
+  <circle cx="520" cy="165" r="36" fill="#FF6B2E"/>
+</svg>

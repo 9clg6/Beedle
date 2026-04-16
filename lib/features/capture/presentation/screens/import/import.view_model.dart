@@ -1,10 +1,14 @@
+import 'dart:async';
+
 import 'package:beedle/core/providers/service_providers.dart';
 import 'package:beedle/core/providers/usecase_providers.dart';
 import 'package:beedle/domain/entities/ingestion_job.entity.dart';
 import 'package:beedle/domain/params/import_screenshot.param.dart';
 import 'package:beedle/features/capture/presentation/screens/import/import.state.dart';
+import 'package:beedle/foundation/exceptions/app_exceptions.dart';
 import 'package:beedle/foundation/interfaces/results.usecases.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:beedle/generated/locale_keys.g.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -16,17 +20,41 @@ class ImportViewModel extends _$ImportViewModel {
   ImportState build() => ImportState.initial();
 
   Future<void> pickImages() async {
-    final picker = ImagePicker();
-    final files = await picker.pickMultiImage(imageQuality: 90, limit: 20);
+    final ImagePicker picker = ImagePicker();
+    final List<XFile> files = await picker.pickMultiImage(
+      imageQuality: 90,
+      limit: 20,
+    );
     if (files.isEmpty) return;
-    state = state.copyWith(selectedPaths: files.map((f) => f.path).toList(), error: null);
+    state = state.copyWith(
+      selectedPaths: files.map((XFile f) => f.path).toList(),
+      error: null,
+    );
+  }
+
+  /// Reset explicite du state — appelé par le screen après le pop de route
+  /// pour nettoyer `selectedPaths` et revenir en `ImportPhase.idle`.
+  void reset() {
+    state = ImportState.initial();
+  }
+
+  /// Convertit une `Exception` brute en message utilisateur traduit.
+  /// Les cas typés (ex: `AllDuplicatesException`) ont un rendu dédié ;
+  /// sinon on fallback sur le générique pour ne pas exposer `toString()`.
+  String _humanizeError(Exception e) {
+    if (e is AllDuplicatesException) {
+      return LocaleKeys.capture_import_all_duplicates.tr();
+    }
+    return LocaleKeys.common_error_generic.tr();
   }
 
   Future<void> confirmImport() async {
     if (state.selectedPaths.isEmpty) return;
-    state = state.copyWith(isImporting: true, error: null);
+    state = state.copyWith(phase: ImportPhase.importing, error: null);
 
-    final ResultState<IngestionJobEntity> result = await ref.read(importScreenshotsUseCaseProvider).execute(
+    final ResultState<IngestionJobEntity> result = await ref
+        .read(importScreenshotsUseCaseProvider)
+        .execute(
           ImportScreenshotParam(filePaths: state.selectedPaths),
         );
 
@@ -34,13 +62,18 @@ class ImportViewModel extends _$ImportViewModel {
       success: (_) {
         // Force le pipeline à traiter le job immédiatement (l'app est foreground).
         unawaited(ref.read(ingestionPipelineServiceProvider).processNext());
-        state = ImportState.initial();
+        // On passe en "launched" — l'écran observe cette phase pour afficher
+        // le feedback "Digestion lancée" et déclencher la transition Hero.
+        // Le reset (ImportState.initial()) n'est fait qu'après le pop côté UI
+        // pour éviter que le pill Hero disparaisse avant la route transition.
+        state = state.copyWith(phase: ImportPhase.launched);
       },
-      failure: (e) {
-        state = state.copyWith(isImporting: false, error: e.toString());
+      failure: (Exception e) {
+        state = state.copyWith(
+          phase: ImportPhase.error,
+          error: _humanizeError(e),
+        );
       },
     );
   }
 }
-
-void unawaited(Future<void> future) {}

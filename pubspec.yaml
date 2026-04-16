@@ -1,6 +1,6 @@
 name: beedle
 description: "La veille qui se rappelle à toi — screenshots tech transformés en fiches IA."
-publish_to: 'none'
+publish_to: "none"
 version: 0.1.0
 
 environment:
@@ -48,6 +48,9 @@ dependencies:
   flutter_local_notifications: ^21.0.0
   timezone: ^0.11.0
 
+  # OS permissions (photos on iOS, notifications status on Android)
+  permission_handler: ^11.3.1
+
   # Monetization
   purchases_flutter: ^9.16.1
 
@@ -72,7 +75,7 @@ dependencies:
   figma_squircle: ^0.6.3
   flutter_svg: ^2.0.10+1
   flutter_markdown: ^0.7.4+3
-  google_fonts: ^6.2.1        # Hanken Grotesk + Geist Mono + Doto
+  google_fonts: ^6.2.1 # Hanken Grotesk + Geist Mono + Doto
   liquid_glass_renderer: ^0.2.0-dev.4 # Apple Liquid Glass authentique (opt-in)
 
   # Logging & crash reporting (optionnel)
@@ -95,6 +98,11 @@ dev_dependencies:
   objectbox_generator: ^5.3.1
   flutter_gen_runner: ^5.6.0
 
+  # App icon generation — takes a 1024×1024 PNG master and produces all the
+  # iOS/Android/web asset sizes required by the stores.
+  # Usage: dart run flutter_launcher_icons
+  flutter_launcher_icons: ^0.14.1
+
   # Testing
   mocktail: ^1.0.4
 
@@ -103,10 +111,42 @@ flutter:
 
   assets:
     - assets/translations/
-    - assets/images/
-    - assets/animations/
+    - assets/branding/
 
 flutter_gen:
   output: lib/gen
   integrations:
     flutter_svg: true
+
+# App icon generation — see docs/app-icon-generation.md for the full pipeline.
+#
+# Source of truth: assets/branding/icon-source-1024.png (produced by
+# `dart run tool/render_icon.dart`, itself rendering the BeedleIconAsset
+# widget at 1024×1024 with the exact Hanken Grotesk 'b' + ember dot).
+#
+# Command: `dart run flutter_launcher_icons`
+flutter_launcher_icons:
+  android: "ic_launcher"
+  ios: true
+  image_path: "assets/branding/icon-source-1024.png"
+  min_sdk_android: 21
+  # Adaptive icon for Android 8+ (foreground layer floats over a solid
+  # background — we use the Aurora warm cream #FFFBF5 as base layer and
+  # only the 'b' + dot in the foreground for the classic launcher shape.
+  # The adaptive icon is separate from `image_path`.
+  adaptive_icon_background: "#FFFBF5"
+  adaptive_icon_foreground: "assets/branding/icon-adaptive-foreground-1024.png"
+  # Monochrome adaptive icon (Android 13+ themed icons feature — the system
+  # tints this silhouette based on user wallpaper).
+  adaptive_icon_monochrome: "assets/branding/icon-notification-monochrome-1024.png"
+  # iOS dark mode icon (iOS 18+ alternate image in xcassets)
+  ios_dark_mode_image_path: "assets/branding/icon-dot-b-dark-1024.png"
+  # Tinted mode (iOS 18) — uses the same monochrome silhouette
+  ios_tinted_mode_image_path: "assets/branding/icon-notification-monochrome-1024.png"
+  # Web favicon
+  web:
+    generate: true
+    image_path: "assets/branding/icon-source-1024.png"
+    background_color: "#FBF8F3"
+    theme_color: "#FF6B2E"
+  remove_alpha_ios: true

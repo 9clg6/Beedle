@@ -37,11 +37,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(onboardingViewModelProvider);
+    final OnboardingState state = ref.watch(onboardingViewModelProvider);
 
     ref.listen(
-      onboardingViewModelProvider.select((s) => s.currentIndex),
-      (prev, next) {
+      onboardingViewModelProvider.select((OnboardingState s) => s.currentIndex),
+      (int? prev, int next) {
         if (_controller.hasClients && _controller.page?.round() != next) {
           _controller.animateToPage(
             next,
@@ -110,7 +110,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       granted: state.photosGranted,
                       onRequest: () => ref
                           .read(onboardingViewModelProvider.notifier)
-                          .markPhotosGranted(),
+                          .requestPhotos(),
                     ),
                     const _OBHero(
                       number: '09',
@@ -123,14 +123,16 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                       titleKey: LocaleKeys.onboarding_step11_title,
                       subtitleKey: LocaleKeys.onboarding_step11_subtitle,
                     ),
-                    _OBAhaStep(onFinish: () async {
-                      await ref
-                          .read(onboardingViewModelProvider.notifier)
-                          .finishOnboarding();
-                      if (context.mounted) {
-                        await context.router.replace(const HomeRoute());
-                      }
-                    }),
+                    _OBAhaStep(
+                      onFinish: () async {
+                        await ref
+                            .read(onboardingViewModelProvider.notifier)
+                            .finishOnboarding();
+                        if (context.mounted) {
+                          await context.router.replace(const HomeRoute());
+                        }
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -171,8 +173,8 @@ class _NavBar extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final i = state.currentIndex;
-    final canSkip = i >= 5 && i < 9;
+    final int i = state.currentIndex;
+    final bool canSkip = i >= 5 && i < 9;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
@@ -187,18 +189,16 @@ class _NavBar extends ConsumerWidget {
             SquircleButton(
               label: LocaleKeys.common_action_back.tr(),
               variant: SquircleButtonVariant.ghost,
-              onPressed: () => ref
-                  .read(onboardingViewModelProvider.notifier)
-                  .previous(),
+              onPressed: () =>
+                  ref.read(onboardingViewModelProvider.notifier).previous(),
             ),
           const Spacer(),
           if (canSkip)
             SquircleButton(
               label: LocaleKeys.common_action_skip.tr(),
               variant: SquircleButtonVariant.ghost,
-              onPressed: () => ref
-                  .read(onboardingViewModelProvider.notifier)
-                  .goTo(i + 1),
+              onPressed: () =>
+                  ref.read(onboardingViewModelProvider.notifier).goTo(i + 1),
             ),
           if (i < 11)
             SquircleButton(
@@ -228,7 +228,7 @@ class _OBHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final TextTheme textTheme = Theme.of(context).textTheme;
 
     return Padding(
       padding: const EdgeInsets.all(CalmSpace.s7),
@@ -252,8 +252,7 @@ class _OBHero extends StatelessWidget {
             constraints: const BoxConstraints(maxWidth: 360),
             child: Text(
               subtitleKey.tr(),
-              style: textTheme.bodyLarge
-                  ?.copyWith(color: AppColors.neutral6),
+              style: textTheme.bodyLarge?.copyWith(color: AppColors.neutral6),
               textAlign: TextAlign.center,
             ),
           ),
@@ -268,8 +267,8 @@ class _OBQuizStep extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(onboardingViewModelProvider);
-    final textTheme = Theme.of(context).textTheme;
+    final OnboardingState state = ref.watch(onboardingViewModelProvider);
+    final TextTheme textTheme = Theme.of(context).textTheme;
 
     return SingleChildScrollView(
       padding: const EdgeInsets.all(CalmSpace.s7),
@@ -375,8 +374,8 @@ class _QuizLabel extends StatelessWidget {
     return Text(
       label.toUpperCase(),
       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: AppColors.neutral6,
-          ),
+        color: AppColors.neutral6,
+      ),
     );
   }
 }
@@ -393,11 +392,11 @@ class _CountChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final label = count == 0
+    final String label = count == 0
         ? 'onboarding.step6.q2_options.none'
         : count == 1
-            ? 'onboarding.step6.q2_options.one'
-            : 'onboarding.step6.q2_options.two';
+        ? 'onboarding.step6.q2_options.one'
+        : 'onboarding.step6.q2_options.two';
     return PillChip(label: label.tr(), selected: selected, onTap: onTap);
   }
 }
@@ -421,7 +420,7 @@ class _OBPermissionStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final TextTheme textTheme = Theme.of(context).textTheme;
 
     return Padding(
       padding: const EdgeInsets.all(CalmSpace.s7),
@@ -445,17 +444,14 @@ class _OBPermissionStep extends StatelessWidget {
             constraints: const BoxConstraints(maxWidth: 360),
             child: Text(
               subtitleKey.tr(),
-              style: textTheme.bodyLarge
-                  ?.copyWith(color: AppColors.neutral6),
+              style: textTheme.bodyLarge?.copyWith(color: AppColors.neutral6),
               textAlign: TextAlign.center,
             ),
           ),
           const Gap(CalmSpace.s8),
           SquircleButton(
             label: granted ? ctaKey.tr() : ctaKey.tr(),
-            icon: granted
-                ? Icons.check_rounded
-                : Icons.arrow_forward_rounded,
+            icon: granted ? Icons.check_rounded : Icons.arrow_forward_rounded,
             variant: granted
                 ? SquircleButtonVariant.secondary
                 : SquircleButtonVariant.primary,
@@ -472,7 +468,7 @@ class _OBPaywallStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final TextTheme textTheme = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.all(CalmSpace.s7),
       child: Column(
@@ -548,15 +544,13 @@ class _PlanTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final TextTheme textTheme = Theme.of(context).textTheme;
     return Container(
       padding: const EdgeInsets.all(CalmSpace.s5),
       decoration: BoxDecoration(
         color: highlighted ? AppColors.ink : AppColors.glassSoft,
         borderRadius: BorderRadius.circular(CalmRadius.lg),
-        border: highlighted
-            ? null
-            : Border.all(color: AppColors.neutral3),
+        border: highlighted ? null : Border.all(color: AppColors.neutral3),
       ),
       child: Row(
         children: <Widget>[
@@ -567,8 +561,7 @@ class _PlanTile extends StatelessWidget {
                 Text(
                   label,
                   style: textTheme.titleMedium?.copyWith(
-                    color:
-                        highlighted ? AppColors.canvas : AppColors.neutral8,
+                    color: highlighted ? AppColors.canvas : AppColors.neutral8,
                   ),
                 ),
                 if (badge != null)
@@ -610,7 +603,7 @@ class _OBAhaStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final TextTheme textTheme = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.all(CalmSpace.s7),
       child: Column(
@@ -634,8 +627,7 @@ class _OBAhaStep extends StatelessWidget {
             constraints: const BoxConstraints(maxWidth: 360),
             child: Text(
               LocaleKeys.onboarding_step12_subtitle.tr(),
-              style: textTheme.bodyLarge
-                  ?.copyWith(color: AppColors.neutral6),
+              style: textTheme.bodyLarge?.copyWith(color: AppColors.neutral6),
               textAlign: TextAlign.center,
             ),
           ),

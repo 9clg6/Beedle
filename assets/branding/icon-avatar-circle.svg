@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Beedle — Avatar / Watermark (Circle)
+
+  Destination : avatar slot in-app (profile, team members), favicon web,
+  watermark discret en bas de chaque card générée par l'IA.
+
+  Design : version la plus "minimal" — le point ember est supprimé car à
+  petite échelle (32px favicon, 40px avatar) il devient un pixel bruité.
+  On garde juste le 'b' italicisé, en monogramme propre.
+
+  Forme : cercle parfait (pas un squircle) — plus universel pour les
+  contextes qui attendent un avatar rond.
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 1024 1024"
+  width="1024"
+  height="1024"
+>
+  <title>Beedle — Avatar (Circle)</title>
+  <desc>Lowercase italicized 'b' in a cream circle, compact monogram variant.</desc>
+
+  <!-- Cercle cream — compact, flat, no gradient at small sizes -->
+  <circle cx="512" cy="512" r="512" fill="#FBF8F3"/>
+
+  <!-- 'b' italicisé, ink — même proportions que le master, sans le point ember -->
+  <g transform="translate(512, 700)">
+    <text
+      x="0"
+      y="0"
+      font-family="'Hanken Grotesk', 'Inter', 'SF Pro Display', sans-serif"
+      font-weight="700"
+      font-size="520"
+      fill="#0A0A0A"
+      text-anchor="middle"
+      transform="skewX(-8)"
+    >b</text>
+  </g>
+</svg>

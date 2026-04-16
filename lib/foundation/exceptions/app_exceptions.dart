@@ -5,7 +5,8 @@ class BeedleException implements Exception {
   final Object? cause;
 
   @override
-  String toString() => 'BeedleException: $message${cause != null ? ' (cause: $cause)' : ''}';
+  String toString() =>
+      'BeedleException: $message${cause != null ? ' (cause: $cause)' : ''}';
 }
 
 /// Échec d'appel au LLM (timeout, rate limit, 5xx...).
@@ -27,6 +28,15 @@ class FreemiumCapReachedException extends BeedleException {
 /// Permission OS refusée.
 class PermissionDeniedException extends BeedleException {
   const PermissionDeniedException(this.permission, {super.cause})
-      : super('Permission denied: $permission');
+    : super('Permission denied: $permission');
   final String permission;
+}
+
+/// Toutes les captures sélectionnées sont déjà présentes en base (même
+/// SHA-256). Levée par `ImportScreenshotsUseCase` pour que la UI affiche
+/// un message clair ("Ces captures ont déjà été importées") au lieu du
+/// toString() technique.
+class AllDuplicatesException extends BeedleException {
+  const AllDuplicatesException()
+    : super('All selected screenshots are already imported.');
 }

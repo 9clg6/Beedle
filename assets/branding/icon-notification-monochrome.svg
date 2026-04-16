@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Beedle — Notification Icon (Monochrome Silhouette)
+
+  Destination : Android notification icon (status bar).
+  Per Material spec, the status bar icon MUST be a single-color white silhouette
+  on transparent background — the OS tints it at runtime (orange on dark theme,
+  ink on light theme, etc.). Any additional color is stripped or turned into
+  a flat alpha mask.
+
+  Anatomy: only the 'b' glyph + the accent dot, both pure white, on a
+  transparent canvas. No squircle, no background.
+
+  iOS equivalent: the monochrome tint mode on iOS 18 uses a similar asset
+  if provided via xcassets "Tinted" variant, but iOS otherwise keeps the
+  full-color icon.
+-->
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 1024 1024"
+  width="1024"
+  height="1024"
+>
+  <title>Beedle — Notification Silhouette</title>
+  <desc>Monochrome silhouette of the 'b' glyph and accent dot for Android status bar.</desc>
+
+  <!-- Transparent background is implicit (no <rect> fill) -->
+
+  <!-- 'b' glyph — same proportions as master, color: pure white -->
+  <g transform="translate(512, 720)">
+    <text
+      x="0"
+      y="0"
+      font-family="'Hanken Grotesk', 'Inter', 'SF Pro Display', sans-serif"
+      font-weight="700"
+      font-size="560"
+      fill="#FFFFFF"
+      text-anchor="middle"
+      transform="skewX(-8)"
+    >b</text>
+  </g>
+
+  <!-- Accent dot — same white, so the whole glyph reads as a unified shape -->
+  <circle cx="520" cy="165" r="36" fill="#FFFFFF"/>
+</svg>
