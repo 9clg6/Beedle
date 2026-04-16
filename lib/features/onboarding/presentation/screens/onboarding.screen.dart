@@ -7,8 +7,9 @@ import 'package:beedle/features/onboarding/presentation/screens/onboarding_step_
 import 'package:beedle/features/onboarding/presentation/widgets/ob_category_step.dart';
 import 'package:beedle/features/onboarding/presentation/widgets/ob_comparison_step.dart';
 import 'package:beedle/features/onboarding/presentation/widgets/ob_goal_step.dart';
-import 'package:beedle/features/onboarding/presentation/widgets/ob_pain_points_step.dart';
 import 'package:beedle/features/onboarding/presentation/widgets/ob_demo_step.dart';
+import 'package:beedle/features/onboarding/presentation/widgets/ob_pain_points_step.dart';
+import 'package:beedle/features/onboarding/presentation/widgets/ob_paywall_step.dart';
 import 'package:beedle/features/onboarding/presentation/widgets/ob_permission_notifs_step.dart';
 import 'package:beedle/features/onboarding/presentation/widgets/ob_permission_photos_step.dart';
 import 'package:beedle/features/onboarding/presentation/widgets/ob_processing_step.dart';
@@ -72,7 +73,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       11 => const OnboardingProcessingStep(),
       12 => const OnboardingDemoStep(),
       13 => const OnboardingViralMomentStep(),
-      _ => _PlaceholderStep(index: index),
+      14 => const OnboardingPaywallStep(),
+      _ => const SizedBox.shrink(),
     };
   }
 
@@ -218,28 +220,5 @@ class _NavBar extends ConsumerWidget {
       12 => LocaleKeys.onboarding_validator_demo_required.tr(),
       _ => '',
     };
-  }
-}
-
-/// Placeholder écran — remplacé incrémentalement dans les commits suivants
-/// (5 → 10) par les vrais widgets `ob_*_step.dart`.
-class _PlaceholderStep extends StatelessWidget {
-  const _PlaceholderStep({required this.index});
-  final int index;
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(CalmSpace.s7),
-        child: Text(
-          'Écran ${(index + 1).toString().padLeft(2, '0')} / 15',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            color: AppColors.neutral6,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      ),
-    );
   }
 }
