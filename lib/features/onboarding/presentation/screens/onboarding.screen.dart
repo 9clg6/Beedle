@@ -4,6 +4,10 @@ import 'package:auto_route/auto_route.dart';
 import 'package:beedle/features/onboarding/presentation/screens/onboarding.state.dart';
 import 'package:beedle/features/onboarding/presentation/screens/onboarding.view_model.dart';
 import 'package:beedle/features/onboarding/presentation/screens/onboarding_step_validator.dart';
+import 'package:beedle/features/onboarding/presentation/widgets/ob_goal_step.dart';
+import 'package:beedle/features/onboarding/presentation/widgets/ob_pain_points_step.dart';
+import 'package:beedle/features/onboarding/presentation/widgets/ob_tinder_step.dart';
+import 'package:beedle/features/onboarding/presentation/widgets/ob_welcome_step.dart';
 import 'package:beedle/foundation/routing/app_router.dart';
 import 'package:beedle/generated/locale_keys.g.dart';
 import 'package:beedle/presentation/theme/app_colors.dart';
@@ -42,6 +46,16 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     }
   }
 
+  Widget _buildStep(int index) {
+    return switch (index) {
+      0 => const OnboardingWelcomeStep(),
+      1 => const OnboardingGoalStep(),
+      2 => const OnboardingPainPointsStep(),
+      3 => const OnboardingTinderStep(),
+      _ => _PlaceholderStep(index: index),
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     final OnboardingState state = ref.watch(onboardingViewModelProvider);
@@ -78,8 +92,7 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                   controller: _controller,
                   physics: const NeverScrollableScrollPhysics(),
                   children: <Widget>[
-                    for (int i = 0; i < _kTotalScreens; i++)
-                      _PlaceholderStep(index: i),
+                    for (int i = 0; i < _kTotalScreens; i++) _buildStep(i),
                   ],
                 ),
               ),
