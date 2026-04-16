@@ -2,11 +2,17 @@ import 'package:beedle/core/providers/data_providers.dart';
 import 'package:beedle/core/providers/service_providers.dart';
 import 'package:beedle/domain/entities/user_preferences.entity.dart';
 import 'package:beedle/domain/enum/content_category.enum.dart';
+import 'package:beedle/domain/enum/onboarding_goal.enum.dart';
+import 'package:beedle/domain/enum/pain_point.enum.dart';
+import 'package:beedle/domain/services/analytics.service.dart';
 import 'package:beedle/features/onboarding/presentation/screens/onboarding.state.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'onboarding.view_model.g.dart';
+
+/// Index max du PageView onboarding (15 écrans : 0..14).
+const int _kLastIndex = 14;
 
 @riverpod
 class OnboardingViewModel extends _$OnboardingViewModel {
@@ -14,7 +20,7 @@ class OnboardingViewModel extends _$OnboardingViewModel {
   OnboardingState build() => OnboardingState.initial();
 
   void next() {
-    if (state.currentIndex < 11) {
+    if (state.currentIndex < _kLastIndex) {
       state = state.copyWith(currentIndex: state.currentIndex + 1);
     }
   }
@@ -28,6 +34,44 @@ class OnboardingViewModel extends _$OnboardingViewModel {
   void goTo(int index) {
     state = state.copyWith(currentIndex: index);
   }
+
+  // ── Self-discovery setters ───────────────────────────────────────────
+
+  void selectGoal(OnboardingGoal goal) {
+    state = state.copyWith(goal: goal);
+  }
+
+  void togglePainPoint(PainPoint point) {
+    final Set<PainPoint> updated = <PainPoint>{...state.painPoints};
+    if (!updated.add(point)) {
+      updated.remove(point);
+    }
+    state = state.copyWith(painPoints: updated);
+  }
+
+  void recordTinderSwipe(int index, {required bool agreed}) {
+    final Set<int> updated = <int>{...state.tinderAgreedIndices};
+    if (agreed) {
+      updated.add(index);
+    } else {
+      updated.remove(index);
+    }
+    state = state.copyWith(tinderAgreedIndices: updated);
+  }
+
+  // ── Demo (écran 13) ─────────────────────────────────────────────────
+
+  void recordDemoSwipe(int index, {required bool keep}) {
+    final Set<int> updated = <int>{...state.demoSwipedRightIndices};
+    if (keep) {
+      updated.add(index);
+    } else {
+      updated.remove(index);
+    }
+    state = state.copyWith(demoSwipedRightIndices: updated);
+  }
+
+  // ── Preferences (existing) ───────────────────────────────────────────
 
   void toggleCategory(ContentCategory c) {
     final List<ContentCategory> updated = List<ContentCategory>.of(
@@ -46,6 +90,8 @@ class OnboardingViewModel extends _$OnboardingViewModel {
 
   void setReminderHour(int hour) =>
       state = state.copyWith(captureReminderHour: hour);
+
+  // ── Permissions (existing) ───────────────────────────────────────────
 
   Future<void> requestNotifications() async {
     final bool granted = await ref
@@ -67,6 +113,8 @@ class OnboardingViewModel extends _$OnboardingViewModel {
     state = state.copyWith(photosGranted: granted);
   }
 
+  // ── Finish ──────────────────────────────────────────────────────────
+
   Future<void> finishOnboarding() async {
     state = state.copyWith(isSubmitting: true);
     final UserPreferencesEntity prefs = UserPreferencesEntity(
@@ -76,6 +124,25 @@ class OnboardingViewModel extends _$OnboardingViewModel {
       onboardingCompletedAt: DateTime.now(),
     );
     await ref.read(userPreferencesRepositoryProvider).save(prefs);
+
+    // Analytics — payload aligné sur §4.14 du blueprint.
+    await ref
+        .read(analyticsServiceProvider)
+        .track(
+          AnalyticsEvent.onboardingCompleted,
+          properties: <String, Object>{
+            'goal': state.goal?.name ?? 'unknown',
+            'pain_points_count': state.painPoints.length,
+            'categories': state.contentCategories
+                .map((ContentCategory c) => c.name)
+                .join(','),
+            'teaser_count': state.teaserCountPerDay,
+            'photos_granted': state.photosGranted,
+            'notifications_granted': state.notificationsGranted,
+            'demo_picked_count': state.demoSwipedRightIndices.length,
+          },
+        );
+
     state = state.copyWith(isSubmitting: false);
   }
 }
