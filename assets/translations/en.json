@@ -98,6 +98,198 @@
       "title": "Your first card is ready",
       "subtitle": "Welcome to your living library.",
       "cta": "Explore"
+    },
+    "_TODO_TRANSLATE": "ob01..ob15 + validator below are FR fallbacks — translate before EN launch",
+    "ob01": {
+      "eyebrow": "BIENVENUE",
+      "title": "La veille qui se rappelle à toi",
+      "subtitle": "Tes screenshots tech transformés en fiches que tu consultes vraiment, au bon moment.",
+      "cta": "Commencer"
+    },
+    "ob02": {
+      "title": "Pourquoi tu es là aujourd'hui ?",
+      "subtitle": "Choisis l'objectif qui te ressemble le plus.",
+      "options": {
+        "buildFaster": "Builder plus vite",
+        "stayAIUpToDate": "Suivre l'IA qui bouge tous les jours",
+        "rememberTutorials": "Me souvenir des tutos que je vois passer",
+        "findInfoFast": "Retrouver l'info qui m'a échappé",
+        "shareWithTeam": "Partager avec mon équipe",
+        "exploring": "Juste curieux, j'explore"
+      }
+    },
+    "ob03": {
+      "title": "Tu te reconnais là-dedans ?",
+      "subtitle": "Coche tout ce qui t'arrive — on va régler ça.",
+      "options": {
+        "pelliculeCemetery": "Ma pellicule est un cimetière de captures",
+        "reGoogle": "Je re-google les mêmes trucs sans arrêt",
+        "notionHeavy": "Mes notes Notion, je les rouvre jamais",
+        "neverRevisit": "Je sauve sans jamais relire",
+        "forgetWhatIKnow": "J'oublie ce que je connais déjà",
+        "noTimelyReminder": "Personne ne me rappelle ce que j'ai capté",
+        "llmMissOut": "Je rate des LLMs et techs qui sortent"
+      }
+    },
+    "ob04": {
+      "title": "Tu vois ce qu'on veut résoudre ?",
+      "subtitle": "Glisse à droite si t'es d'accord, à gauche sinon.",
+      "progress": "{current}/{total}",
+      "statements": {
+        "s0": "Sauver une info, c'est facile. La revoir, c'est rare.",
+        "s1": "Le bon contenu, au mauvais moment, c'est du contenu mort.",
+        "s2": "Une fiche bien faite vaut 10 onglets ouverts.",
+        "s3": "L'IA peut digérer ce que je n'ai pas le temps de lire.",
+        "s4": "Une notif utile, c'est une notif que j'attends."
+      }
+    },
+    "ob05": {
+      "eyebrow": "ILS SONT DÉJÀ DEDANS",
+      "title": "Une communauté qui transforme sa veille",
+      "stat_value": "1 200+",
+      "stat_label": "fiches digérées par jour",
+      "testimonials": {
+        "t0": {
+          "quote": "J'ai enfin un endroit où mes screenshots ne meurent pas.",
+          "author": "Antoine L.",
+          "persona": "indie hacker"
+        },
+        "t1": {
+          "quote": "Beedle m'a fait re-tester 3 prompts que j'avais oubliés.",
+          "author": "Léa M.",
+          "persona": "PM en SaaS"
+        },
+        "t2": {
+          "quote": "C'est devenu mon réflexe avant Notion.",
+          "author": "Hugo D.",
+          "persona": "designer freelance"
+        }
+      }
+    },
+    "ob06": {
+      "title": "À chaque douleur, une réponse",
+      "items": {
+        "i0": {
+          "pain": "Cimetière de pellicule",
+          "fix": "On digère et on classe pour toi"
+        },
+        "i1": {
+          "pain": "Re-googler en boucle",
+          "fix": "Recherche sémantique qui retrouve par idée"
+        },
+        "i2": {
+          "pain": "Notes jamais relues",
+          "fix": "Notifs au bon moment, contenu réel"
+        },
+        "i3": {
+          "pain": "Rater une nouveauté tech",
+          "fix": "Capture en 1 geste, fiche prête à digérer"
+        }
+      }
+    },
+    "ob07": {
+      "title": "Avant Beedle / Avec Beedle",
+      "before": {
+        "title": "Sans Beedle",
+        "items": {
+          "i0": "Captures qui dorment dans la pellicule",
+          "i1": "Notes Notion empilées, jamais rouvertes",
+          "i2": "Re-googler les mêmes infos",
+          "i3": "Notifs vides qui dérangent"
+        }
+      },
+      "after": {
+        "title": "Avec Beedle",
+        "items": {
+          "i0": "Fiches IA prêtes en quelques minutes",
+          "i1": "Une bibliothèque vivante, recherchée par idée",
+          "i2": "Le bon contenu te revient au bon moment",
+          "i3": "Notifs avec du fond, jamais du bruit"
+        }
+      }
+    },
+    "ob08": {
+      "title": "Tu captures quoi en général ?",
+      "subtitle": "On adapte les rappels à tes contenus."
+    },
+    "ob09": {
+      "title": "On te rappelle à quel rythme ?",
+      "subtitle": "Tu peux changer ça plus tard.",
+      "count_label": "Notifs par jour",
+      "count_options": {
+        "none": "Aucune",
+        "one": "1 / jour",
+        "two": "2 / jour"
+      },
+      "hour_label": "Créneau préféré"
+    },
+    "ob10": {
+      "eyebrow": "PERMISSION PHOTOS",
+      "title": "Importe tes captures en 1 geste",
+      "subtitle": "Beedle va lire tes screenshots pour les digérer en fiches.",
+      "bullet0": "On ne touche qu'aux screenshots que tu choisis",
+      "bullet1": "Aucune photo perso n'est envoyée nulle part",
+      "bullet2": "Désactivable à tout moment dans les réglages",
+      "cta_allow": "Autoriser l'accès",
+      "cta_skip": "Plus tard"
+    },
+    "ob11": {
+      "eyebrow": "PERMISSION NOTIFS",
+      "title": "Des notifs qui ont du fond",
+      "subtitle": "1-2 par jour max, toujours avec une fiche utile à lire.",
+      "preview_title": "Aujourd'hui : Évalue n'importe quel LLM en 30 secondes",
+      "bullet0": "Jamais de notif vide ou marketing",
+      "bullet1": "Tu choisis le créneau et la fréquence",
+      "bullet2": "Mode Zen pour tout couper",
+      "cta_allow": "Activer les notifs",
+      "cta_skip": "Plus tard"
+    },
+    "ob12": {
+      "title": "Beedle digère ça pour toi",
+      "subtitle": "On prépare ta première bibliothèque…",
+      "lines": {
+        "l0": "Lecture des captures…",
+        "l1": "Génération des résumés…",
+        "l2": "Catégorisation des fiches…"
+      }
+    },
+    "ob13": {
+      "title": "Choisis 3 fiches qui te parlent",
+      "subtitle": "Glisse à droite pour garder, à gauche pour passer.",
+      "progress": "{kept}/3 gardées"
+    },
+    "ob14": {
+      "eyebrow": "TES 3 PREMIÈRES FICHES",
+      "title": "T'as déjà une mini-bibliothèque",
+      "subtitle": "Imagine ça avec 6 mois de captures digérées.",
+      "share_cta": "Partager mes fiches",
+      "share_text": "Mes 3 premières fiches Beedle 📓",
+      "share_failed": "Le partage n'a pas pu démarrer.",
+      "finish_cta": "Continuer"
+    },
+    "ob15": {
+      "badge": "BEEDLE PRO",
+      "title": "Débloque ta bibliothèque illimitée",
+      "testimonial": "« Beedle m'a fait re-tester 3 prompts que j'avais oubliés. » — Léa M.",
+      "monthly_label": "Mensuel",
+      "monthly_price": "9€",
+      "monthly_period": "/mois",
+      "yearly_label": "Annuel",
+      "yearly_price": "59€",
+      "yearly_period": "/an",
+      "yearly_badge": "- 45 % · meilleure offre",
+      "cta_trial": "Démarrer mon essai 7 jours",
+      "cta_free": "Continuer en gratuit",
+      "cta_restore": "Restaurer mes achats",
+      "error_purchase": "L'achat n'a pas pu être complété. Réessaie ou continue en gratuit.",
+      "error_restore": "Aucun abonnement actif trouvé."
+    },
+    "validator": {
+      "goal_required": "Choisis un objectif pour continuer",
+      "pain_required": "Coche au moins une douleur",
+      "tinder_required": "Glisse les 5 cards pour continuer",
+      "categories_required": "Choisis au moins une catégorie",
+      "demo_required": "Garde au moins 3 fiches pour continuer"
     }
   },
   "home": {
