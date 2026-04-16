@@ -4,9 +4,11 @@ import 'package:auto_route/auto_route.dart';
 import 'package:beedle/features/onboarding/presentation/screens/onboarding.state.dart';
 import 'package:beedle/features/onboarding/presentation/screens/onboarding.view_model.dart';
 import 'package:beedle/features/onboarding/presentation/screens/onboarding_step_validator.dart';
+import 'package:beedle/features/onboarding/presentation/widgets/ob_category_step.dart';
 import 'package:beedle/features/onboarding/presentation/widgets/ob_comparison_step.dart';
 import 'package:beedle/features/onboarding/presentation/widgets/ob_goal_step.dart';
 import 'package:beedle/features/onboarding/presentation/widgets/ob_pain_points_step.dart';
+import 'package:beedle/features/onboarding/presentation/widgets/ob_reminder_step.dart';
 import 'package:beedle/features/onboarding/presentation/widgets/ob_social_proof_step.dart';
 import 'package:beedle/features/onboarding/presentation/widgets/ob_solution_step.dart';
 import 'package:beedle/features/onboarding/presentation/widgets/ob_tinder_step.dart';
@@ -58,6 +60,8 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
       4 => const OnboardingSocialProofStep(),
       5 => const OnboardingSolutionStep(),
       6 => const OnboardingComparisonStep(),
+      7 => const OnboardingCategoryStep(),
+      8 => const OnboardingReminderStep(),
       _ => _PlaceholderStep(index: index),
     };
   }
