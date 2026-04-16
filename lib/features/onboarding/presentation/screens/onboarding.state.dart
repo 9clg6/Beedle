@@ -1,4 +1,6 @@
 import 'package:beedle/domain/enum/content_category.enum.dart';
+import 'package:beedle/domain/enum/onboarding_goal.enum.dart';
+import 'package:beedle/domain/enum/pain_point.enum.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'onboarding.state.freezed.dart';
@@ -7,11 +9,20 @@ part 'onboarding.state.freezed.dart';
 abstract class OnboardingState with _$OnboardingState {
   const factory OnboardingState({
     @Default(0) int currentIndex,
+    // Self-discovery (questionnaire)
+    OnboardingGoal? goal,
+    @Default(<PainPoint>{}) Set<PainPoint> painPoints,
+    @Default(<int>{}) Set<int> tinderAgreedIndices,
+    // Demo (interactive practice swipe)
+    @Default(<int>{}) Set<int> demoSwipedRightIndices,
+    // Preferences (existing — unchanged)
     @Default(<ContentCategory>[]) List<ContentCategory> contentCategories,
     @Default(1) int teaserCountPerDay,
     @Default(20) int captureReminderHour,
+    // Permissions (existing — unchanged)
     @Default(false) bool notificationsGranted,
     @Default(false) bool photosGranted,
+    // Submission (existing — unchanged)
     @Default(false) bool isSubmitting,
   }) = _OnboardingState;
 
