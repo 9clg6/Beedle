@@ -1,0 +1,16 @@
+{
+  "title": "Fix pour Claude Opus 4.6",
+  "summary": "Découvrez la solution efficace pour améliorer le fonctionnement de Claude Opus 4.6 en deux étapes simples.",
+  "fullContent": "> @Sthiven_R sur X\n\nJ'ai fait un post hier sur le nerf de Claude Opus 4.6. Depuis, tout le monde cherche le fix... Après tant d'essais et d'erreurs, j'ai enfin trouvé la solution...\n\nAprès avoir vu beaucoup de « Solutions » qui circulent, comme par exemple :\n\n```json\n{\n  \"model\": \"claude-opus-4-6\",\n  \"effortLevel\": \"high\",\n  \"alwaysThinkingEnabled\": true,\n  \"env\": {\n    \"CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING\": \"1\",\n    \"MAX_THINKING_TOKENS\": \"31999\"\n  }\n}\n```\n\nJ'ai testé ça. Ce n'est pas la solution.\n\nMAX_THINKING_TOKENS et alwaysThinkingEnabled, c'est du bruit. Ça fait que le modèle dépense plus de tokens sans que le raisonnement s'améliore vraiment. C'est comme monter le volume d'une enceinte cassée.\n\n— Alors, qu'est-ce qui marche ?\n\nDeux étapes. Sans mystère :\n\n**Paso 1 :** Désinstaller ta version actuelle de Claude Code et installer une version stable, surtout celle de 2.1.98\n\n```bash\nnpm uninstall -g @anthropic-ai/claude-code\nnpm install -g @anthropic-ai/claude-code@2.1.98\n```\n\n**Paso 2 :** Ajouter UNE seule variable dans ton `.claude/settings.json`\n\n```json\n\"env\": {\n  \"CLAUDE_CODE_DISABLE_ADAPTIVE_THINKING\": \"1\"\n}\n```\n\nC'est tout.\n\n— Pourquoi ça marche ?\n\nCe qu'Anthropic a activé s'appelle « adaptive thinking ». En théorie, le modèle décide combien penser par tour. En pratique, dans certains tours, il assigne ZÉRO tokens de raisonnement.",
+  "level": "intermediate",
+  "intent": "apply",
+  "tags": [
+    "Claude Opus",
+    "AI",
+    "Tech",
+    "Solution",
+    "Programmation"
+  ],
+  "language": "fr",
+  "teaserHook": "Découvrez la solution efficace pour améliorer le fonctionnement de Claude Opus 4.6 en deux étapes simples."
+}
