@@ -63,7 +63,6 @@ class ObSwipeDeck extends StatelessWidget {
       Positioned.fill(
         child: Dismissible(
           key: ValueKey<int>(currentIndex),
-          direction: DismissDirection.horizontal,
           onDismissed: onDismissed,
           child: cardBuilder(context, currentIndex),
         ),
