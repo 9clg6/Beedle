@@ -7,7 +7,7 @@ abstract interface class DataExportService {
 
 final class ExportAllDataUseCase extends FutureUseCase<String> {
   ExportAllDataUseCase({required DataExportService dataExportService})
-      : _service = dataExportService;
+    : _service = dataExportService;
 
   final DataExportService _service;
 

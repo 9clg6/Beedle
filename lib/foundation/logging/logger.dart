@@ -3,15 +3,15 @@ import 'package:logger/logger.dart';
 /// Logger de Beedle, taggé par composant.
 class Log {
   Log.named(this.name)
-      : _logger = Logger(
-          printer: PrettyPrinter(
-            methodCount: 0,
-            errorMethodCount: 5,
-            lineLength: 100,
-            printEmojis: false,
-            dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart,
-          ),
-        );
+    : _logger = Logger(
+        printer: PrettyPrinter(
+          methodCount: 0,
+          errorMethodCount: 5,
+          lineLength: 100,
+          printEmojis: false,
+          dateTimeFormat: DateTimeFormat.onlyTimeAndSinceStart,
+        ),
+      );
 
   final String name;
   final Logger _logger;

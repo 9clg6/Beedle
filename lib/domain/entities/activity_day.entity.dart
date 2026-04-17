@@ -20,7 +20,7 @@ extension ActivityDayEntityX on ActivityDayEntity {
 
   /// Score d'intensité (0-4) pour color-coding activity graph.
   int get intensity {
-    final total = cardsImported + cardsViewed * 2 + cardsTested * 3;
+    final int total = cardsImported + cardsViewed * 2 + cardsTested * 3;
     if (total == 0) return 0;
     if (total <= 3) return 1;
     if (total <= 8) return 2;

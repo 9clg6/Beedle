@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;700;800;900&amp;family=Work+Sans:wght@400;500;600&amp;family=Space+Grotesk:wght@300;400;500;700&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "background": "#fcf9f4",
+                        "tertiary": "#815525",
+                        "surface-container-lowest": "#ffffff",
+                        "inverse-on-surface": "#f3f0eb",
+                        "surface-dim": "#dcdad5",
+                        "on-background": "#1c1c19",
+                        "primary-fixed-dim": "#ffb59b",
+                        "on-error-container": "#93000a",
+                        "on-secondary-container": "#656464",
+                        "on-primary-fixed": "#380d00",
+                        "tertiary-container": "#c38f5a",
+                        "primary-container": "#ff6b2e",
+                        "error-container": "#ffdad6",
+                        "error": "#ba1a1a",
+                        "surface-container-high": "#ebe8e3",
+                        "on-tertiary-fixed": "#2c1600",
+                        "surface-container-low": "#f6f3ee",
+                        "on-surface-variant": "#594139",
+                        "surface-tint": "#a93800",
+                        "inverse-primary": "#ffb59b",
+                        "on-primary": "#ffffff",
+                        "secondary-fixed-dim": "#c9c6c5",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "tertiary-fixed-dim": "#f5bb82",
+                        "surface-container-highest": "#e5e2dd",
+                        "inverse-surface": "#31302d",
+                        "on-tertiary-fixed-variant": "#653e0f",
+                        "outline": "#8d7167",
+                        "surface": "#fcf9f4",
+                        "on-surface": "#1c1c19",
+                        "secondary": "#5f5e5e",
+                        "primary-fixed": "#ffdbcf",
+                        "on-error": "#ffffff",
+                        "outline-variant": "#e2bfb4",
+                        "tertiary-fixed": "#ffdcbd",
+                        "surface-bright": "#fcf9f4",
+                        "on-secondary-fixed-variant": "#474646",
+                        "surface-container": "#f0ede9",
+                        "on-tertiary": "#ffffff",
+                        "secondary-container": "#e5e2e1",
+                        "primary": "#a93800",
+                        "on-primary-container": "#5d1b00",
+                        "on-tertiary-container": "#4b2900",
+                        "secondary-fixed": "#e5e2e1",
+                        "surface-variant": "#e5e2dd",
+                        "on-secondary": "#ffffff",
+                        "on-primary-fixed-variant": "#812900"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "fontFamily": {
+                        "headline": ["Epilogue"],
+                        "body": ["Work Sans"],
+                        "label": ["Space Grotesk"],
+                        "mono": ["JetBrains Mono"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .squircle-smoothing {
+            border-radius: 180px; /* Base for 720px */
+            /* Note: Actual iOS-style squircle smoothing 0.6 is approximated via high radius or clip-path in standard CSS */
+            mask-image: paint(squircle); 
+        }
+        .ambient-shadow {
+            box-shadow: 0 20px 40px rgba(28, 28, 25, 0.06);
+        }
+        .ink-text {
+            color: #0A0A0A;
+        }
+        .meta-text {
+            color: #6C645A;
+        }
+    </style>
+</head>
+<body class="bg-[#F8F4ED] font-body text-on-background min-h-screen flex flex-col items-center justify-center overflow-hidden">
+<!-- TopNavBar from JSON -->
+<header class="fixed top-0 left-0 w-full z-50 bg-[#fcf9f4] dark:bg-stone-950 flex justify-between items-center px-8 py-6 max-w-screen-2xl mx-auto">
+<div class="flex items-center gap-4">
+<span class="text-xl font-bold text-stone-900 dark:text-stone-100 font-['Epilogue'] tracking-tight">The Archivist</span>
+</div>
+<nav class="hidden md:flex items-center gap-8 font-['Epilogue'] tracking-tight">
+<a class="text-[#ff6b2e] dark:text-orange-400 font-bold transition-all scale-95 active:opacity-80" href="#">Gallery</a>
+<a class="text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors" href="#">Specs</a>
+<a class="text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 transition-colors" href="#">Release</a>
+</nav>
+<div class="flex items-center">
+<button class="p-2 transition-all scale-95 active:opacity-80">
+<span class="material-symbols-outlined text-stone-900 dark:text-stone-100">menu</span>
+</button>
+</div>
+</header>
+<!-- SideNavBar (Suppressed due to focused layout intent) -->
+<!-- Main Canvas Content -->
+<main class="w-full h-full flex flex-col items-center justify-center p-8 relative">
+<!-- Aurora Glow for the Hero Icon -->
+<div class="absolute inset-0 flex items-center justify-center -z-10 opacity-30 pointer-events-none">
+<div class="w-[800px] h-[800px] bg-gradient-to-tr from-[#FFFBF5] to-[#FFC48A] rounded-full blur-[120px]"></div>
+</div>
+<!-- The Hero Icon Squircle -->
+<div class="relative w-[720px] h-[720px] bg-[#FBF8F3] ambient-shadow flex items-center justify-center" style="border-radius: 144px;">
+<!-- The Caret Graphic -->
+<div class="flex w-full h-full items-center justify-center">
+<!-- Shifted slightly left horizontally: translate-x-[-15px] -->
+<div class="w-[50px] h-[180px] bg-[#FF6B2E] rounded-[8px] transform -translate-x-[40px]"></div>
+</div>
+</div>
+<!-- Editorial Captions -->
+<div class="mt-12 text-center space-y-1">
+<h1 class="font-mono text-[14px] ink-text uppercase tracking-tight">
+                The Caret
+            </h1>
+<p class="font-mono text-[11px] meta-text tracking-[1.5px]">
+                Beedle · app icon concept 2/2
+            </p>
+</div>
+</main>
+<!-- Bottom Metadata Section (Editorial Detail) -->
+<footer class="fixed bottom-12 w-full flex justify-between px-12 items-end pointer-events-none">
+<div class="flex flex-col gap-2">
+<div class="w-12 h-[1px] bg-outline-variant/30"></div>
+<span class="font-label text-[10px] uppercase tracking-widest text-secondary">Project: Archive_01</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex flex-col text-right">
+<span class="font-mono text-[10px] text-tertiary">#FF6B2E</span>
+<span class="font-mono text-[10px] text-tertiary">EMBER_ORANGE</span>
+</div>
+<div class="w-1 h-1 bg-primary-container rounded-full"></div>
+</div>
+</footer>
+<!-- Image Generation Data-Alt (Though primarily CSS based here) -->
+<div class="hidden">
+<div data-alt="A clean minimalist design presentation of a warm cream square with rounded corners sitting on a slightly darker warm background, featuring a single orange rectangle as a logo."></div>
+</div>
+</body></html>

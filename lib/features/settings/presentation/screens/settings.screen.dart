@@ -1,9 +1,12 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:beedle/core/providers/auth.provider.dart';
 import 'package:beedle/core/providers/data_providers.dart';
 import 'package:beedle/core/providers/service_providers.dart';
 import 'package:beedle/core/providers/usecase_providers.dart';
+import 'package:beedle/domain/entities/auth_user.entity.dart';
 import 'package:beedle/domain/entities/subscription_snapshot.entity.dart';
 import 'package:beedle/domain/entities/user_preferences.entity.dart';
+import 'package:beedle/domain/services/analytics.service.dart';
 import 'package:beedle/features/home/presentation/providers/upload_display_state.provider.dart';
 import 'package:beedle/features/home/presentation/screens/engagement_home.view_model.dart';
 import 'package:beedle/features/home/presentation/screens/home.view_model.dart';
@@ -47,9 +50,17 @@ class SettingsScreen extends ConsumerWidget {
             error: (Object e, StackTrace st) =>
                 Center(child: Text(LocaleKeys.common_error_generic.tr())),
             data: (UserPreferencesEntity prefs) {
+              final AuthUserEntity? user = ref.watch(currentUserProvider);
               return ListView(
                 padding: const EdgeInsets.all(CalmSpace.s6),
                 children: <Widget>[
+                  _Section(title: LocaleKeys.auth_settings_section.tr()),
+                  GlassCard(
+                    padding: EdgeInsets.zero,
+                    elevated: false,
+                    child: _AccountTile(user: user),
+                  ),
+                  const Gap(CalmSpace.s7),
                   _Section(title: LocaleKeys.settings_sections_general.tr()),
                   GlassCard(
                     padding: EdgeInsets.zero,
@@ -354,6 +365,87 @@ Future<void> _rescheduleLesson(
     );
   } on Exception catch (_) {
     // silent — prefs sont sauvegardées, la replanif au prochain boot.
+  }
+}
+
+/// Tile "Compte" — affiche l'email signed-in + bouton signout, ou bouton
+/// signin si anonyme.
+class _AccountTile extends ConsumerWidget {
+  const _AccountTile({required this.user});
+
+  final AuthUserEntity? user;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final TextTheme textTheme = Theme.of(context).textTheme;
+    final AuthUserEntity? user = this.user;
+
+    if (user == null) {
+      return Padding(
+        padding: const EdgeInsets.fromLTRB(
+          CalmSpace.s6,
+          CalmSpace.s4,
+          CalmSpace.s4,
+          CalmSpace.s4,
+        ),
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: Text(
+                LocaleKeys.auth_settings_signin.tr(),
+                style: textTheme.bodyLarge,
+              ),
+            ),
+            TextButton(
+              onPressed: () => context.router.push(AuthRoute(required: true)),
+              child: Text(
+                LocaleKeys.auth_settings_signin.tr(),
+                style: textTheme.labelLarge?.copyWith(color: AppColors.ink),
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final String? email = user.email;
+    final String label = email == null
+        ? LocaleKeys.auth_settings_signed_in_anonymous.tr()
+        : LocaleKeys.auth_settings_signed_in_as.tr(
+            namedArgs: <String, String>{'email': email},
+          );
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(
+        CalmSpace.s6,
+        CalmSpace.s4,
+        CalmSpace.s4,
+        CalmSpace.s4,
+      ),
+      child: Row(
+        children: <Widget>[
+          Expanded(
+            child: Text(
+              label,
+              style: textTheme.bodyLarge,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          TextButton(
+            onPressed: () => _signOut(ref),
+            child: Text(
+              LocaleKeys.auth_settings_signout.tr(),
+              style: textTheme.labelLarge?.copyWith(color: AppColors.danger),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _signOut(WidgetRef ref) async {
+    await ref.read(authServiceProvider).signOut();
+    await ref.read(analyticsServiceProvider).track(AnalyticsEvent.authSignout);
   }
 }
 

@@ -12,7 +12,8 @@ abstract interface class SubscriptionSnapshotLocalDataSource {
 
 final class SubscriptionSnapshotLocalDataSourceImpl
     implements SubscriptionSnapshotLocalDataSource {
-  SubscriptionSnapshotLocalDataSourceImpl({required ObjectBoxStore store}) : _store = store;
+  SubscriptionSnapshotLocalDataSourceImpl({required ObjectBoxStore store})
+    : _store = store;
 
   final ObjectBoxStore _store;
 
@@ -21,13 +22,14 @@ final class SubscriptionSnapshotLocalDataSourceImpl
 
   @override
   Future<SubscriptionSnapshotLocalModel> load() async {
-    final existing = _box.get(1);
+    final SubscriptionSnapshotLocalModel? existing = _box.get(1);
     if (existing != null) return existing;
-    final now = DateTime.now();
-    final initial = SubscriptionSnapshotLocalModel(
-      lastSyncedAt: now,
-      monthlyCycleStart: DateTime(now.year, now.month),
-    );
+    final DateTime now = DateTime.now();
+    final SubscriptionSnapshotLocalModel initial =
+        SubscriptionSnapshotLocalModel(
+          lastSyncedAt: now,
+          monthlyCycleStart: DateTime(now.year, now.month),
+        );
     _box.put(initial);
     return initial;
   }
@@ -40,10 +42,12 @@ final class SubscriptionSnapshotLocalDataSourceImpl
 
   @override
   Stream<SubscriptionSnapshotLocalModel> watch() {
-    return _box.query().watch(triggerImmediately: true).map((query) {
-      final first = query.findFirst();
+    return _box.query().watch(triggerImmediately: true).map((
+      Query<SubscriptionSnapshotLocalModel> query,
+    ) {
+      final SubscriptionSnapshotLocalModel? first = query.findFirst();
       if (first != null) return first;
-      final now = DateTime.now();
+      final DateTime now = DateTime.now();
       return SubscriptionSnapshotLocalModel(
         lastSyncedAt: now,
         monthlyCycleStart: DateTime(now.year, now.month),

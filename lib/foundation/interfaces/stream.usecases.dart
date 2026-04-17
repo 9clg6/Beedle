@@ -1,8 +1,7 @@
 import 'package:beedle/foundation/interfaces/usecase.interfaces.dart';
 
 /// Use case streaming sans paramètres.
-abstract class StreamUseCase<T>
-    implements BaseUseCase<Stream<T>> {
+abstract class StreamUseCase<T> implements BaseUseCase<Stream<T>> {
   @override
   Stream<T> execute() => invoke();
 

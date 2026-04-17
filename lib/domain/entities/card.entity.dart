@@ -1,3 +1,4 @@
+import 'package:beedle/domain/enum/card_intent.enum.dart';
 import 'package:beedle/domain/enum/card_level.enum.dart';
 import 'package:beedle/domain/enum/ingestion_status.enum.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -32,8 +33,11 @@ abstract class CardEntity with _$CardEntity {
     required DateTime createdAt,
     @Default(0) int viewedCount,
     @Default(<double>[]) List<double> embedding,
+    @Default(CardIntent.read) CardIntent intent,
+    @Default(false) bool intentOverridden,
     int? estimatedMinutes,
     String? sourceUrl,
+    String? primaryAction,
     DateTime? viewedAt,
     DateTime? testedAt,
   }) = _CardEntity;
@@ -41,18 +45,26 @@ abstract class CardEntity with _$CardEntity {
 
 extension CardEntityX on CardEntity {
   bool get isGenerated => status == IngestionStatus.completed;
-  bool get isPending => status == IngestionStatus.queued || status == IngestionStatus.processing;
+  bool get isPending =>
+      status == IngestionStatus.queued || status == IngestionStatus.processing;
   bool get isFailed => status == IngestionStatus.failed;
   bool get isTested => testedAt != null;
 
+  /// Éligible pour Daily Lesson : intent=apply + non testée + généré.
+  bool get isDailyLessonEligible =>
+      isGenerated && intent == CardIntent.apply && testedAt == null;
+
+  /// Exclue des push notifications (cards `reference` ne dérangent jamais).
+  bool get isPushEligible => intent != CardIntent.reference;
+
   Duration? get sinceViewed {
-    final v = viewedAt;
+    final DateTime? v = viewedAt;
     if (v == null) return null;
     return DateTime.now().difference(v);
   }
 
   bool get isStale {
-    final d = sinceViewed;
+    final Duration? d = sinceViewed;
     return d == null || d.inDays > 14;
   }
 }

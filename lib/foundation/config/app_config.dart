@@ -8,8 +8,6 @@ abstract class AppConfig {
     required this.env,
     required this.revenueCatApiKeyIos,
     required this.revenueCatApiKeyAndroid,
-    required this.postHogApiKey,
-    required this.postHogHost,
   });
 
   /// Environnement courant.
@@ -26,12 +24,6 @@ abstract class AppConfig {
 
   /// Clé publique RevenueCat Android.
   final String revenueCatApiKeyAndroid;
-
-  /// Clé publique PostHog.
-  final String postHogApiKey;
-
-  /// Host PostHog (EU).
-  final String postHogHost;
 
   /// Indique si c'est la production.
   bool get isProd => env == Environment.production;

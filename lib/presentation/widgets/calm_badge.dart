@@ -20,15 +20,15 @@ class CalmBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final textTheme = Theme.of(context).textTheme;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final TextTheme textTheme = Theme.of(context).textTheme;
 
-    final spec = _resolveSpec(variant, isDark);
-    final baseStyle = textTheme.labelSmall?.copyWith(
+    final _BadgeSpec spec = _resolveSpec(variant, isDark);
+    final TextStyle? baseStyle = textTheme.labelSmall?.copyWith(
       color: spec.foreground,
       fontWeight: FontWeight.w600,
     );
-    final style = variant == CalmBadgeVariant.digital
+    final TextStyle? style = variant == CalmBadgeVariant.digital
         ? AppTypography.digital(baseStyle ?? const TextStyle())
         : baseStyle;
 

@@ -11,9 +11,10 @@ import 'package:beedle/domain/enum/challenge_type.enum.dart';
 
 extension GamificationStateLocalModelX on GamificationStateLocalModel {
   GamificationStateEntity toEntity() {
-    final badges = (jsonDecode(unlockedBadgesJson) as List<dynamic>)
-        .map((dynamic e) => BadgeType.fromString(e.toString()))
-        .toList();
+    final List<BadgeType> badges =
+        (jsonDecode(unlockedBadgesJson) as List<dynamic>)
+            .map((dynamic e) => BadgeType.fromString(e.toString()))
+            .toList();
     return GamificationStateEntity(
       totalXp: totalXp,
       currentStreak: currentStreak,
@@ -27,46 +28,49 @@ extension GamificationStateLocalModelX on GamificationStateLocalModel {
 
 extension GamificationStateEntityToLocalX on GamificationStateEntity {
   GamificationStateLocalModel toLocalModel() => GamificationStateLocalModel(
-        totalXp: totalXp,
-        currentStreak: currentStreak,
-        longestStreak: longestStreak,
-        freezeDaysUsedThisMonth: freezeDaysUsedThisMonth,
-        unlockedBadgesJson: jsonEncode(unlockedBadges.map((b) => b.name).toList()),
-        lastActiveDay: lastActiveDay,
-      );
+    totalXp: totalXp,
+    currentStreak: currentStreak,
+    longestStreak: longestStreak,
+    freezeDaysUsedThisMonth: freezeDaysUsedThisMonth,
+    unlockedBadgesJson: jsonEncode(
+      unlockedBadges.map((BadgeType b) => b.name).toList(),
+    ),
+    lastActiveDay: lastActiveDay,
+  );
 }
 
 extension ActivityDayLocalModelX on ActivityDayLocalModel {
   ActivityDayEntity toEntity() => ActivityDayEntity(
-        day: dayEpoch,
-        cardsImported: cardsImported,
-        cardsViewed: cardsViewed,
-        cardsTested: cardsTested,
-      );
+    day: dayEpoch,
+    cardsImported: cardsImported,
+    cardsViewed: cardsViewed,
+    cardsTested: cardsTested,
+  );
 }
 
 extension ActivityDayEntityToLocalX on ActivityDayEntity {
   ActivityDayLocalModel toLocalModel({int? id}) => ActivityDayLocalModel(
-        id: id ?? 0,
-        dayEpoch: day,
-        cardsImported: cardsImported,
-        cardsViewed: cardsViewed,
-        cardsTested: cardsTested,
-      );
+    id: id ?? 0,
+    dayEpoch: day,
+    cardsImported: cardsImported,
+    cardsViewed: cardsViewed,
+    cardsTested: cardsTested,
+  );
 }
 
 extension WeeklyChallengeLocalModelX on WeeklyChallengeLocalModel {
   WeeklyChallengeEntity toEntity() => WeeklyChallengeEntity(
-        weekStart: weekStart,
-        type: ChallengeType.fromString(type),
-        target: target,
-        progress: progress,
-        completedAt: completedAt,
-      );
+    weekStart: weekStart,
+    type: ChallengeType.fromString(type),
+    target: target,
+    progress: progress,
+    completedAt: completedAt,
+  );
 }
 
 extension WeeklyChallengeEntityToLocalX on WeeklyChallengeEntity {
-  WeeklyChallengeLocalModel toLocalModel({int? id}) => WeeklyChallengeLocalModel(
+  WeeklyChallengeLocalModel toLocalModel({int? id}) =>
+      WeeklyChallengeLocalModel(
         id: id ?? 0,
         weekStart: weekStart,
         type: type.name,

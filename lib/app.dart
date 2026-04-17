@@ -1,4 +1,3 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:beedle/foundation/routing/app_router.dart';
 import 'package:beedle/presentation/theme/app_theme.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -14,7 +13,7 @@ class BeedleApp extends ConsumerStatefulWidget {
 }
 
 class _BeedleAppState extends ConsumerState<BeedleApp> {
-  late final AppRouter _router = AppRouter();
+  final AppRouter _router = AppRouter.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +22,8 @@ class _BeedleAppState extends ConsumerState<BeedleApp> {
       title: 'Beedle',
       theme: AppTheme.light(),
       darkTheme: AppTheme.dark(),
-      themeMode: ThemeMode.light, // CalmSurface light-first — dark à raffiner plus tard.
+      themeMode: ThemeMode
+          .light, // CalmSurface light-first — dark à raffiner plus tard.
       routerConfig: _router.config(),
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,

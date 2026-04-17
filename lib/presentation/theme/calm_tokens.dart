@@ -2,7 +2,8 @@
 /// motion. Voir `docs/DESIGN.md` pour la spec complète.
 ///
 /// Les classes existantes (AppColors, AppTypography) consomment ces tokens.
-/// Ne JAMAIS utiliser de valeurs magiques dans les widgets : tout passe par ici.
+/// Ne JAMAIS utiliser de valeurs magiques dans les widgets :
+///  tout passe par ici.
 library;
 
 import 'package:flutter/material.dart';

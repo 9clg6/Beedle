@@ -3,7 +3,8 @@ import 'package:objectbox/objectbox.dart';
 @Entity()
 class ActivityDayLocalModel {
   ActivityDayLocalModel({
-    required this.dayEpoch, this.id = 0,
+    required this.dayEpoch,
+    this.id = 0,
     this.cardsImported = 0,
     this.cardsViewed = 0,
     this.cardsTested = 0,

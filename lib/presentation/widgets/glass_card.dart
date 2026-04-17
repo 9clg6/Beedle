@@ -37,17 +37,19 @@ class GlassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final brightness = Theme.of(context).brightness;
-    final resolvedBg = backgroundColor ??
+    final Brightness brightness = Theme.of(context).brightness;
+    final Color resolvedBg =
+        backgroundColor ??
         (brightness == Brightness.dark
             ? AppColors.glassDarkMedium
             : AppColors.glassMedium);
-    final resolvedBorder = borderColor ??
+    final Color resolvedBorder =
+        borderColor ??
         (brightness == Brightness.dark
             ? AppColors.glassDarkBorder
             : AppColors.glassBorder);
 
-    final shape = SmoothRectangleBorder(
+    final SmoothRectangleBorder shape = SmoothRectangleBorder(
       borderRadius: SmoothBorderRadius(
         cornerRadius: cornerRadius,
         cornerSmoothing: cornerSmoothing,
@@ -55,7 +57,7 @@ class GlassCard extends StatelessWidget {
       side: BorderSide(color: resolvedBorder),
     );
 
-    final clipper = ShapeBorderClipper(shape: shape);
+    final ShapeBorderClipper clipper = ShapeBorderClipper(shape: shape);
 
     Widget content = Padding(padding: padding, child: child);
 

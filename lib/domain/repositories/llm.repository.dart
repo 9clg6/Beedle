@@ -1,6 +1,7 @@
 import 'package:beedle/domain/entities/digestion_result.entity.dart';
 import 'package:beedle/domain/params/generate_card.param.dart';
-import 'package:beedle/foundation/exceptions/app_exceptions.dart' show LLMException;
+import 'package:beedle/foundation/exceptions/app_exceptions.dart'
+    show LLMException;
 
 abstract interface class LLMRepository {
   /// Génère une fiche structurée depuis du texte OCR.

@@ -10,8 +10,10 @@ abstract interface class UserPreferencesLocalDataSource {
   Future<void> wipe();
 }
 
-final class UserPreferencesLocalDataSourceImpl implements UserPreferencesLocalDataSource {
-  UserPreferencesLocalDataSourceImpl({required ObjectBoxStore store}) : _store = store;
+final class UserPreferencesLocalDataSourceImpl
+    implements UserPreferencesLocalDataSource {
+  UserPreferencesLocalDataSourceImpl({required ObjectBoxStore store})
+    : _store = store;
 
   final ObjectBoxStore _store;
 
@@ -20,9 +22,9 @@ final class UserPreferencesLocalDataSourceImpl implements UserPreferencesLocalDa
 
   @override
   Future<UserPreferencesLocalModel> load() async {
-    final existing = _box.get(1);
+    final UserPreferencesLocalModel? existing = _box.get(1);
     if (existing != null) return existing;
-    final initial = UserPreferencesLocalModel();
+    final UserPreferencesLocalModel initial = UserPreferencesLocalModel();
     _box.put(initial);
     return initial;
   }
@@ -35,8 +37,10 @@ final class UserPreferencesLocalDataSourceImpl implements UserPreferencesLocalDa
 
   @override
   Stream<UserPreferencesLocalModel> watch() {
-    return _box.query().watch(triggerImmediately: true).map((query) {
-      final first = query.findFirst();
+    return _box.query().watch(triggerImmediately: true).map((
+      Query<UserPreferencesLocalModel> query,
+    ) {
+      final UserPreferencesLocalModel? first = query.findFirst();
       return first ?? UserPreferencesLocalModel();
     });
   }

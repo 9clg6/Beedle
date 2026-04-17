@@ -3,12 +3,13 @@ enum CardLevel {
   beginner,
   intermediate,
   advanced,
-  unknown;
+  unknown
+  ;
 
   static CardLevel fromString(String? value) {
     if (value == null) return CardLevel.unknown;
     return CardLevel.values.firstWhere(
-      (e) => e.name == value.toLowerCase(),
+      (CardLevel e) => e.name == value.toLowerCase(),
       orElse: () => CardLevel.unknown,
     );
   }

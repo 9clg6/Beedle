@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 /// Thèmes Beedle — CalmSurface Warm (light prioritaire, dark secondaire).
 abstract final class AppTheme {
   static ThemeData light() {
-    const colorScheme = ColorScheme.light(
+    const ColorScheme colorScheme = ColorScheme.light(
       primary: AppColors.ink, // flat ink pour CTA in-app (anti-gradient)
       onPrimary: AppColors.canvas,
       secondary: AppColors.ember,
@@ -41,8 +41,10 @@ abstract final class AppTheme {
         centerTitle: false,
         foregroundColor: AppColors.neutral8,
         iconTheme: const IconThemeData(color: AppColors.neutral8, size: 22),
-        actionsIconTheme:
-            const IconThemeData(color: AppColors.neutral8, size: 22),
+        actionsIconTheme: const IconThemeData(
+          color: AppColors.neutral8,
+          size: 22,
+        ),
         titleTextStyle: AppTypography.textTheme(
           primary: AppColors.neutral8,
           secondary: AppColors.neutral6,
@@ -59,7 +61,7 @@ abstract final class AppTheme {
   }
 
   static ThemeData dark() {
-    const colorScheme = ColorScheme.dark(
+    const ColorScheme colorScheme = ColorScheme.dark(
       primary: AppColors.inkDark,
       onPrimary: AppColors.canvasDark,
       secondary: AppColors.ember,
@@ -95,8 +97,10 @@ abstract final class AppTheme {
         centerTitle: false,
         foregroundColor: AppColors.neutral8Dark,
         iconTheme: const IconThemeData(color: AppColors.neutral8Dark, size: 22),
-        actionsIconTheme:
-            const IconThemeData(color: AppColors.neutral8Dark, size: 22),
+        actionsIconTheme: const IconThemeData(
+          color: AppColors.neutral8Dark,
+          size: 22,
+        ),
         titleTextStyle: AppTypography.textTheme(
           primary: AppColors.neutral8Dark,
           secondary: AppColors.neutral6Dark,
@@ -125,11 +129,11 @@ class CupertinoSlidingTransitionBuilder extends PageTransitionsBuilder {
     Animation<double> secondaryAnimation,
     Widget child,
   ) {
-    final tween = Tween<Offset>(
+    final Tween<Offset> tween = Tween<Offset>(
       begin: const Offset(0.25, 0),
       end: Offset.zero,
     );
-    final curved = CurvedAnimation(
+    final CurvedAnimation curved = CurvedAnimation(
       parent: animation,
       curve: Curves.easeOutCubic,
     );

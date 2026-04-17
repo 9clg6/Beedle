@@ -18,8 +18,8 @@ class CardMarkdownBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final colorScheme = Theme.of(context).colorScheme;
+    final TextTheme textTheme = Theme.of(context).textTheme;
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
 
     return MarkdownBody(
       data: markdown,
@@ -43,7 +43,10 @@ class CardMarkdownBody extends StatelessWidget {
             left: BorderSide(color: AppColors.orange500, width: 3),
           ),
         ),
-        blockquotePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        blockquotePadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 12,
+        ),
         a: textTheme.bodyLarge?.copyWith(
           color: AppColors.orange400,
           decoration: TextDecoration.underline,
@@ -55,7 +58,10 @@ class CardMarkdownBody extends StatelessWidget {
         ),
         codeblockDecoration: BoxDecoration(
           color: colorScheme.onSurface.withValues(alpha: 0.9),
-          borderRadius: SmoothBorderRadius(cornerRadius: 18, cornerSmoothing: 0.6),
+          borderRadius: SmoothBorderRadius(
+            cornerRadius: 18,
+            cornerSmoothing: 0.6,
+          ),
         ),
         codeblockPadding: const EdgeInsets.all(16),
       ),
@@ -70,10 +76,17 @@ class _CodeBlockBuilder extends MarkdownElementBuilder {
 
   @override
   Widget? visitElementAfter(md.Element element, TextStyle? preferredStyle) {
-    final code = element.textContent;
-    final language = element.attributes['class']?.replaceFirst('language-', '');
+    final String code = element.textContent;
+    final String? language = element.attributes['class']?.replaceFirst(
+      'language-',
+      '',
+    );
 
-    return _CodeBlockWidget(code: code, language: language, colorScheme: colorScheme);
+    return _CodeBlockWidget(
+      code: code,
+      language: language,
+      colorScheme: colorScheme,
+    );
   }
 }
 
@@ -97,7 +110,7 @@ class _CodeBlockWidgetState extends State<_CodeBlockWidget> {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final TextTheme textTheme = Theme.of(context).textTheme;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 12),
       child: GlassCard(
@@ -122,7 +135,10 @@ class _CodeBlockWidgetState extends State<_CodeBlockWidget> {
                   borderRadius: BorderRadius.circular(12),
                   onTap: _copy,
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: <Widget>[

@@ -11,11 +11,12 @@ import 'package:dio/dio.dart';
 /// Inclut un cache LRU de 20 entrées pour les queries répétées.
 final class EmbeddingsRepositoryImpl implements EmbeddingsRepository {
   EmbeddingsRepositoryImpl({required WorkerClient workerClient})
-      : _dio = workerClient.dio;
+    : _dio = workerClient.dio;
 
   final Dio _dio;
   final Log _log = Log.named('EmbeddingsRepository');
-  final LinkedHashMap<String, List<double>> _cache = LinkedHashMap<String, List<double>>();
+  final LinkedHashMap<String, List<double>> _cache =
+      LinkedHashMap<String, List<double>>();
 
   static const int _maxCacheSize = 20;
   static const String _model = 'text-embedding-3-small';
@@ -27,7 +28,7 @@ final class EmbeddingsRepositoryImpl implements EmbeddingsRepository {
 
     // Cache hit ?
     if (_cache.containsKey(text)) {
-      final cached = _cache.remove(text);
+      final List<double>? cached = _cache.remove(text);
       if (cached != null) {
         _cache[text] = cached; // refresh LRU
         return cached;
@@ -35,22 +36,23 @@ final class EmbeddingsRepositoryImpl implements EmbeddingsRepository {
     }
 
     try {
-      final response = await _dio.post<dynamic>(
+      final Response<dynamic> response = await _dio.post<dynamic>(
         '/v1/embeddings',
         data: <String, dynamic>{
           'model': _model,
           'input': text,
         },
       );
-      final body = response.data as Map<String, dynamic>;
-      final data = body['data'] as List<dynamic>;
+      final Map<String, dynamic> body = response.data as Map<String, dynamic>;
+      final List<dynamic> data = body['data'] as List<dynamic>;
       if (data.isEmpty) {
         throw const LLMException('Empty embeddings response');
       }
-      final first = data.first as Map<String, dynamic>;
-      final rawVector = first['embedding'] as List<dynamic>;
-      final vector =
-          rawVector.map((dynamic e) => (e as num).toDouble()).toList();
+      final Map<String, dynamic> first = data.first as Map<String, dynamic>;
+      final List<dynamic> rawVector = first['embedding'] as List<dynamic>;
+      final List<double> vector = rawVector
+          .map((dynamic e) => (e as num).toDouble())
+          .toList();
 
       _cache[text] = vector;
       if (_cache.length > _maxCacheSize) {
@@ -60,7 +62,11 @@ final class EmbeddingsRepositoryImpl implements EmbeddingsRepository {
       return vector;
     } on DioException catch (e) {
       _log.error('Embeddings failed: ${e.message}', e);
-      throw LLMException('Embeddings request failed', cause: e, statusCode: e.response?.statusCode);
+      throw LLMException(
+        'Embeddings request failed',
+        cause: e,
+        statusCode: e.response?.statusCode,
+      );
     } on Exception catch (e) {
       _log.error('Embeddings unexpected error: $e', e);
       throw LLMException('Embeddings unexpected error', cause: e);

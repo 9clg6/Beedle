@@ -88,6 +88,10 @@ dependencies:
   firebase_auth: ^5.3.3
   firebase_messaging: ^15.1.5
 
+  # Auth providers (Google + Apple Sign In)
+  google_sign_in: ^6.2.1
+  sign_in_with_apple: ^6.1.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

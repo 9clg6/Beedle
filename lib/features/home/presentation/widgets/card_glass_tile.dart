@@ -2,6 +2,7 @@ import 'package:beedle/domain/entities/card.entity.dart';
 import 'package:beedle/presentation/theme/app_colors.dart';
 import 'package:beedle/presentation/theme/calm_tokens.dart';
 import 'package:beedle/presentation/widgets/glass_card.dart';
+import 'package:beedle/presentation/widgets/intent_badge.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
@@ -13,8 +14,8 @@ class CardGlassTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final TextTheme textTheme = Theme.of(context).textTheme;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
 
     return GlassCard(
       onTap: onTap,
@@ -25,6 +26,8 @@ class CardGlassTile extends StatelessWidget {
       cornerRadius: CalmRadius.xl,
       child: Row(
         children: <Widget>[
+          IntentBadge(intent: card.intent, compact: true),
+          const Gap(CalmSpace.s4),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

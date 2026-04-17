@@ -22,17 +22,18 @@ class CalmSegmentedProgress extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    final activeColor = isDark ? AppColors.inkDark : AppColors.ink;
-    final inactiveColor =
-        isDark ? AppColors.neutral3Dark : AppColors.neutral2;
+    final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final Color activeColor = isDark ? AppColors.inkDark : AppColors.ink;
+    final Color inactiveColor = isDark
+        ? AppColors.neutral3Dark
+        : AppColors.neutral2;
 
     return SizedBox(
       height: segmentHeight,
       child: Row(
-        children: List<Widget>.generate(total, (i) {
-          final active = i <= currentIndex;
-          final isLast = i == total - 1;
+        children: List<Widget>.generate(total, (int i) {
+          final bool active = i <= currentIndex;
+          final bool isLast = i == total - 1;
           return Expanded(
             child: Padding(
               padding: EdgeInsets.only(right: isLast ? 0 : gap),

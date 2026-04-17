@@ -7,13 +7,26 @@ import 'package:objectbox/objectbox.dart';
 @Entity()
 class CardLocalModel {
   CardLocalModel({
-    required this.uuid, required this.title, required this.summary, required this.fullContent, required this.level, required this.tagsJson, required this.language, required this.teaserHook, required this.status, required this.createdAt, this.id = 0,
+    required this.uuid,
+    required this.title,
+    required this.summary,
+    required this.fullContent,
+    required this.level,
+    required this.tagsJson,
+    required this.language,
+    required this.teaserHook,
+    required this.status,
+    required this.createdAt,
+    this.id = 0,
     this.embedding,
     this.viewedCount = 0,
     this.viewedAt,
     this.testedAt,
     this.estimatedMinutes,
     this.sourceUrl,
+    this.intent = 'read',
+    this.intentOverridden = false,
+    this.primaryAction,
   });
 
   @Id()
@@ -36,6 +49,17 @@ class CardLocalModel {
   String language;
   String teaserHook;
   String status;
+
+  /// Intent (apply|read|reference). Default 'read' pour backward-compat.
+  String intent;
+
+  /// True si l'user a manuellement override l'intent — LLM ne re-classe pas
+  /// lors d'un re-digest (fusion).
+  bool intentOverridden;
+
+  /// Action concrète extraite par le LLM (intent=apply uniquement).
+  /// Null pour intent!=apply ou cards pré-feature.
+  String? primaryAction;
 
   @Property(type: PropertyType.date)
   DateTime createdAt;

@@ -11,28 +11,31 @@ class ActivityGraph extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colorScheme = Theme.of(context).colorScheme;
+    final ColorScheme colorScheme = Theme.of(context).colorScheme;
     // Bucket par jour (ms midnight).
-    final byDay = <int, ActivityDayEntity>{
+    final Map<int, ActivityDayEntity> byDay = <int, ActivityDayEntity>{
       for (final ActivityDayEntity d in days) _dayKey(d.day): d,
     };
 
-    final today = _todayMidnight();
+    final DateTime today = _todayMidnight();
     // 12 semaines = 84 jours. Dernier jour = aujourd'hui.
-    const totalWeeks = 12;
-    final grid = List<List<Color>>.generate(totalWeeks, (w) {
-      return List<Color>.generate(7, (d) {
-        final daysAgo = (totalWeeks - 1 - w) * 7 + (6 - d);
-        final day = today.subtract(Duration(days: daysAgo));
-        final entry = byDay[_dayKey(day)];
-        final intensity = entry?.intensity ?? 0;
+    const int totalWeeks = 12;
+    final List<List<Color>> grid = List<List<Color>>.generate(totalWeeks, (
+      int w,
+    ) {
+      return List<Color>.generate(7, (int d) {
+        final int daysAgo = (totalWeeks - 1 - w) * 7 + (6 - d);
+        final DateTime day = today.subtract(Duration(days: daysAgo));
+        final ActivityDayEntity? entry = byDay[_dayKey(day)];
+        final int intensity = entry?.intensity ?? 0;
         return _intensityColor(intensity, colorScheme);
       });
     });
 
     return LayoutBuilder(
-      builder: (context, constraints) {
-        final cellSize = (constraints.maxWidth - (totalWeeks - 1) * 4) / totalWeeks;
+      builder: (BuildContext context, BoxConstraints constraints) {
+        final double cellSize =
+            (constraints.maxWidth - (totalWeeks - 1) * 4) / totalWeeks;
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -101,10 +104,11 @@ class ActivityGraph extends StatelessWidget {
     }
   }
 
-  int _dayKey(DateTime d) => DateTime(d.year, d.month, d.day).millisecondsSinceEpoch;
+  int _dayKey(DateTime d) =>
+      DateTime(d.year, d.month, d.day).millisecondsSinceEpoch;
 
   DateTime _todayMidnight() {
-    final now = DateTime.now();
+    final DateTime now = DateTime.now();
     return DateTime(now.year, now.month, now.day);
   }
 }

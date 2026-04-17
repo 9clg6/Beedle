@@ -8,7 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 ///
 /// Résolution : dev en mode debug, prod en release. Utiliser `--dart-define`
 /// pour override si besoin (ex: staging).
-final Provider<AppConfig> appConfigProvider = Provider<AppConfig>((ref) {
+final Provider<AppConfig> appConfigProvider = Provider<AppConfig>((Ref ref) {
   if (kReleaseMode) {
     return const AppConfigProd();
   }

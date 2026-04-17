@@ -7,11 +7,12 @@ enum ChallengeType {
   reviveOld,
 
   /// Maintenir un streak de X jours consécutifs.
-  streakN;
+  streakN
+  ;
 
   static ChallengeType fromString(String value) {
     return ChallengeType.values.firstWhere(
-      (t) => t.name == value,
+      (ChallengeType t) => t.name == value,
       orElse: () => ChallengeType.testN,
     );
   }

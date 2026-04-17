@@ -38,9 +38,17 @@ abstract final class AnalyticsEvent {
   static const String subscribed = 'subscribed';
   static const String subscriptionRestored = 'subscription_restored';
   static const String freemiumCapReached = 'freemium_cap_reached';
+
+  // Auth
+  static const String authScreenViewed = 'auth_screen_viewed';
+  static const String authSigninStarted = 'auth_signin_started';
+  static const String authSigninSucceeded = 'auth_signin_succeeded';
+  static const String authSigninFailed = 'auth_signin_failed';
+  static const String authSigninSkipped = 'auth_signin_skipped';
+  static const String authSignout = 'auth_signout';
 }
 
-/// Contrat de l'analytics service (impl via PostHog dans la couche data).
+/// Contrat de l'analytics service (impl via Firebase Analytics dans la couche data).
 abstract interface class AnalyticsService {
   Future<void> init();
 

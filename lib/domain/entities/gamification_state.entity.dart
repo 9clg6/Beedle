@@ -1,6 +1,7 @@
 import 'package:beedle/domain/enum/badge_type.enum.dart';
 import 'package:beedle/domain/enum/beedle_level.enum.dart';
-import 'package:beedle/domain/services/gamification_engine.service.dart' show GamificationEngine;
+import 'package:beedle/domain/services/gamification_engine.service.dart'
+    show GamificationEngine;
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'gamification_state.entity.freezed.dart';

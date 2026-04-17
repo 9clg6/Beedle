@@ -28,7 +28,8 @@ enum BadgeType {
 
   // Défis hebdos.
   challengeRookie, // 1er défi hebdo complété
-  challengeStreak3; // 3 défis hebdos consécutifs complétés
+  challengeStreak3
+  ; // 3 défis hebdos consécutifs complétés
 
   String get icon {
     switch (this) {
@@ -69,7 +70,7 @@ enum BadgeType {
 
   static BadgeType fromString(String value) {
     return BadgeType.values.firstWhere(
-      (b) => b.name == value,
+      (BadgeType b) => b.name == value,
       orElse: () => BadgeType.firstImport,
     );
   }

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@400;700;800&amp;family=Work+Sans:wght@400;500&amp;family=Space+Grotesk:wght@400;700&amp;family=Hanken+Grotesk:ital,wght@1,700;1,900&amp;family=JetBrains+Mono:wght@400&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "tertiary-fixed-dim": "#f5bb82",
+                        "inverse-surface": "#31302d",
+                        "on-primary-fixed-variant": "#812900",
+                        "on-secondary-fixed-variant": "#474646",
+                        "surface-bright": "#fcf9f4",
+                        "on-primary-container": "#5d1b00",
+                        "tertiary-container": "#c38f5a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "outline-variant": "#e2bfb4",
+                        "secondary": "#5f5e5e",
+                        "on-secondary": "#ffffff",
+                        "inverse-primary": "#ffb59b",
+                        "secondary-container": "#e5e2e1",
+                        "surface-container": "#f0ede9",
+                        "primary-fixed-dim": "#ffb59b",
+                        "background": "#fcf9f4",
+                        "surface-variant": "#e5e2dd",
+                        "error-container": "#ffdad6",
+                        "tertiary": "#815525",
+                        "surface-dim": "#dcdad5",
+                        "surface-container-highest": "#e5e2dd",
+                        "surface-container-high": "#ebe8e3",
+                        "primary": "#a93800",
+                        "on-tertiary-fixed": "#2c1600",
+                        "on-secondary-container": "#656464",
+                        "secondary-fixed": "#e5e2e1",
+                        "on-surface-variant": "#594139",
+                        "on-error": "#ffffff",
+                        "surface": "#fcf9f4",
+                        "on-tertiary-fixed-variant": "#653e0f",
+                        "on-tertiary-container": "#4b2900",
+                        "secondary-fixed-dim": "#c9c6c5",
+                        "on-background": "#1c1c19",
+                        "on-tertiary": "#ffffff",
+                        "surface-container-low": "#f6f3ee",
+                        "primary-container": "#ff6b2e",
+                        "on-surface": "#1c1c19",
+                        "tertiary-fixed": "#ffdcbd",
+                        "on-secondary-fixed": "#1c1b1b",
+                        "on-primary-fixed": "#380d00",
+                        "primary-fixed": "#ffdbcf",
+                        "on-error-container": "#93000a",
+                        "surface-tint": "#a93800",
+                        "error": "#ba1a1a",
+                        "outline": "#8d7167",
+                        "inverse-on-surface": "#f3f0eb"
+                    },
+                    fontFamily: {
+                        headline: ["Epilogue"],
+                        body: ["Work Sans"],
+                        label: ["Space Grotesk"],
+                        mono: ["JetBrains Mono"],
+                        brand: ["Hanken Grotesk"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .squircle {
+            mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='720' height='720' viewBox='0 0 720 720'%3E%3Cpath d='M720,360C720,630.12,630.12,720,360,720C89.88,720,0,630.12,0,360C0,89.88,89.88,0,360,0C630.12,0,720,89.88,720,360Z'/%3E%3C/svg%3E");
+            -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='720' height='720' viewBox='0 0 720 720'%3E%3Cpath d='M720,360C720,630.12,630.12,720,360,720C89.88,720,0,630.12,0,360C0,89.88,89.88,0,360,0C630.12,0,720,89.88,720,360Z'/%3E%3C/svg%3E");
+            mask-size: contain;
+            mask-repeat: no-repeat;
+        }
+        .aurora-gradient {
+            background: linear-gradient(180deg, #FFFBF5 0%, #FFE9D0 33%, #FFDBB0 66%, #FFC48A 100%);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-[#F8F4ED] text-on-surface font-body selection:bg-primary-fixed-dim selection:text-on-primary-fixed overflow-hidden">
+<!-- Header / Nav (Following Shared Components Logic) -->
+<header class="fixed top-0 w-full z-50">
+<nav class="flex justify-between items-center px-12 py-8 max-w-screen-2xl mx-auto">
+<div class="font-brand italic text-3xl font-black text-[#1c1c19] tracking-tight">
+                Beedle
+            </div>
+<div class="hidden md:flex gap-10 items-center font-headline tracking-tight">
+<a class="text-[#ff6b2e] font-bold border-b-2 border-[#ff6b2e] pb-1" href="#">Archive</a>
+<a class="text-[#1c1c19] opacity-60 hover:opacity-100 transition-opacity duration-300" href="#">Curation</a>
+<a class="text-[#1c1c19] opacity-60 hover:opacity-100 transition-opacity duration-300" href="#">Studio</a>
+</div>
+<div class="flex gap-6">
+<span class="material-symbols-outlined text-2xl opacity-60 cursor-pointer hover:opacity-100 transition-all">search</span>
+<span class="material-symbols-outlined text-2xl opacity-60 cursor-pointer hover:opacity-100 transition-all">account_circle</span>
+</div>
+</nav>
+</header>
+<!-- Main Showcase Content -->
+<main class="h-screen w-full flex flex-col items-center justify-center p-8">
+<!-- Hero Showcase Container -->
+<div class="relative flex flex-col items-center">
+<!-- The Squircle Icon -->
+<div class="relative w-[720px] h-[720px] squircle aurora-gradient flex items-center justify-center shadow-[0_20px_40px_rgba(28,28,25,0.06)] transform scale-90 md:scale-100 transition-transform duration-500">
+<!-- Inner Glyph and Ember Dot -->
+<div class="relative flex items-center justify-center h-full w-full">
+<!-- The Dot-b Glyph -->
+<div class="relative flex flex-col items-center">
+<!-- Ember Indicator (Dot) -->
+<div class="absolute -top-12 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[#ff6b2e] shadow-sm"></div>
+<!-- Main Character -->
+<span class="font-brand italic font-black text-[#0a0a0a] text-[432px] leading-none select-none">
+                            b
+                        </span>
+</div>
+</div>
+</div>
+<!-- Editorial Caption -->
+<div class="mt-12 text-center space-y-2">
+<h1 class="font-mono text-[14px] text-[#0A0A0A] uppercase tracking-normal">
+                    The Dot-b
+                </h1>
+<p class="font-mono text-[11px] text-[#6C645A] tracking-[0.15em]">
+                    Beedle · app icon concept 1/2
+                </p>
+</div>
+</div>
+</main>
+<!-- Secondary Contextual Elements (Editorial Flavour) -->
+<div class="fixed bottom-12 left-12 max-w-xs space-y-4 opacity-40 hover:opacity-100 transition-opacity">
+<div class="font-mono text-[10px] tracking-widest uppercase">Specifications</div>
+<p class="font-body text-xs leading-relaxed text-on-surface-variant">
+            Built using the Modern Archivist framework. Features organic squircle smoothing (0.6) and the Aurora Warm Gradient to signify intentional growth and curated storage.
+        </p>
+</div>
+<!-- Right Side Sidebar (Shared Components - Small Scale Interpretation) -->
+<aside class="fixed right-0 top-1/2 -translate-y-1/2 hidden lg:flex flex-col items-center gap-12 px-6 py-12 bg-surface-container-low rounded-l-[2rem] shadow-[6%_0_20px_rgba(28,28,25,0.06)]">
+<div class="flex flex-col gap-8">
+<span class="material-symbols-outlined text-[#ff6b2e] font-bold cursor-pointer" data-icon="folder_open">folder_open</span>
+<span class="material-symbols-outlined text-on-surface opacity-40 cursor-pointer hover:opacity-100" data-icon="auto_awesome_motion">auto_awesome_motion</span>
+<span class="material-symbols-outlined text-on-surface opacity-40 cursor-pointer hover:opacity-100" data-icon="edit_note">edit_note</span>
+<span class="material-symbols-outlined text-on-surface opacity-40 cursor-pointer hover:opacity-100" data-icon="tune">tune</span>
+</div>
+<div class="w-px h-12 bg-outline-variant opacity-20"></div>
+<div class="flex flex-col gap-6">
+<span class="material-symbols-outlined text-on-surface opacity-40 cursor-pointer hover:opacity-100" data-icon="help_outline">help_outline</span>
+</div>
+</aside>
+<!-- Background Decorative Text (Editorial Style) -->
+<div class="fixed -bottom-24 -left-12 opacity-[0.03] select-none pointer-events-none">
+<span class="font-brand italic font-black text-[40rem] text-[#1c1c19]">
+            b
+        </span>
+</div>
+</body></html>

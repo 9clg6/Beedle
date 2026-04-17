@@ -7,7 +7,6 @@ import 'package:beedle/domain/entities/subscription_snapshot.entity.dart';
 import 'package:beedle/domain/params/search_cards.param.dart';
 import 'package:beedle/features/search/presentation/screens/search.state.dart';
 import 'package:beedle/foundation/interfaces/results.usecases.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'search.view_model.g.dart';
@@ -35,17 +34,20 @@ class SearchViewModel extends _$SearchViewModel {
     }
     state = state.copyWith(isSearching: true);
 
-    final sub =
-        await ref.read(subscriptionRepositoryProvider).load();
+    final SubscriptionSnapshotEntity sub = await ref
+        .read(subscriptionRepositoryProvider)
+        .load();
 
-    final result = await ref.read(searchCardsUseCaseProvider).execute(
+    final ResultState<List<CardEntity>> result = await ref
+        .read(searchCardsUseCaseProvider)
+        .execute(
           SearchCardsParam(
             query: state.query,
             restrictToCurrentMonth: !sub.isPro,
           ),
         );
 
-    final results = result.data ?? <CardEntity>[];
+    final List<CardEntity> results = result.data ?? <CardEntity>[];
     state = state.copyWith(results: results, isSearching: false);
   }
 }

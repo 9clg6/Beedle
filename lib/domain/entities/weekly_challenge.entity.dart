@@ -17,5 +17,6 @@ abstract class WeeklyChallengeEntity with _$WeeklyChallengeEntity {
 
 extension WeeklyChallengeEntityX on WeeklyChallengeEntity {
   bool get isCompleted => completedAt != null;
-  double get progressRatio => target == 0 ? 0 : (progress / target).clamp(0.0, 1.0);
+  double get progressRatio =>
+      target == 0 ? 0 : (progress / target).clamp(0.0, 1.0);
 }

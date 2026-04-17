@@ -22,7 +22,8 @@ import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
 /// Service d'export + wipe des données locales.
-final class DataManagementService implements DataExportService, DataWipeService {
+final class DataManagementService
+    implements DataExportService, DataWipeService {
   DataManagementService({
     required CardLocalDataSource cardDataSource,
     required ScreenshotLocalDataSource screenshotDataSource,
@@ -32,14 +33,14 @@ final class DataManagementService implements DataExportService, DataWipeService 
     required SubscriptionSnapshotLocalDataSource subscriptionDataSource,
     required GamificationLocalDataSource gamificationDataSource,
     required AnalyticsService analyticsService,
-  })  : _cardDataSource = cardDataSource,
-        _screenshotDataSource = screenshotDataSource,
-        _ingestionJobDataSource = ingestionJobDataSource,
-        _notificationRecordDataSource = notificationRecordDataSource,
-        _userPreferencesDataSource = userPreferencesDataSource,
-        _subscriptionDataSource = subscriptionDataSource,
-        _gamificationDataSource = gamificationDataSource,
-        _analyticsService = analyticsService;
+  }) : _cardDataSource = cardDataSource,
+       _screenshotDataSource = screenshotDataSource,
+       _ingestionJobDataSource = ingestionJobDataSource,
+       _notificationRecordDataSource = notificationRecordDataSource,
+       _userPreferencesDataSource = userPreferencesDataSource,
+       _subscriptionDataSource = subscriptionDataSource,
+       _gamificationDataSource = gamificationDataSource,
+       _analyticsService = analyticsService;
 
   final CardLocalDataSource _cardDataSource;
   final ScreenshotLocalDataSource _screenshotDataSource;
@@ -54,15 +55,20 @@ final class DataManagementService implements DataExportService, DataWipeService 
 
   @override
   Future<String> exportAsJson() async {
-    final cards = await _cardDataSource.getAll();
-    final cardEntities = cards.map((e) => e.toEntity()).toList();
-    final screenshots = <List<ScreenshotEntity>>[];
-    for (final c in cardEntities) {
-      final list = await _screenshotDataSource.getByCardUuid(c.uuid);
-      screenshots.add(list.map((e) => e.toEntity()).toList());
+    final List<CardLocalModel> cards = await _cardDataSource.getAll();
+    final List<CardEntity> cardEntities = cards
+        .map((CardLocalModel e) => e.toEntity())
+        .toList();
+    final List<List<ScreenshotEntity>> screenshots = <List<ScreenshotEntity>>[];
+    for (final CardEntity c in cardEntities) {
+      final List<ScreenshotLocalModel> list = await _screenshotDataSource
+          .getByCardUuid(c.uuid);
+      screenshots.add(
+        list.map((ScreenshotLocalModel e) => e.toEntity()).toList(),
+      );
     }
 
-    final export = <String, dynamic>{
+    final Map<String, dynamic> export = <String, dynamic>{
       'exportedAt': DateTime.now().toIso8601String(),
       'schemaVersion': 1,
       'cards': <Map<String, dynamic>>[
@@ -81,19 +87,28 @@ final class DataManagementService implements DataExportService, DataWipeService 
             'testedAt': cardEntities[i].testedAt?.toIso8601String(),
             'sourceUrl': cardEntities[i].sourceUrl,
             'estimatedMinutes': cardEntities[i].estimatedMinutes,
-            'screenshots': screenshots[i].map((s) => <String, dynamic>{
-                  'uuid': s.uuid,
-                  'capturedAt': s.capturedAt.toIso8601String(),
-                  'ocrText': s.ocrText,
-                  'sha256': s.sha256,
-                }).toList(),
+            'screenshots': screenshots[i]
+                .map(
+                  (ScreenshotEntity s) => <String, dynamic>{
+                    'uuid': s.uuid,
+                    'capturedAt': s.capturedAt.toIso8601String(),
+                    'ocrText': s.ocrText,
+                    'sha256': s.sha256,
+                  },
+                )
+                .toList(),
           },
       ],
     };
 
-    final json = const JsonEncoder.withIndent('  ').convert(export);
-    final tmp = await getTemporaryDirectory();
-    final file = File(p.join(tmp.path, 'beedle-export-${DateTime.now().millisecondsSinceEpoch}.json'));
+    final String json = const JsonEncoder.withIndent('  ').convert(export);
+    final Directory tmp = await getTemporaryDirectory();
+    final File file = File(
+      p.join(
+        tmp.path,
+        'beedle-export-${DateTime.now().millisecondsSinceEpoch}.json',
+      ),
+    );
     await file.writeAsString(json);
     _log.info('Exported ${cardEntities.length} cards to ${file.path}');
     return file.path;

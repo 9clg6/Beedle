@@ -2,7 +2,6 @@ import 'package:beedle/data/clients/objectbox_store.dart';
 import 'package:beedle/data/datasources/local/card.local.data_source.dart';
 import 'package:beedle/data/model/local/card.local.model.dart';
 import 'package:beedle/objectbox.g.dart';
-import 'package:objectbox/objectbox.dart';
 
 final class CardLocalDataSourceImpl implements CardLocalDataSource {
   CardLocalDataSourceImpl({required ObjectBoxStore store}) : _store = store;
@@ -13,7 +12,7 @@ final class CardLocalDataSourceImpl implements CardLocalDataSource {
 
   @override
   Future<List<CardLocalModel>> getAll({int? limit, int? offset}) async {
-    final query = _box
+    final Query<CardLocalModel> query = _box
         .query()
         .order(CardLocalModel_.createdAt, flags: Order.descending)
         .build();
@@ -28,8 +27,9 @@ final class CardLocalDataSourceImpl implements CardLocalDataSource {
 
   @override
   Future<CardLocalModel?> getByUuid(String uuid) async {
-    final query =
-        _box.query(CardLocalModel_.uuid.equals(uuid)).build();
+    final Query<CardLocalModel> query = _box
+        .query(CardLocalModel_.uuid.equals(uuid))
+        .build();
     try {
       return query.findFirst();
     } finally {
@@ -39,7 +39,7 @@ final class CardLocalDataSourceImpl implements CardLocalDataSource {
 
   @override
   Future<CardLocalModel> upsert(CardLocalModel card) async {
-    final existing = await getByUuid(card.uuid);
+    final CardLocalModel? existing = await getByUuid(card.uuid);
     if (existing != null) card.id = existing.id;
     card.id = _box.put(card);
     return card;
@@ -47,7 +47,7 @@ final class CardLocalDataSourceImpl implements CardLocalDataSource {
 
   @override
   Future<void> delete(String uuid) async {
-    final existing = await getByUuid(uuid);
+    final CardLocalModel? existing = await getByUuid(uuid);
     if (existing != null) _box.remove(existing.id);
   }
 
@@ -56,7 +56,7 @@ final class CardLocalDataSourceImpl implements CardLocalDataSource {
     required List<double> queryEmbedding,
     int limit = 10,
   }) async {
-    final query = _box
+    final Query<CardLocalModel> query = _box
         .query(
           CardLocalModel_.embedding.nearestNeighborsF32(queryEmbedding, limit),
         )
@@ -70,7 +70,7 @@ final class CardLocalDataSourceImpl implements CardLocalDataSource {
 
   @override
   Future<CardLocalModel?> oldestUnviewed() async {
-    final query = _box
+    final Query<CardLocalModel> query = _box
         .query(CardLocalModel_.viewedAt.isNull())
         .order(CardLocalModel_.createdAt)
         .build();
@@ -86,8 +86,8 @@ final class CardLocalDataSourceImpl implements CardLocalDataSource {
     int limit = 3,
     Duration staleAfter = const Duration(days: 14),
   }) async {
-    final threshold = DateTime.now().subtract(staleAfter);
-    final query = _box
+    final DateTime threshold = DateTime.now().subtract(staleAfter);
+    final Query<CardLocalModel> query = _box
         .query(
           CardLocalModel_.viewedAt.lessThan(threshold.millisecondsSinceEpoch),
         )
@@ -103,7 +103,7 @@ final class CardLocalDataSourceImpl implements CardLocalDataSource {
 
   @override
   Future<void> markViewed(String uuid) async {
-    final c = await getByUuid(uuid);
+    final CardLocalModel? c = await getByUuid(uuid);
     if (c == null) return;
     c
       ..viewedAt = DateTime.now()
@@ -113,7 +113,7 @@ final class CardLocalDataSourceImpl implements CardLocalDataSource {
 
   @override
   Future<void> markTested(String uuid) async {
-    final c = await getByUuid(uuid);
+    final CardLocalModel? c = await getByUuid(uuid);
     if (c == null) return;
     c.testedAt = DateTime.now();
     _box.put(c);
@@ -128,7 +128,7 @@ final class CardLocalDataSourceImpl implements CardLocalDataSource {
         .query()
         .order(CardLocalModel_.createdAt, flags: Order.descending)
         .watch(triggerImmediately: true)
-        .map((q) => q.find());
+        .map((Query<CardLocalModel> q) => q.find());
   }
 
   @override

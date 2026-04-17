@@ -4,11 +4,12 @@ enum NotificationType {
   teaser,
 
   /// Notif quotidienne de rappel d'import.
-  capture;
+  capture
+  ;
 
   static NotificationType fromString(String value) {
     return NotificationType.values.firstWhere(
-      (e) => e.name == value,
+      (NotificationType e) => e.name == value,
       orElse: () => NotificationType.teaser,
     );
   }

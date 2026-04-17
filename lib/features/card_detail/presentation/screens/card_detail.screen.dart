@@ -6,9 +6,12 @@ import 'package:beedle/features/card_detail/presentation/widgets/card_markdown_b
 import 'package:beedle/generated/locale_keys.g.dart';
 import 'package:beedle/presentation/theme/app_colors.dart';
 import 'package:beedle/presentation/theme/calm_tokens.dart';
-import 'package:beedle/presentation/widgets/calm_badge.dart';
+import 'package:beedle/core/providers/data_providers.dart';
+import 'package:beedle/domain/enum/card_intent.enum.dart';
+import 'package:beedle/presentation/widgets/calm_back_button.dart';
 import 'package:beedle/presentation/widgets/glass_card.dart';
 import 'package:beedle/presentation/widgets/gradient_background.dart';
+import 'package:beedle/presentation/widgets/intent_badge.dart';
 import 'package:beedle/presentation/widgets/pill_chip.dart';
 import 'package:beedle/presentation/widgets/squircle_button.dart';
 import 'package:easy_localization/easy_localization.dart';
@@ -31,24 +34,22 @@ class CardDetailScreen extends ConsumerStatefulWidget {
 class _CardDetailScreenState extends ConsumerState<CardDetailScreen> {
   @override
   Widget build(BuildContext context) {
-    final asyncState =
-        ref.watch(cardDetailViewModelProvider(widget.uuid));
+    final AsyncValue<CardDetailState> asyncState = ref.watch(
+      cardDetailViewModelProvider(widget.uuid),
+    );
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => context.router.maybePop(),
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              color: AppColors.neutral8),
-        ),
+        leadingWidth: 60,
+        leading: const CalmBackButton(),
       ),
       body: GradientBackground(
         child: asyncState.when(
           loading: () => const Center(child: CircularProgressIndicator()),
-          error: (e, st) =>
+          error: (Object e, StackTrace st) =>
               Center(child: Text(LocaleKeys.common_error_generic.tr())),
-          data: (state) {
-            final card = state.card;
+          data: (CardDetailState state) {
+            final CardEntity? card = state.card;
             if (card == null) {
               return Center(child: Text(LocaleKeys.common_empty.tr()));
             }
@@ -67,7 +68,7 @@ class _Body extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final textTheme = Theme.of(context).textTheme;
+    final TextTheme textTheme = Theme.of(context).textTheme;
 
     return SafeArea(
       child: ListView(
@@ -78,7 +79,28 @@ class _Body extends ConsumerWidget {
           CalmSpace.s9,
         ),
         children: <Widget>[
-          // Eyebrow métadata — texte inline séparé par · (pas de pills fullWidth)
+          // Intent badge tappable — override sheet au tap.
+          Row(
+            children: <Widget>[
+              IntentBadge(
+                intent: card.intent,
+                onTap: () async {
+                  final CardIntent? next = await showIntentOverrideSheet(
+                    context,
+                    current: card.intent,
+                  );
+                  if (next == null || next == card.intent) return;
+                  await ref
+                      .read(cardRepositoryProvider)
+                      .setIntent(card.uuid, next);
+                  ref.invalidate(cardDetailViewModelProvider(uuid));
+                },
+              ),
+            ],
+          ),
+          const Gap(CalmSpace.s4),
+          // Eyebrow métadata — texte inline séparé par ·
+          // (pas de pills fullWidth)
           _MetaRow(
             level: _levelLabel(card),
             minutes: card.estimatedMinutes,
@@ -111,7 +133,7 @@ class _Body extends ConsumerWidget {
               spacing: CalmSpace.s3,
               runSpacing: CalmSpace.s3,
               children: card.tags
-                  .map((t) => PillChip(label: '#$t'))
+                  .map((String t) => PillChip(label: '#$t'))
                   .toList(),
             ),
             const Gap(CalmSpace.s7),
@@ -145,7 +167,7 @@ class _MetaRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final parts = <String>[
+    final List<String> parts = <String>[
       level,
       if (minutes != null)
         LocaleKeys.card_estimated_time.tr(
@@ -156,9 +178,9 @@ class _MetaRow extends StatelessWidget {
     return Text(
       parts.join(' · '),
       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: AppColors.neutral6,
-            letterSpacing: 0.4,
-          ),
+        color: AppColors.neutral6,
+        letterSpacing: 0.4,
+      ),
     );
   }
 }
@@ -188,7 +210,7 @@ class _ActionsBar extends ConsumerWidget {
             variant: SquircleButtonVariant.secondary,
             expand: true,
             onPressed: () async {
-              final url = Uri.parse(card.sourceUrl!);
+              final Uri url = Uri.parse(card.sourceUrl!);
               if (await canLaunchUrl(url)) {
                 await launchUrl(url, mode: LaunchMode.externalApplication);
               }
@@ -207,16 +229,16 @@ class _ActionsBar extends ConsumerWidget {
           onPressed: card.testedAt != null
               ? null
               : () => ref
-                  .read(cardDetailViewModelProvider(uuid).notifier)
-                  .markTested(),
+                    .read(cardDetailViewModelProvider(uuid).notifier)
+                    .markTested(),
         ),
       ],
     );
   }
 
   Future<void> _openWithAI(CardEntity card) async {
-    final prompt = '${card.title}\n\n${card.fullContent}';
-    final webFallback = Uri.parse(
+    final String prompt = '${card.title}\n\n${card.fullContent}';
+    final Uri webFallback = Uri.parse(
       'https://claude.ai/new?q=${Uri.encodeComponent(prompt)}',
     );
     if (await canLaunchUrl(webFallback)) {

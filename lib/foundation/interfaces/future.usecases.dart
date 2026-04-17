@@ -7,13 +7,13 @@ import 'package:beedle/foundation/logging/logger.dart';
 const Duration _kDefaultTimeout = Duration(seconds: 25);
 
 /// Use case asynchrone sans paramètres.
-abstract class FutureUseCase<T>
-    implements BaseUseCase<Future<ResultState<T>>> {
+abstract class FutureUseCase<T> implements BaseUseCase<Future<ResultState<T>>> {
   /// Timeout appliqué à `invoke()`.
   Duration get timeout => _kDefaultTimeout;
 
   @override
-  Future<ResultState<T>> execute() async => _futureCatcher(invoke, name: runtimeType.toString(), timeout: timeout);
+  Future<ResultState<T>> execute() async =>
+      _futureCatcher(invoke, name: runtimeType.toString(), timeout: timeout);
 
   /// Méthode à implémenter par les sous-classes.
   Future<T> invoke();
@@ -26,8 +26,11 @@ abstract class FutureUseCaseWithParams<T, P>
   Duration get timeout => _kDefaultTimeout;
 
   @override
-  Future<ResultState<T>> execute(P params) async =>
-      _futureCatcher(() => invoke(params), name: runtimeType.toString(), timeout: timeout);
+  Future<ResultState<T>> execute(P params) async => _futureCatcher(
+    () => invoke(params),
+    name: runtimeType.toString(),
+    timeout: timeout,
+  );
 
   /// Méthode à implémenter par les sous-classes.
   Future<T> invoke(P params);
@@ -38,9 +41,9 @@ Future<ResultState<T>> _futureCatcher<T>(
   required String name,
   required Duration timeout,
 }) async {
-  final log = Log.named(name);
+  final Log log = Log.named(name);
   try {
-    final result = await operation().timeout(timeout);
+    final T result = await operation().timeout(timeout);
     return ResultState<T>.success(result);
   } on TimeoutException catch (e, st) {
     log.warn('Timeout after ${timeout.inSeconds}s', e, st);

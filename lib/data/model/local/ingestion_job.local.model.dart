@@ -3,7 +3,11 @@ import 'package:objectbox/objectbox.dart';
 @Entity()
 class IngestionJobLocalModel {
   IngestionJobLocalModel({
-    required this.uuid, required this.screenshotUuidsJson, required this.status, required this.createdAt, this.id = 0,
+    required this.uuid,
+    required this.screenshotUuidsJson,
+    required this.status,
+    required this.createdAt,
+    this.id = 0,
     this.attempts = 0,
     this.lastError,
     this.cardUuid,

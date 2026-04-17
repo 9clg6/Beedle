@@ -3,7 +3,10 @@ import 'package:objectbox/objectbox.dart';
 @Entity()
 class NotificationRecordLocalModel {
   NotificationRecordLocalModel({
-    required this.uuid, required this.type, required this.scheduledAt, this.id = 0,
+    required this.uuid,
+    required this.type,
+    required this.scheduledAt,
+    this.id = 0,
     this.cardUuid,
     this.content,
     this.sentAt,
