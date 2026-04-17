@@ -6,13 +6,11 @@ import 'package:beedle/domain/enum/onboarding_goal.enum.dart';
 import 'package:beedle/domain/enum/pain_point.enum.dart';
 import 'package:beedle/domain/services/analytics.service.dart';
 import 'package:beedle/features/onboarding/presentation/screens/onboarding.state.dart';
+import 'package:beedle/features/onboarding/presentation/screens/onboarding_step_validator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'onboarding.view_model.g.dart';
-
-/// Index max du PageView onboarding (15 écrans : 0..14).
-const int _kLastIndex = 14;
 
 @riverpod
 class OnboardingViewModel extends _$OnboardingViewModel {
@@ -20,7 +18,7 @@ class OnboardingViewModel extends _$OnboardingViewModel {
   OnboardingState build() => OnboardingState.initial();
 
   void next() {
-    if (state.currentIndex < _kLastIndex) {
+    if (state.currentIndex < kOnboardingLastIndex) {
       state = state.copyWith(currentIndex: state.currentIndex + 1);
     }
   }
@@ -117,32 +115,36 @@ class OnboardingViewModel extends _$OnboardingViewModel {
 
   Future<void> finishOnboarding() async {
     state = state.copyWith(isSubmitting: true);
-    final UserPreferencesEntity prefs = UserPreferencesEntity(
-      contentCategories: state.contentCategories,
-      teaserCountPerDay: state.teaserCountPerDay,
-      captureReminderHour: state.captureReminderHour,
-      onboardingCompletedAt: DateTime.now(),
-    );
-    await ref.read(userPreferencesRepositoryProvider).save(prefs);
+    try {
+      final UserPreferencesEntity prefs = UserPreferencesEntity(
+        contentCategories: state.contentCategories,
+        teaserCountPerDay: state.teaserCountPerDay,
+        captureReminderHour: state.captureReminderHour,
+        onboardingCompletedAt: DateTime.now(),
+      );
+      await ref.read(userPreferencesRepositoryProvider).save(prefs);
 
-    // Analytics — payload aligné sur §4.14 du blueprint.
-    await ref
-        .read(analyticsServiceProvider)
-        .track(
-          AnalyticsEvent.onboardingCompleted,
-          properties: <String, Object>{
-            'goal': state.goal?.name ?? 'unknown',
-            'pain_points_count': state.painPoints.length,
-            'categories': state.contentCategories
-                .map((ContentCategory c) => c.name)
-                .join(','),
-            'teaser_count': state.teaserCountPerDay,
-            'photos_granted': state.photosGranted,
-            'notifications_granted': state.notificationsGranted,
-            'demo_picked_count': state.demoSwipedRightIndices.length,
-          },
-        );
-
-    state = state.copyWith(isSubmitting: false);
+      // Analytics — payload aligné sur §4.14 du blueprint.
+      await ref
+          .read(analyticsServiceProvider)
+          .track(
+            AnalyticsEvent.onboardingCompleted,
+            properties: <String, Object>{
+              'goal': state.goal?.name ?? 'unknown',
+              'pain_points_count': state.painPoints.length,
+              'categories': state.contentCategories
+                  .map((ContentCategory c) => c.name)
+                  .join(','),
+              'teaser_count': state.teaserCountPerDay,
+              'photos_granted': state.photosGranted,
+              'notifications_granted': state.notificationsGranted,
+              'demo_picked_count': state.demoSwipedRightIndices.length,
+            },
+          );
+    } finally {
+      // Always reset isSubmitting — even on save / track failure — so a
+      // retry from the paywall CTA isn't blocked by a stuck spinner.
+      state = state.copyWith(isSubmitting: false);
+    }
   }
 }

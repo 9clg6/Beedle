@@ -48,7 +48,7 @@ class OnboardingCategoryStep extends ConsumerWidget {
             children: <Widget>[
               for (final ContentCategory c in ContentCategory.values)
                 PillChip(
-                  label: 'onboarding.step6.q1_options.${c.name}'.tr(),
+                  label: 'onboarding.ob08.options.${c.name}'.tr(),
                   selected: state.contentCategories.contains(c),
                   onTap: () => ref
                       .read(onboardingViewModelProvider.notifier)

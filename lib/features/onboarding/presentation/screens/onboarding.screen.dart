@@ -30,8 +30,8 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-/// Total d'écrans dans le flow questionnaire (0..14).
-const int _kTotalScreens = 15;
+// Source-of-truth pour le total d'écrans : `kOnboardingTotalScreens` /
+// `kOnboardingLastIndex` exportés par `onboarding_step_validator.dart`.
 
 @RoutePage()
 class OnboardingScreen extends ConsumerStatefulWidget {
@@ -107,14 +107,15 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
               if (!isImmersive)
                 _ProgressIndicator(
                   currentIndex: state.currentIndex,
-                  total: _kTotalScreens,
+                  total: kOnboardingTotalScreens,
                 ),
               Expanded(
                 child: PageView(
                   controller: _controller,
                   physics: const NeverScrollableScrollPhysics(),
                   children: <Widget>[
-                    for (int i = 0; i < _kTotalScreens; i++) _buildStep(i),
+                    for (int i = 0; i < kOnboardingTotalScreens; i++)
+                      _buildStep(i),
                   ],
                 ),
               ),
@@ -159,7 +160,7 @@ class _NavBar extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final int i = state.currentIndex;
     final bool canAdvance = OnboardingStepValidator.canAdvance(i, state);
-    final bool isLast = i == _kTotalScreens - 1;
+    final bool isLast = i == kOnboardingLastIndex;
     final bool isAutoAdvance = kAutoAdvanceSteps.contains(i);
 
     return Padding(
