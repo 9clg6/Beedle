@@ -72,32 +72,38 @@ class _GoalOptionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
-    return GlassCard(
-      onTap: onTap,
-      elevated: false,
-      borderColor: selected ? AppColors.ink : null,
-      backgroundColor: selected ? AppColors.glassMedium : null,
-      padding: const EdgeInsets.symmetric(
-        horizontal: CalmSpace.s5,
-        vertical: CalmSpace.s5,
-      ),
-      child: Row(
-        children: <Widget>[
-          Expanded(
-            child: Text(
-              _labelKeyFor(goal).tr(),
-              style: textTheme.titleMedium?.copyWith(color: AppColors.ink),
+    final String label = _labelKeyFor(goal).tr();
+    return Semantics(
+      label: label,
+      button: true,
+      selected: selected,
+      child: GlassCard(
+        onTap: onTap,
+        elevated: false,
+        borderColor: selected ? AppColors.ink : null,
+        backgroundColor: selected ? AppColors.glassMedium : null,
+        padding: const EdgeInsets.symmetric(
+          horizontal: CalmSpace.s5,
+          vertical: CalmSpace.s5,
+        ),
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: Text(
+                label,
+                style: textTheme.titleMedium?.copyWith(color: AppColors.ink),
+              ),
             ),
-          ),
-          if (selected)
-            const Icon(Icons.check_circle, color: AppColors.ember, size: 22)
-          else
-            Icon(
-              Icons.circle_outlined,
-              color: AppColors.neutral3,
-              size: 22,
-            ),
-        ],
+            if (selected)
+              const Icon(Icons.check_circle, color: AppColors.ember, size: 22)
+            else
+              const Icon(
+                Icons.circle_outlined,
+                color: AppColors.neutral3,
+                size: 22,
+              ),
+          ],
+        ),
       ),
     );
   }

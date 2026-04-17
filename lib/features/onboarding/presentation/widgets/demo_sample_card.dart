@@ -19,64 +19,67 @@ class DemoSampleCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
-    return GlassCard(
-      padding: EdgeInsets.zero,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Expanded(
-            child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(CalmRadius.xl2),
-              ),
-              child: Image.asset(
-                assetPath,
-                fit: BoxFit.cover,
-                errorBuilder: (_, _, _) => Container(
-                  color: AppColors.glassSoft,
-                  alignment: Alignment.center,
-                  child: const Icon(
-                    Icons.image_outlined,
-                    color: AppColors.neutral3,
-                    size: 48,
+    return Semantics(
+      label: '$title — swipe à droite pour garder, à gauche pour passer',
+      child: GlassCard(
+        padding: EdgeInsets.zero,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Expanded(
+              child: ClipRRect(
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(CalmRadius.xl2),
+                ),
+                child: Image.asset(
+                  assetPath,
+                  fit: BoxFit.cover,
+                  errorBuilder: (_, _, _) => Container(
+                    color: AppColors.glassSoft,
+                    alignment: Alignment.center,
+                    child: const Icon(
+                      Icons.image_outlined,
+                      color: AppColors.neutral3,
+                      size: 48,
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(CalmSpace.s5),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  title,
-                  style: textTheme.titleMedium?.copyWith(
-                    color: AppColors.ink,
+            Padding(
+              padding: const EdgeInsets.all(CalmSpace.s5),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(
+                    title,
+                    style: textTheme.titleMedium?.copyWith(
+                      color: AppColors.ink,
+                    ),
                   ),
-                ),
-                const Gap(CalmSpace.s3),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Text(
-                      '← passer',
-                      style: textTheme.labelSmall?.copyWith(
-                        color: AppColors.neutral6,
+                  const Gap(CalmSpace.s3),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Text(
+                        '← passer',
+                        style: textTheme.labelSmall?.copyWith(
+                          color: AppColors.neutral6,
+                        ),
                       ),
-                    ),
-                    Text(
-                      'garder →',
-                      style: textTheme.labelSmall?.copyWith(
-                        color: AppColors.ember,
+                      Text(
+                        'garder →',
+                        style: textTheme.labelSmall?.copyWith(
+                          color: AppColors.ember,
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
