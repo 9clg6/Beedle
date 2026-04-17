@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Politique de confidentialité — Beedle</title>
+  <meta name="description" content="Comment Beedle collecte, utilise et protège tes données." />
+  <meta name="robots" content="index, follow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=VT323&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="assets/styles.css" />
+</head>
+<body>
+  <div class="container">
+    <header>
+      <a href="index.html" style="display: flex; align-items: center; gap: 0.75rem; text-decoration: none">
+        <div class="logo">b</div>
+        <div class="brand">Beedle</div>
+      </a>
+      <nav>
+        <a href="support.html">Support</a>
+        <a href="privacy.html">Confidentialité</a>
+        <a href="terms.html">Conditions</a>
+      </nav>
+    </header>
+
+    <div class="eyebrow">Politique de confidentialité</div>
+    <h1>Tes données,<br />tes règles.</h1>
+    <p class="subtitle">
+      Résumé en une phrase : Beedle fait le maximum en local sur ton appareil, et
+      ne partage avec des tiers que le strict nécessaire pour faire fonctionner
+      la digestion par IA.
+    </p>
+
+    <div class="meta">
+      <span>Version 1.0</span>
+      <span>En vigueur au 17 avril 2026</span>
+      <span>Droit français</span>
+    </div>
+
+    <div class="card">
+      <h2 style="margin-top: 0">L'essentiel en 30 secondes</h2>
+      <ul>
+        <li><strong>OCR en local.</strong> L'extraction de texte depuis tes screenshots se fait sur ton appareil (Apple Vision / Google ML Kit). Aucune image ne sort de ton téléphone.</li>
+        <li><strong>Digestion IA externalisée.</strong> Le texte extrait (pas l'image) est envoyé à un modèle de langage (OpenAI) pour produire la fiche. La requête transite par notre proxy sur Cloudflare.</li>
+        <li><strong>Stockage local.</strong> Tes fiches, tes embeddings, ton historique — tout reste sur ton appareil (base ObjectBox).</li>
+        <li><strong>Analytics opt-in.</strong> PostHog (hébergé en UE), activé uniquement avec ton consentement, sans données identifiantes.</li>
+        <li><strong>Pas de publicité.</strong> Pas de revente. Pas de profilage.</li>
+      </ul>
+    </div>
+
+    <h2>1. Qui est le responsable du traitement</h2>
+    <p>
+      Beedle est une application développée de manière indépendante depuis la
+      France. Le responsable du traitement des données personnelles est
+      joignable à l'adresse
+      <a href="mailto:privacy@beedle.app">privacy@beedle.app</a>.
+      Les coordonnées complètes peuvent être communiquées sur demande écrite
+      à cette même adresse.
+    </p>
+
+    <h2>2. Quelles données sont collectées</h2>
+
+    <h3>Données que tu fournis</h3>
+    <ul>
+      <li><strong>Screenshots</strong> que tu importes ou partages via la share sheet.</li>
+      <li><strong>Compte utilisateur</strong> (si tu t'inscris) : email, identifiant Apple/Google si SSO.</li>
+      <li><strong>Préférences</strong> : horaires de notification, langue, thème.</li>
+    </ul>
+
+    <h3>Données générées par l'app</h3>
+    <ul>
+      <li><strong>Texte OCR</strong> extrait localement de tes screenshots.</li>
+      <li><strong>Fiches IA</strong> (titre, résumé, étapes) produites à partir du texte.</li>
+      <li><strong>Embeddings vectoriels</strong> pour la recherche sémantique, stockés localement.</li>
+    </ul>
+
+    <h3>Données techniques</h3>
+    <ul>
+      <li><strong>Journaux d'erreurs</strong> anonymisés (Sentry ou équivalent, si activé).</li>
+      <li><strong>Statut d'abonnement</strong> via RevenueCat (identifiant opaque, pas d'email).</li>
+      <li><strong>Analytics PostHog</strong> (EU) uniquement si tu as donné ton consentement explicite.</li>
+    </ul>
+
+    <h2>3. À quoi servent ces données</h2>
+    <ul>
+      <li><strong>Faire fonctionner le produit</strong> : transformer tes screenshots en fiches, te notifier.</li>
+      <li><strong>Gérer ton abonnement</strong> via les systèmes Apple / Google / RevenueCat.</li>
+      <li><strong>Améliorer l'app</strong> (si tu as consenti aux analytics) : comprendre les parcours agrégés, corriger les bugs.</li>
+      <li><strong>Te contacter</strong> uniquement pour des raisons essentielles (mises à jour importantes, réponse support).</li>
+    </ul>
+
+    <h2>4. Qui a accès à tes données</h2>
+    <p>Beedle partage le strict minimum avec les sous-traitants suivants :</p>
+
+    <div class="card">
+      <h3 style="margin-top: 0">Sous-traitants actifs</h3>
+      <ul>
+        <li><strong>Apple</strong> (Apple ID, App Store, iCloud sync si activé) — États-Unis, DPF.</li>
+        <li><strong>Google</strong> (Google Play Billing pour Android) — États-Unis, DPF.</li>
+        <li><strong>OpenAI</strong> (digestion IA, via proxy Cloudflare) — États-Unis, DPF. Seul le texte OCR est transmis, jamais l'image d'origine. Les prompts ne sont pas utilisés pour entraîner les modèles (opt-out contractuel).</li>
+        <li><strong>Cloudflare</strong> (proxy API + edge hosting) — États-Unis, DPF.</li>
+        <li><strong>RevenueCat</strong> (gestion abonnements) — États-Unis, DPF.</li>
+        <li><strong>PostHog Cloud EU</strong> (analytics, opt-in uniquement) — Allemagne, UE.</li>
+      </ul>
+    </div>
+
+    <h2>5. Durée de conservation</h2>
+    <ul>
+      <li><strong>Screenshots, fiches, historique</strong> : conservés localement tant que l'app est installée ; supprimés en 1 tap depuis les Réglages.</li>
+      <li><strong>Compte</strong> : conservé tant que tu ne demandes pas sa suppression.</li>
+      <li><strong>Journaux techniques</strong> : 30 jours maximum.</li>
+      <li><strong>Analytics agrégés</strong> (si activés) : 12 mois glissants.</li>
+    </ul>
+
+    <h2>6. Tes droits (RGPD)</h2>
+    <p>En tant que résident de l'Espace économique européen, tu disposes des droits suivants :</p>
+    <ul>
+      <li><strong>Accès</strong> : obtenir une copie de tes données.</li>
+      <li><strong>Rectification</strong> : corriger des données inexactes.</li>
+      <li><strong>Effacement</strong> : demander la suppression de ton compte et de tes données.</li>
+      <li><strong>Portabilité</strong> : exporter tes fiches au format JSON.</li>
+      <li><strong>Opposition</strong> : refuser l'usage analytics (déjà désactivé par défaut).</li>
+      <li><strong>Réclamation</strong> auprès de la CNIL : <a href="https://www.cnil.fr/fr/plaintes" target="_blank" rel="noopener">cnil.fr/plaintes</a>.</li>
+    </ul>
+    <p>
+      Pour exercer ces droits, écris à
+      <a href="mailto:privacy@beedle.app">privacy@beedle.app</a>. Réponse sous 30 jours maximum.
+    </p>
+
+    <h2>7. Sécurité</h2>
+    <ul>
+      <li>Chiffrement TLS pour toute communication réseau.</li>
+      <li>Stockage local chiffré via les mécanismes iOS (Data Protection) et Android (EncryptedSharedPreferences / Keystore).</li>
+      <li>Clés API backend masquées côté proxy Cloudflare — jamais exposées dans l'app.</li>
+      <li>Aucun mot de passe stocké côté Beedle : authentification par Apple ID / Google Sign-In uniquement.</li>
+    </ul>
+
+    <h2>8. Enfants</h2>
+    <p>
+      Beedle n'est pas destiné aux enfants de moins de 13 ans et ne collecte
+      sciemment aucune donnée de mineurs. Si tu constates qu'un mineur utilise
+      Beedle sans ton consentement, écris-nous à
+      <a href="mailto:privacy@beedle.app">privacy@beedle.app</a>.
+    </p>
+
+    <h2>9. Modifications de cette politique</h2>
+    <p>
+      Toute modification substantielle te sera notifiée via l'app ou par email
+      (si tu as un compte). La version en vigueur est toujours consultable à cette
+      adresse, avec la date de dernière mise à jour en haut de page.
+    </p>
+
+    <h2>10. Contact</h2>
+    <p>
+      Une question, une demande, une inquiétude ? Écris-nous à
+      <a href="mailto:privacy@beedle.app">privacy@beedle.app</a>.
+    </p>
+
+    <footer>
+      <div>© 2026 Beedle. Tous droits réservés.</div>
+      <div>
+        <a href="privacy.html">Confidentialité</a> ·
+        <a href="terms.html">Conditions</a> ·
+        <a href="support.html">Support</a>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
