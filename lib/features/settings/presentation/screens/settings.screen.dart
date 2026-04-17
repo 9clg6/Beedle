@@ -6,7 +6,6 @@ import 'package:beedle/core/providers/usecase_providers.dart';
 import 'package:beedle/domain/entities/auth_user.entity.dart';
 import 'package:beedle/domain/entities/subscription_snapshot.entity.dart';
 import 'package:beedle/domain/entities/user_preferences.entity.dart';
-import 'package:beedle/domain/services/analytics.service.dart';
 import 'package:beedle/features/home/presentation/providers/upload_display_state.provider.dart';
 import 'package:beedle/features/home/presentation/screens/engagement_home.view_model.dart';
 import 'package:beedle/features/home/presentation/screens/home.view_model.dart';
@@ -392,7 +391,7 @@ class _AccountTile extends ConsumerWidget {
           children: <Widget>[
             Expanded(
               child: Text(
-                LocaleKeys.auth_settings_signin.tr(),
+                LocaleKeys.auth_settings_signed_in_anonymous.tr(),
                 style: textTheme.bodyLarge,
               ),
             ),
@@ -444,8 +443,8 @@ class _AccountTile extends ConsumerWidget {
   }
 
   Future<void> _signOut(WidgetRef ref) async {
+    // Le service track lui-même `authSignout` — ne pas dupliquer ici.
     await ref.read(authServiceProvider).signOut();
-    await ref.read(analyticsServiceProvider).track(AnalyticsEvent.authSignout);
   }
 }
 
