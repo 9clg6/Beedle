@@ -1,5 +1,6 @@
 import 'package:beedle/features/onboarding/presentation/screens/onboarding.view_model.dart';
 import 'package:beedle/features/onboarding/presentation/widgets/ob_swipe_card.dart';
+import 'package:beedle/features/onboarding/presentation/widgets/ob_swipe_deck.dart';
 import 'package:beedle/generated/locale_keys.g.dart';
 import 'package:beedle/presentation/theme/app_colors.dart';
 import 'package:beedle/presentation/theme/calm_tokens.dart';
@@ -88,68 +89,24 @@ class _OnboardingTinderStepState extends ConsumerState<OnboardingTinderStep> {
           ),
           const Gap(CalmSpace.s5),
           Expanded(
-            child: _CardStack(
+            child: ObSwipeDeck(
+              total: _kTotalStatements,
               currentIndex: _currentCardIndex,
               onDismissed: _onDismissed,
+              emptyChild: const Center(
+                child: Icon(
+                  Icons.check_rounded,
+                  color: AppColors.ember,
+                  size: 48,
+                ),
+              ),
+              cardBuilder: (BuildContext _, int idx) => OnboardingSwipeCard(
+                statement: _kStatementKeys[idx].tr(),
+              ),
             ),
           ),
         ],
       ),
     );
-  }
-}
-
-class _CardStack extends StatelessWidget {
-  const _CardStack({
-    required this.currentIndex,
-    required this.onDismissed,
-  });
-
-  final int currentIndex;
-  final void Function(DismissDirection) onDismissed;
-
-  @override
-  Widget build(BuildContext context) {
-    if (currentIndex >= _kTotalStatements) {
-      return const Center(
-        child: Icon(Icons.check_rounded, color: AppColors.ember, size: 48),
-      );
-    }
-
-    // Affiche la top card swipable + les 2 prochaines en background pour
-    // l'effet visuel "deck".
-    final List<Widget> cards = <Widget>[];
-    final int maxBackground = (_kTotalStatements - currentIndex - 1).clamp(
-      0,
-      2,
-    );
-    for (int i = maxBackground; i >= 1; i--) {
-      cards.add(
-        Positioned.fill(
-          top: i * 8.0,
-          left: i * 6.0,
-          right: i * 6.0,
-          child: Opacity(
-            opacity: 1.0 - (i * 0.18),
-            child: OnboardingSwipeCard(
-              statement: _kStatementKeys[currentIndex + i].tr(),
-            ),
-          ),
-        ),
-      );
-    }
-    cards.add(
-      Positioned.fill(
-        child: Dismissible(
-          key: ValueKey<int>(currentIndex),
-          direction: DismissDirection.horizontal,
-          onDismissed: onDismissed,
-          child: OnboardingSwipeCard(
-            statement: _kStatementKeys[currentIndex].tr(),
-          ),
-        ),
-      ),
-    );
-    return Stack(children: cards);
   }
 }

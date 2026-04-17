@@ -3,6 +3,21 @@
     "name": "Beedle",
     "tagline": "The watchlist that pings you back"
   },
+  "auth": {
+    "title": "Welcome to Beedle",
+    "subtitle": "Sign in to sync your watchlist and unlock your subscription.",
+    "signin_apple": "Continue with Apple",
+    "signin_google": "Continue with Google",
+    "skip": "Continue without an account",
+    "legal": "By continuing, you accept our Terms of Service and Privacy Policy.",
+    "error_network": "Could not connect. Check your network.",
+    "error_provider": "Sign-in failed. Try again.",
+    "settings_section": "Account",
+    "settings_signed_in_as": "Signed in as {email}",
+    "settings_signed_in_anonymous": "Account without email",
+    "settings_signout": "Sign out",
+    "settings_signin": "Sign in"
+  },
   "common": {
     "error": {
       "generic": "Something went wrong",
@@ -210,7 +225,15 @@
     },
     "ob08": {
       "title": "Tu captures quoi en général ?",
-      "subtitle": "On adapte les rappels à tes contenus."
+      "subtitle": "On adapte les rappels à tes contenus.",
+      "options": {
+        "techAi": "Tech / IA",
+        "design": "Design",
+        "business": "Business",
+        "productivity": "Productivité",
+        "creative": "Créatif",
+        "other": "Autre"
+      }
     },
     "ob09": {
       "title": "On te rappelle à quel rythme ?",

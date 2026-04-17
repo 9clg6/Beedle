@@ -3,6 +3,21 @@
     "name": "Beedle",
     "tagline": "La veille qui se rappelle à toi"
   },
+  "auth": {
+    "title": "Bienvenue sur Beedle",
+    "subtitle": "Connecte-toi pour synchroniser ta veille et débloquer ton abonnement.",
+    "signin_apple": "Continuer avec Apple",
+    "signin_google": "Continuer avec Google",
+    "skip": "Continuer sans compte",
+    "legal": "En continuant, tu acceptes nos CGU et notre politique de confidentialité.",
+    "error_network": "Connexion impossible. Vérifie ton réseau.",
+    "error_provider": "Connexion échouée. Réessaye.",
+    "settings_section": "Compte",
+    "settings_signed_in_as": "Connecté en tant que {email}",
+    "settings_signed_in_anonymous": "Compte sans email",
+    "settings_signout": "Se déconnecter",
+    "settings_signin": "Se connecter"
+  },
   "common": {
     "error": {
       "generic": "Une erreur est survenue",
@@ -209,7 +224,15 @@
     },
     "ob08": {
       "title": "Tu captures quoi en général ?",
-      "subtitle": "On adapte les rappels à tes contenus."
+      "subtitle": "On adapte les rappels à tes contenus.",
+      "options": {
+        "techAi": "Tech / IA",
+        "design": "Design",
+        "business": "Business",
+        "productivity": "Productivité",
+        "creative": "Créatif",
+        "other": "Autre"
+      }
     },
     "ob09": {
       "title": "On te rappelle à quel rythme ?",

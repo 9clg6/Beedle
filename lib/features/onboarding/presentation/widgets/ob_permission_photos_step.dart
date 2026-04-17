@@ -1,5 +1,6 @@
 import 'package:beedle/features/onboarding/presentation/screens/onboarding.state.dart';
 import 'package:beedle/features/onboarding/presentation/screens/onboarding.view_model.dart';
+import 'package:beedle/features/onboarding/presentation/widgets/ob_bullet.dart';
 import 'package:beedle/generated/locale_keys.g.dart';
 import 'package:beedle/presentation/theme/app_colors.dart';
 import 'package:beedle/presentation/theme/calm_tokens.dart';
@@ -57,63 +58,44 @@ class OnboardingPermissionPhotosStep extends ConsumerWidget {
           ),
           const Gap(CalmSpace.s7),
           for (final String k in _kBulletKeys) ...<Widget>[
-            _Bullet(text: k.tr()),
+            ObBullet(text: k.tr()),
             const Gap(CalmSpace.s3),
           ],
           const Gap(CalmSpace.s7),
-          SquircleButton(
+          Semantics(
             label: LocaleKeys.onboarding_ob10_cta_allow.tr(),
-            icon: state.photosGranted
-                ? Icons.check_rounded
-                : Icons.photo_library_rounded,
-            variant: state.photosGranted
-                ? SquircleButtonVariant.secondary
-                : SquircleButtonVariant.primary,
-            expand: true,
-            onPressed: state.photosGranted
-                ? () => ref.read(onboardingViewModelProvider.notifier).next()
-                : () => ref
-                      .read(onboardingViewModelProvider.notifier)
-                      .requestPhotos(),
+            button: true,
+            child: SquircleButton(
+              label: LocaleKeys.onboarding_ob10_cta_allow.tr(),
+              icon: state.photosGranted
+                  ? Icons.check_rounded
+                  : Icons.photo_library_rounded,
+              variant: state.photosGranted
+                  ? SquircleButtonVariant.secondary
+                  : SquircleButtonVariant.primary,
+              expand: true,
+              onPressed: state.photosGranted
+                  ? () => ref.read(onboardingViewModelProvider.notifier).next()
+                  : () => ref
+                        .read(onboardingViewModelProvider.notifier)
+                        .requestPhotos(),
+            ),
           ),
           const Gap(CalmSpace.s2),
           if (!state.photosGranted)
-            SquircleButton(
+            Semantics(
               label: LocaleKeys.onboarding_ob10_cta_skip.tr(),
-              variant: SquircleButtonVariant.ghost,
-              expand: true,
-              onPressed: () =>
-                  ref.read(onboardingViewModelProvider.notifier).next(),
+              button: true,
+              child: SquircleButton(
+                label: LocaleKeys.onboarding_ob10_cta_skip.tr(),
+                variant: SquircleButtonVariant.ghost,
+                expand: true,
+                onPressed: () =>
+                    ref.read(onboardingViewModelProvider.notifier).next(),
+              ),
             ),
         ],
       ),
-    );
-  }
-}
-
-class _Bullet extends StatelessWidget {
-  const _Bullet({required this.text});
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    final TextTheme textTheme = Theme.of(context).textTheme;
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        const Icon(
-          Icons.check_circle_outline,
-          color: AppColors.ember,
-          size: 18,
-        ),
-        const Gap(CalmSpace.s3),
-        Expanded(
-          child: Text(
-            text,
-            style: textTheme.bodyMedium?.copyWith(color: AppColors.ink),
-          ),
-        ),
-      ],
     );
   }
 }

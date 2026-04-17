@@ -91,7 +91,9 @@ class _OnboardingViralMomentStepState
       final File file = File('${dir.path}/beedle-onboarding-preview.png');
       await file.writeAsBytes(bytes.buffer.asUint8List());
 
-      // sharePositionOrigin avoids the iPad crash described in plan R4.
+      // Async gap above (toImage / toByteData / writeAsBytes) — re-check
+      // mounted before touching `context` to compute the iPad popover anchor.
+      if (!mounted) return;
       final RenderBox? box = context.findRenderObject() as RenderBox?;
       await Share.shareXFiles(
         <XFile>[XFile(file.path)],

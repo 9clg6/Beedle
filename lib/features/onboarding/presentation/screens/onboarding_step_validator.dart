@@ -1,5 +1,11 @@
 import 'package:beedle/features/onboarding/presentation/screens/onboarding.state.dart';
 
+/// Nombre total d'écrans dans le flow questionnaire (indices 0..14).
+const int kOnboardingTotalScreens = 15;
+
+/// Index du dernier écran (cap pour [`OnboardingViewModel.next()`]).
+const int kOnboardingLastIndex = kOnboardingTotalScreens - 1;
+
 /// Indices "full immersion" — pas de NavBar, l'écran auto-pilote l'avance.
 ///
 /// - 0  : Welcome → CTA dans la page
