@@ -5,6 +5,8 @@ import 'package:beedle/domain/enum/onboarding_goal.enum.dart';
 import 'package:beedle/domain/enum/pain_point.enum.dart';
 import 'package:beedle/domain/repositories/user_preferences.repository.dart';
 import 'package:beedle/domain/services/analytics.service.dart';
+import 'package:beedle/features/onboarding/data/onboarding_baked_cards.provider.dart';
+import 'package:beedle/features/onboarding/data/onboarding_baked_cards.repository.dart';
 import 'package:beedle/features/onboarding/presentation/screens/onboarding.view_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_riverpod/misc.dart' show Override;
@@ -16,9 +18,13 @@ class _MockUserPreferencesRepository extends Mock
 
 class _MockAnalyticsService extends Mock implements AnalyticsService {}
 
+class _MockBakedCardsRepository extends Mock
+    implements OnboardingBakedCardsRepository {}
+
 ProviderContainer _buildContainer({
   UserPreferencesRepository? prefsRepo,
   AnalyticsService? analytics,
+  OnboardingBakedCardsRepository? bakedCards,
 }) {
   return ProviderContainer(
     overrides: <Override>[
@@ -26,6 +32,8 @@ ProviderContainer _buildContainer({
         userPreferencesRepositoryProvider.overrideWithValue(prefsRepo),
       if (analytics != null)
         analyticsServiceProvider.overrideWithValue(analytics),
+      if (bakedCards != null)
+        onboardingBakedCardsRepositoryProvider.overrideWithValue(bakedCards),
     ],
   );
 }
@@ -182,15 +190,18 @@ void main() {
       final _MockUserPreferencesRepository prefsRepo =
           _MockUserPreferencesRepository();
       final _MockAnalyticsService analytics = _MockAnalyticsService();
+      final _MockBakedCardsRepository bakedCards = _MockBakedCardsRepository();
 
       when(() => prefsRepo.save(any())).thenAnswer((_) async {});
       when(
         () => analytics.track(any(), properties: any(named: 'properties')),
       ).thenAnswer((_) async {});
+      when(bakedCards.persistAll).thenAnswer((_) async => 3);
 
       final ProviderContainer c = _buildContainer(
         prefsRepo: prefsRepo,
         analytics: analytics,
+        bakedCards: bakedCards,
       );
       addTearDown(c.dispose);
       final OnboardingViewModel vm = c.read(
@@ -206,6 +217,7 @@ void main() {
       await vm.finishOnboarding();
 
       verify(() => prefsRepo.save(any())).called(1);
+      verify(bakedCards.persistAll).called(1);
 
       final VerificationResult capture = verify(
         () => analytics.track(
@@ -219,21 +231,25 @@ void main() {
       expect(payload['goal'], 'stayAIUpToDate');
       expect(payload['pain_points_count'], 2);
       expect(payload['demo_completed'], isTrue);
+      expect(payload['baked_cards_persisted'], 3);
     });
 
     test('clears isSubmitting when complete', () async {
       final _MockUserPreferencesRepository prefsRepo =
           _MockUserPreferencesRepository();
       final _MockAnalyticsService analytics = _MockAnalyticsService();
+      final _MockBakedCardsRepository bakedCards = _MockBakedCardsRepository();
 
       when(() => prefsRepo.save(any())).thenAnswer((_) async {});
       when(
         () => analytics.track(any(), properties: any(named: 'properties')),
       ).thenAnswer((_) async {});
+      when(bakedCards.persistAll).thenAnswer((_) async => 3);
 
       final ProviderContainer c = _buildContainer(
         prefsRepo: prefsRepo,
         analytics: analytics,
+        bakedCards: bakedCards,
       );
       addTearDown(c.dispose);
       final OnboardingViewModel vm = c.read(

@@ -1,10 +1,10 @@
-import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data' show ByteData;
 import 'dart:ui' as ui;
 
-import 'package:beedle/domain/entities/onboarding_sample_card.entity.dart';
-import 'package:beedle/features/onboarding/presentation/screens/onboarding.state.dart';
+import 'package:beedle/domain/entities/card.entity.dart';
+import 'package:beedle/domain/enum/card_intent.enum.dart';
+import 'package:beedle/features/onboarding/data/onboarding_baked_cards.provider.dart';
 import 'package:beedle/features/onboarding/presentation/screens/onboarding.view_model.dart';
 import 'package:beedle/generated/locale_keys.g.dart';
 import 'package:beedle/presentation/theme/app_colors.dart';
@@ -15,19 +15,17 @@ import 'package:beedle/presentation/widgets/squircle_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/services.dart' show rootBundle;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
-const String _kCardsJsonAsset = 'assets/onboarding/samples/cards.json';
-const int _kPreviewCount = 3;
-
-/// Écran 14 — Viral moment (full-immersion, share PNG export).
+/// Écran 14 — Viral moment (full-immersion).
 ///
-/// Charge `cards.json`, projette les cards gardées dans le demo step
-/// (capped à 3) dans une stack visuelle. Le bouton *Partager* capture
+/// Affiche les 3 fiches qui seront persistées dans la bibliothèque
+/// (chargées via `OnboardingBakedCardsRepository.loadPreview()`,
+/// `withEmbedding: false` — l'embedding est calculé seulement à
+/// `finishOnboarding()` côté ViewModel). Le bouton *Partager* capture
 /// la stack via `RepaintBoundary.toImage()` puis lance le native share
 /// sheet via `share_plus`.
 class OnboardingViralMomentStep extends ConsumerStatefulWidget {
@@ -41,33 +39,10 @@ class OnboardingViralMomentStep extends ConsumerStatefulWidget {
 class _OnboardingViralMomentStepState
     extends ConsumerState<OnboardingViralMomentStep> {
   final GlobalKey _previewKey = GlobalKey();
-  late final Future<List<OnboardingSampleCard>> _cardsFuture =
-      _loadSampleCards();
+  late final Future<List<CardEntity>> _cardsFuture = ref
+      .read(onboardingBakedCardsRepositoryProvider)
+      .loadPreview();
   bool _sharing = false;
-
-  Future<List<OnboardingSampleCard>> _loadSampleCards() async {
-    final String raw = await rootBundle.loadString(_kCardsJsonAsset);
-    final List<dynamic> entries = json.decode(raw) as List<dynamic>;
-    return entries
-        .map(
-          (dynamic e) =>
-              OnboardingSampleCard.fromJson(e as Map<String, dynamic>),
-        )
-        .toList();
-  }
-
-  List<OnboardingSampleCard> _selectKept(
-    List<OnboardingSampleCard> all,
-    Set<int> keptIndices,
-  ) {
-    final List<int> ordered = keptIndices.toList()..sort();
-    final List<OnboardingSampleCard> picked = <OnboardingSampleCard>[];
-    for (final int idx in ordered) {
-      if (idx >= 0 && idx < all.length) picked.add(all[idx]);
-      if (picked.length == _kPreviewCount) break;
-    }
-    return picked;
-  }
 
   Future<void> _onShare() async {
     if (_sharing) return;
@@ -118,7 +93,6 @@ class _OnboardingViralMomentStepState
 
   @override
   Widget build(BuildContext context) {
-    final OnboardingState state = ref.watch(onboardingViewModelProvider);
     final TextTheme textTheme = Theme.of(context).textTheme;
 
     return Padding(
@@ -151,25 +125,21 @@ class _OnboardingViralMomentStepState
           ),
           const Gap(CalmSpace.s5),
           Expanded(
-            child: FutureBuilder<List<OnboardingSampleCard>>(
+            child: FutureBuilder<List<CardEntity>>(
               future: _cardsFuture,
               builder:
                   (
                     BuildContext context,
-                    AsyncSnapshot<List<OnboardingSampleCard>> snap,
+                    AsyncSnapshot<List<CardEntity>> snap,
                   ) {
                     if (!snap.hasData) {
                       return const Center(
                         child: CircularProgressIndicator(color: AppColors.ink),
                       );
                     }
-                    final List<OnboardingSampleCard> picks = _selectKept(
-                      snap.data!,
-                      state.demoSwipedRightIndices,
-                    );
                     return RepaintBoundary(
                       key: _previewKey,
-                      child: _CardStack(cards: picks),
+                      child: _CardStack(cards: snap.data!),
                     );
                   },
             ),
@@ -199,7 +169,7 @@ class _OnboardingViralMomentStepState
 class _CardStack extends StatelessWidget {
   const _CardStack({required this.cards});
 
-  final List<OnboardingSampleCard> cards;
+  final List<CardEntity> cards;
 
   @override
   Widget build(BuildContext context) {
@@ -215,7 +185,7 @@ class _CardStack extends StatelessWidget {
 
     final List<Widget> stack = <Widget>[];
     for (int i = cards.length - 1; i >= 0; i--) {
-      final OnboardingSampleCard card = cards[i];
+      final CardEntity card = cards[i];
       stack.add(
         Positioned.fill(
           top: i * 16.0,
@@ -232,7 +202,7 @@ class _CardStack extends StatelessWidget {
 class _OnboardingPreviewCard extends StatelessWidget {
   const _OnboardingPreviewCard({required this.card});
 
-  final OnboardingSampleCard card;
+  final CardEntity card;
 
   @override
   Widget build(BuildContext context) {
@@ -243,7 +213,7 @@ class _OnboardingPreviewCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Text(
-            card.intent.toUpperCase(),
+            _intentLabel(card.intent),
             style: textTheme.labelSmall?.copyWith(color: AppColors.ember),
           ),
           const Gap(CalmSpace.s2),
@@ -261,26 +231,40 @@ class _OnboardingPreviewCard extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
           ),
           const Spacer(),
-          Row(
-            children: <Widget>[
-              const Icon(
-                Icons.arrow_forward_rounded,
-                size: 16,
-                color: AppColors.ember,
-              ),
-              const Gap(CalmSpace.s2),
-              Expanded(
-                child: Text(
-                  card.actionLabel,
-                  style: textTheme.labelSmall?.copyWith(color: AppColors.ink),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-            ],
-          ),
+          if (card.tags.isNotEmpty)
+            Wrap(
+              spacing: CalmSpace.s2,
+              runSpacing: CalmSpace.s2,
+              children: <Widget>[
+                for (final String tag in card.tags.take(3))
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: CalmSpace.s3,
+                      vertical: CalmSpace.s1,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColors.glassSoft,
+                      borderRadius: BorderRadius.circular(CalmRadius.pill),
+                    ),
+                    child: Text(
+                      '#$tag',
+                      style: textTheme.labelSmall?.copyWith(
+                        color: AppColors.neutral6,
+                      ),
+                    ),
+                  ),
+              ],
+            ),
         ],
       ),
     );
+  }
+
+  String _intentLabel(CardIntent intent) {
+    return switch (intent) {
+      CardIntent.apply => 'À TESTER',
+      CardIntent.read => 'À LIRE',
+      CardIntent.reference => 'DOC',
+    };
   }
 }

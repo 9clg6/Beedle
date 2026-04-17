@@ -1,0 +1,16 @@
+{
+  "title": "Enhancements in OpenClaw for GPT-5.x",
+  "summary": "Peter Steinberger discusses two new experiments in OpenClaw aimed at improving GPT-5.x performance by addressing its limitations.",
+  "fullContent": "> @steipete on X\n\n## Two Experiments in OpenClaw\n\nPeter Steinberger shares two experiments in the next version of OpenClaw to tackle some \"GPT is lazy\" issues:\n\n### 1) Strict Mode\n\n```javascript\nagents.defaults.embeddedPi.executionContract = \"strict-agentic\"\n```\n\nThis configuration instructs GPT-5.x to continue working by reading more code, calling tools, making changes, or returning a real blocker instead of stopping at \"here's the plan.\"  \n[Read more about it here.](https://docs.openclaw.ai/providers/open...)\n\n### 2) Native Codex as the OpenClaw Harness\n\n```javascript\nplugins.entries.codex.enabled = true\nagents.defaults.model = \"codex/gpt-5.4\"\nagents.defaults.embeddedHarness = { runtime: \"codex\", fallback: \"none\" }\n```\n\nIn this setup, Codex manages threads, resumes tasks, compacts data, and executes on the app server.  \n[Learn more about Codex here.](https://docs.openclaw.ai/plugins/codex-...)\n\n### Plugin Harnesses\n\nHarnesses can now be plugins, making it easy to replace the default Pi harness with alternatives like Anthropic's SDK or any custom solution. While this won't automatically enable Claude subscriptions, it provides a useful way to compare different implementations.  \nUsing Codex as a harness will likely yield interesting results.",
+  "level": "intermediate",
+  "intent": "read",
+  "tags": [
+    "OpenClaw",
+    "GPT-5",
+    "Codex",
+    "AI",
+    "Plugins"
+  ],
+  "language": "en",
+  "teaserHook": "Peter Steinberger introduces two key experiments in OpenClaw to enhance GPT-5.x functionality."
+}

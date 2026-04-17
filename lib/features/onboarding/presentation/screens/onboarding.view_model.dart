@@ -5,6 +5,7 @@ import 'package:beedle/domain/enum/content_category.enum.dart';
 import 'package:beedle/domain/enum/onboarding_goal.enum.dart';
 import 'package:beedle/domain/enum/pain_point.enum.dart';
 import 'package:beedle/domain/services/analytics.service.dart';
+import 'package:beedle/features/onboarding/data/onboarding_baked_cards.provider.dart';
 import 'package:beedle/features/onboarding/presentation/screens/onboarding.state.dart';
 import 'package:beedle/features/onboarding/presentation/screens/onboarding_step_validator.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -134,6 +135,15 @@ class OnboardingViewModel extends _$OnboardingViewModel {
       );
       await ref.read(userPreferencesRepositoryProvider).save(prefs);
 
+      // Persiste les 3 fiches baked en bibliothèque (idempotent grâce
+      // aux UUID v5 déterministes) — l'utilisateur arrive sur Home avec
+      // sa "mini-bibliothèque" déjà peuplée. Best-effort : si le call
+      // embedding échoue (offline), l'onboarding ne crashe pas et la
+      // Home affiche l'empty state habituel.
+      final int persistedCount = await ref
+          .read(onboardingBakedCardsRepositoryProvider)
+          .persistAll();
+
       // Analytics — payload aligné sur §4.14 du blueprint.
       await ref
           .read(analyticsServiceProvider)
@@ -149,6 +159,7 @@ class OnboardingViewModel extends _$OnboardingViewModel {
               'photos_granted': state.photosGranted,
               'notifications_granted': state.notificationsGranted,
               'demo_completed': state.demoCompleted,
+              'baked_cards_persisted': persistedCount,
             },
           );
     } finally {
