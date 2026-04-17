@@ -54,7 +54,7 @@ class OnboardingWelcomeStep extends ConsumerWidget {
             child: ClipRRect(
               borderRadius: BorderRadius.circular(CalmRadius.xl2),
               child: Image.asset(
-                'assets/onboarding/home-preview.png',
+                'assets/onboarding/mockup-home.png',
                 fit: BoxFit.contain,
                 errorBuilder: (_, _, _) => const SizedBox.shrink(),
               ),

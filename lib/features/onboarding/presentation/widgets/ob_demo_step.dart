@@ -1,44 +1,33 @@
+import 'dart:async';
+
 import 'package:beedle/features/onboarding/presentation/screens/onboarding.state.dart';
 import 'package:beedle/features/onboarding/presentation/screens/onboarding.view_model.dart';
-import 'package:beedle/features/onboarding/presentation/widgets/demo_sample_card.dart';
-import 'package:beedle/features/onboarding/presentation/widgets/ob_swipe_deck.dart';
 import 'package:beedle/generated/locale_keys.g.dart';
 import 'package:beedle/presentation/theme/app_colors.dart';
 import 'package:beedle/presentation/theme/calm_tokens.dart';
+import 'package:beedle/presentation/widgets/squircle_button.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 
-/// 5 samples — l'index correspond à `assets/onboarding/samples/cards.json`.
-const List<({String asset, String title})> _kSamples =
-    <({String asset, String title})>[
-      (
-        asset: 'assets/onboarding/samples/sample-prompt-eval.png',
-        title: 'Évalue n\'importe quel LLM en 30 secondes',
-      ),
-      (
-        asset: 'assets/onboarding/samples/sample-claude-code-skills.png',
-        title: 'Claude Code Skills, mode d\'emploi',
-      ),
-      (
-        asset: 'assets/onboarding/samples/sample-figma-autolayout.png',
-        title: 'Figma Auto-layout : le pattern qui change tout',
-      ),
-      (
-        asset: 'assets/onboarding/samples/sample-dart-async.png',
-        title: 'Dart async : isolate vs compute()',
-      ),
-      (
-        asset: 'assets/onboarding/samples/sample-raycast-cmd.png',
-        title: 'Raycast : 5 commandes que tu utiliseras tous les jours',
-      ),
-    ];
+/// Durée de la simulation de digestion (illusion de traitement IA).
+const Duration _kDigestDuration = Duration(milliseconds: 1800);
 
-/// Écran 13 — Demo (5 sample cards à swipe-keep).
+const String _kSourceAsset = 'assets/onboarding/demo-source-linkedin.png';
+const String _kResultAsset = 'assets/onboarding/mockup-card-detail.png';
+
+enum _DemoPhase { source, digesting, result }
+
+/// Écran 13 — Demo simulée 1-tap.
 ///
-/// Validator gate : `demoSwipedRightIndices.length >= 3`. L'utilisateur
-/// peut swipe les 5, le NavBar débloque *Continuer* dès le 3e gardé.
+/// Affiche un faux screenshot LinkedIn (la "source"), un bouton CTA pour
+/// déclencher la digestion, puis un mockup iPhone Card Detail (le
+/// "résultat"). L'illusion de traitement IA est faite via un cross-fade
+/// + un loader sur ~1.8 s.
+///
+/// Validator : marque `demoCompleted = true` au tap du CTA → débloque
+/// *Continuer* dans la NavBar.
 class OnboardingDemoStep extends ConsumerStatefulWidget {
   const OnboardingDemoStep({super.key});
 
@@ -47,22 +36,38 @@ class OnboardingDemoStep extends ConsumerStatefulWidget {
 }
 
 class _OnboardingDemoStepState extends ConsumerState<OnboardingDemoStep> {
-  int _currentCardIndex = 0;
+  _DemoPhase _phase = _DemoPhase.source;
+  Timer? _timer;
 
-  void _onDismissed(DismissDirection direction) {
-    final bool keep = direction == DismissDirection.startToEnd;
-    final int swiped = _currentCardIndex;
-    ref
-        .read(onboardingViewModelProvider.notifier)
-        .recordDemoSwipe(swiped, keep: keep);
-    setState(() => _currentCardIndex++);
+  @override
+  void initState() {
+    super.initState();
+    // Si l'utilisateur revient sur l'écran après l'avoir déjà vu,
+    // on remontre directement le résultat plutôt que de relancer
+    // la simulation depuis zéro.
+    final OnboardingState state = ref.read(onboardingViewModelProvider);
+    if (state.demoCompleted) _phase = _DemoPhase.result;
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _onDigest() {
+    if (_phase != _DemoPhase.source) return;
+    setState(() => _phase = _DemoPhase.digesting);
+    _timer = Timer(_kDigestDuration, () {
+      if (!mounted) return;
+      ref.read(onboardingViewModelProvider.notifier).markDemoCompleted();
+      setState(() => _phase = _DemoPhase.result);
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    final OnboardingState state = ref.watch(onboardingViewModelProvider);
     final TextTheme textTheme = Theme.of(context).textTheme;
-    final int kept = state.demoSwipedRightIndices.length;
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(
@@ -72,49 +77,183 @@ class _OnboardingDemoStepState extends ConsumerState<OnboardingDemoStep> {
         CalmSpace.s5,
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Text(
             LocaleKeys.onboarding_ob13_title.tr(),
             style: textTheme.headlineMedium?.copyWith(color: AppColors.ink),
+            textAlign: TextAlign.center,
           ),
           const Gap(CalmSpace.s3),
           Text(
-            LocaleKeys.onboarding_ob13_subtitle.tr(),
+            _captionFor(_phase),
             style: textTheme.bodyMedium?.copyWith(color: AppColors.neutral6),
-          ),
-          const Gap(CalmSpace.s3),
-          Text(
-            LocaleKeys.onboarding_ob13_progress.tr(
-              namedArgs: <String, String>{'kept': '$kept'},
-            ),
-            style: textTheme.labelSmall?.copyWith(color: AppColors.ember),
+            textAlign: TextAlign.center,
           ),
           const Gap(CalmSpace.s5),
           Expanded(
-            child: ObSwipeDeck(
-              total: _kSamples.length,
-              currentIndex: _currentCardIndex,
-              onDismissed: _onDismissed,
-              emptyChild: Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(CalmSpace.s7),
-                  child: Text(
-                    'Toutes les cards ont été passées en revue.',
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: AppColors.neutral6,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-              cardBuilder: (BuildContext _, int idx) => DemoSampleCard(
-                assetPath: _kSamples[idx].asset,
-                title: _kSamples[idx].title,
-              ),
+            child: _DemoStage(phase: _phase),
+          ),
+          const Gap(CalmSpace.s5),
+          if (_phase == _DemoPhase.source)
+            SquircleButton(
+              label: LocaleKeys.onboarding_ob13_cta_digest.tr(),
+              icon: Icons.auto_awesome_rounded,
+              variant: SquircleButtonVariant.primary,
+              expand: true,
+              onPressed: _onDigest,
             ),
+        ],
+      ),
+    );
+  }
+
+  String _captionFor(_DemoPhase phase) {
+    return switch (phase) {
+      _DemoPhase.source => LocaleKeys.onboarding_ob13_subtitle.tr(),
+      _DemoPhase.digesting => LocaleKeys.onboarding_ob13_digesting.tr(),
+      _DemoPhase.result => LocaleKeys.onboarding_ob13_result_caption.tr(),
+    };
+  }
+}
+
+class _DemoStage extends StatelessWidget {
+  const _DemoStage({required this.phase});
+
+  final _DemoPhase phase;
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedSwitcher(
+      duration: CalmDuration.expressive,
+      switchInCurve: CalmCurves.emphasized,
+      switchOutCurve: CalmCurves.standard,
+      transitionBuilder: (Widget child, Animation<double> animation) {
+        return FadeTransition(
+          opacity: animation,
+          child: ScaleTransition(
+            scale: Tween<double>(begin: 0.96, end: 1).animate(animation),
+            child: child,
+          ),
+        );
+      },
+      child: switch (phase) {
+        _DemoPhase.source => const _StageImage(
+          key: ValueKey<String>('source'),
+          assetPath: _kSourceAsset,
+        ),
+        _DemoPhase.digesting => const _DigestingOverlay(
+          key: ValueKey<String>('digesting'),
+        ),
+        _DemoPhase.result => const _StageImage(
+          key: ValueKey<String>('result'),
+          assetPath: _kResultAsset,
+        ),
+      },
+    );
+  }
+}
+
+class _StageImage extends StatelessWidget {
+  const _StageImage({required this.assetPath, super.key});
+
+  final String assetPath;
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Image.asset(
+        assetPath,
+        fit: BoxFit.contain,
+        errorBuilder: (_, _, _) => const _AssetMissingPlaceholder(),
+      ),
+    );
+  }
+}
+
+class _DigestingOverlay extends StatelessWidget {
+  const _DigestingOverlay({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          const _PulseGlyph(),
+          const Gap(CalmSpace.s5),
+          Text(
+            LocaleKeys.onboarding_ob13_digesting.tr(),
+            style: Theme.of(
+              context,
+            ).textTheme.labelMedium?.copyWith(color: AppColors.ember),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class _PulseGlyph extends StatefulWidget {
+  const _PulseGlyph();
+
+  @override
+  State<_PulseGlyph> createState() => _PulseGlyphState();
+}
+
+class _PulseGlyphState extends State<_PulseGlyph>
+    with SingleTickerProviderStateMixin {
+  late final AnimationController _controller = AnimationController(
+    vsync: this,
+    duration: const Duration(milliseconds: 900),
+  )..repeat(reverse: true);
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ScaleTransition(
+      scale: Tween<double>(begin: 0.9, end: 1.1).animate(
+        CurvedAnimation(parent: _controller, curve: CalmCurves.soft),
+      ),
+      child: Container(
+        width: 80,
+        height: 80,
+        decoration: BoxDecoration(
+          color: AppColors.ember.withValues(alpha: 0.12),
+          shape: BoxShape.circle,
+        ),
+        child: const Icon(
+          Icons.auto_awesome_rounded,
+          color: AppColors.ember,
+          size: 40,
+        ),
+      ),
+    );
+  }
+}
+
+class _AssetMissingPlaceholder extends StatelessWidget {
+  const _AssetMissingPlaceholder();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColors.glassSoft,
+        borderRadius: BorderRadius.circular(CalmRadius.xl2),
+        border: Border.all(color: AppColors.neutral3),
+      ),
+      child: const Center(
+        child: Icon(
+          Icons.image_outlined,
+          color: AppColors.neutral3,
+          size: 48,
+        ),
       ),
     );
   }

@@ -41,7 +41,7 @@ abstract final class OnboardingStepValidator {
       1 => state.goal != null,
       2 => state.painPoints.isNotEmpty,
       7 => state.contentCategories.isNotEmpty,
-      12 => state.demoSwipedRightIndices.length >= 3,
+      12 => state.demoCompleted,
       _ => true,
     };
   }

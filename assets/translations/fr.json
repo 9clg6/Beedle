@@ -276,9 +276,13 @@
       }
     },
     "ob13": {
-      "title": "Choisis 3 fiches qui te parlent",
-      "subtitle": "Glisse à droite pour garder, à gauche pour passer.",
-      "progress": "{kept}/3 gardées"
+      "title": "Vois Beedle digérer un screenshot",
+      "subtitle": "Tape le bouton et regarde une capture LinkedIn devenir une fiche.",
+      "source_caption": "Un screenshot LinkedIn comme tu en captures tous les jours",
+      "cta_digest": "Digérer ce screenshot",
+      "digesting": "Digestion en cours…",
+      "result_caption": "Et voilà — une fiche prête, classée et résumée.",
+      "cta_continue": "Continuer"
     },
     "ob14": {
       "eyebrow": "TES 3 PREMIÈRES FICHES",

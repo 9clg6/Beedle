@@ -11,13 +11,12 @@ référencés par les samples PNGs (alignement title/PNG par nom de fichier).
 
 | Fichier                                 | Spec                               | Status |
 |-----------------------------------------|------------------------------------|--------|
-| `home-preview.png`                      | 9:16 · ~1080×1920 · < 300 KB · capture Home peuplée | TODO-USER |
-| `samples/sample-prompt-eval.png`        | 9:16 · ~1080×1920 · < 300 KB · screenshot ou mockup | TODO-USER |
-| `samples/sample-claude-code-skills.png` | idem                               | TODO-USER |
-| `samples/sample-figma-autolayout.png`   | idem                               | TODO-USER |
-| `samples/sample-dart-async.png`         | idem                               | TODO-USER |
-| `samples/sample-raycast-cmd.png`        | idem                               | TODO-USER |
-| `samples/cards.json`                    | déjà rempli avec 5 entrées         | OK ✅   |
+| `mockup-home.png`                       | mockup iPhone Home (avec frame)    | **TODO-USER** |
+| `mockup-card-detail.png`                | mockup iPhone Card Detail (avec frame) | **TODO-USER** |
+| `demo-source-linkedin.png`              | faux screenshot LinkedIn (source de la démo simulée) | **TODO-USER** |
+| `home-preview.png`                      | déprécié — remplacé par `mockup-home.png` | DEPRECATED |
+| `samples/cards.json`                    | déjà rempli (preview cards Viral)  | OK ✅   |
+| `samples/sample-*.png`                  | déprécié — Tinder-demo supprimé    | DEPRECATED |
 
 ## Comment générer les samples
 
