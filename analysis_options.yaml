@@ -10,13 +10,17 @@ analyzer:
     - "lib/objectbox.g.dart"
   errors:
     invalid_annotation_target: ignore
+    lines_longer_than_80_chars: ignore
     todo: info
 
 linter:
   rules:
+    document_ignores: false
     public_member_api_docs: false
     prefer_single_quotes: true
     always_specify_types: true
+    avoid_types_on_closure_parameters: false
+    omit_local_variable_types: false
     always_use_package_imports: true
     require_trailing_commas: true
     avoid_print: true

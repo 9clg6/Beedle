@@ -1,12 +1,15 @@
 plugins {
     id("com.android.application")
+    // START: FlutterFire Configuration
+    id("com.google.gms.google-services")
+    // END: FlutterFire Configuration
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
 
 android {
-    namespace = "com.beedle.app"
+    namespace = "fr.yellowstoneapps.beedle"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -20,7 +23,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.beedle.app"
+        applicationId = "fr.yellowstoneapps.beedle"
         minSdk = 26 // Android 8.0 Oreo — cf. NFR-006
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

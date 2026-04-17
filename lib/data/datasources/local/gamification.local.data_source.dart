@@ -3,7 +3,6 @@ import 'package:beedle/data/model/local/activity_day.local.model.dart';
 import 'package:beedle/data/model/local/gamification_state.local.model.dart';
 import 'package:beedle/data/model/local/weekly_challenge.local.model.dart';
 import 'package:beedle/objectbox.g.dart';
-import 'package:objectbox/objectbox.dart';
 
 abstract interface class GamificationLocalDataSource {
   Future<GamificationStateLocalModel> loadState();
@@ -20,20 +19,25 @@ abstract interface class GamificationLocalDataSource {
   Future<void> wipe();
 }
 
-final class GamificationLocalDataSourceImpl implements GamificationLocalDataSource {
-  GamificationLocalDataSourceImpl({required ObjectBoxStore store}) : _store = store;
+final class GamificationLocalDataSourceImpl
+    implements GamificationLocalDataSource {
+  GamificationLocalDataSourceImpl({required ObjectBoxStore store})
+    : _store = store;
 
   final ObjectBoxStore _store;
 
-  Box<GamificationStateLocalModel> get _stateBox => _store.store.box<GamificationStateLocalModel>();
-  Box<ActivityDayLocalModel> get _activityBox => _store.store.box<ActivityDayLocalModel>();
-  Box<WeeklyChallengeLocalModel> get _challengeBox => _store.store.box<WeeklyChallengeLocalModel>();
+  Box<GamificationStateLocalModel> get _stateBox =>
+      _store.store.box<GamificationStateLocalModel>();
+  Box<ActivityDayLocalModel> get _activityBox =>
+      _store.store.box<ActivityDayLocalModel>();
+  Box<WeeklyChallengeLocalModel> get _challengeBox =>
+      _store.store.box<WeeklyChallengeLocalModel>();
 
   @override
   Future<GamificationStateLocalModel> loadState() async {
-    final existing = _stateBox.get(1);
+    final GamificationStateLocalModel? existing = _stateBox.get(1);
     if (existing != null) return existing;
-    final initial = GamificationStateLocalModel();
+    final GamificationStateLocalModel initial = GamificationStateLocalModel();
     _stateBox.put(initial);
     return initial;
   }
@@ -46,15 +50,18 @@ final class GamificationLocalDataSourceImpl implements GamificationLocalDataSour
 
   @override
   Stream<GamificationStateLocalModel> watchState() {
-    return _stateBox.query().watch(triggerImmediately: true).map((query) {
+    return _stateBox.query().watch(triggerImmediately: true).map((
+      Query<GamificationStateLocalModel> query,
+    ) {
       return query.findFirst() ?? GamificationStateLocalModel();
     });
   }
 
   @override
   Future<ActivityDayLocalModel?> activityForDay(DateTime dayMidnight) async {
-    final q =
-        _activityBox.query(ActivityDayLocalModel_.dayEpoch.equalsDate(dayMidnight)).build();
+    final Query<ActivityDayLocalModel> q = _activityBox
+        .query(ActivityDayLocalModel_.dayEpoch.equalsDate(dayMidnight))
+        .build();
     try {
       return q.findFirst();
     } finally {
@@ -64,14 +71,14 @@ final class GamificationLocalDataSourceImpl implements GamificationLocalDataSour
 
   @override
   Future<void> upsertActivity(ActivityDayLocalModel day) async {
-    final existing = await activityForDay(day.dayEpoch);
+    final ActivityDayLocalModel? existing = await activityForDay(day.dayEpoch);
     if (existing != null) day.id = existing.id;
     _activityBox.put(day);
   }
 
   @override
   Future<List<ActivityDayLocalModel>> lastDays(int count) async {
-    final q = _activityBox
+    final Query<ActivityDayLocalModel> q = _activityBox
         .query()
         .order(ActivityDayLocalModel_.dayEpoch, flags: Order.descending)
         .build();
@@ -84,9 +91,12 @@ final class GamificationLocalDataSourceImpl implements GamificationLocalDataSour
   }
 
   @override
-  Future<WeeklyChallengeLocalModel?> challengeByWeekStart(DateTime weekStart) async {
-    final q =
-        _challengeBox.query(WeeklyChallengeLocalModel_.weekStart.equalsDate(weekStart)).build();
+  Future<WeeklyChallengeLocalModel?> challengeByWeekStart(
+    DateTime weekStart,
+  ) async {
+    final Query<WeeklyChallengeLocalModel> q = _challengeBox
+        .query(WeeklyChallengeLocalModel_.weekStart.equalsDate(weekStart))
+        .build();
     try {
       return q.findFirst();
     } finally {
@@ -96,7 +106,9 @@ final class GamificationLocalDataSourceImpl implements GamificationLocalDataSour
 
   @override
   Future<void> saveChallenge(WeeklyChallengeLocalModel challenge) async {
-    final existing = await challengeByWeekStart(challenge.weekStart);
+    final WeeklyChallengeLocalModel? existing = await challengeByWeekStart(
+      challenge.weekStart,
+    );
     if (existing != null) challenge.id = existing.id;
     _challengeBox.put(challenge);
   }

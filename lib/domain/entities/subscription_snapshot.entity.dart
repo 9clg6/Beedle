@@ -17,18 +17,18 @@ abstract class SubscriptionSnapshotEntity with _$SubscriptionSnapshotEntity {
   }) = _SubscriptionSnapshotEntity;
 
   factory SubscriptionSnapshotEntity.initial() => SubscriptionSnapshotEntity(
-        tier: SubscriptionTier.free,
-        lastSyncedAt: DateTime.now(),
-        monthlyGenerationCount: 0,
-        monthlyCycleStart: DateTime(DateTime.now().year, DateTime.now().month),
-      );
+    tier: SubscriptionTier.free,
+    lastSyncedAt: DateTime.now(),
+    monthlyGenerationCount: 0,
+    monthlyCycleStart: DateTime(DateTime.now().year, DateTime.now().month),
+  );
 }
 
 extension SubscriptionSnapshotEntityX on SubscriptionSnapshotEntity {
   bool get isPro => tier.isPro;
 
   bool get isInTrial {
-    final expires = trialExpiresAt;
+    final DateTime? expires = trialExpiresAt;
     if (expires == null) return false;
     return expires.isAfter(DateTime.now());
   }

@@ -14,7 +14,7 @@ abstract class DashboardState with _$DashboardState {
   }) = _DashboardState;
 
   factory DashboardState.initial() => DashboardState(
-        state: GamificationStateEntity.initial(),
-        days: const <ActivityDayEntity>[],
-      );
+    state: GamificationStateEntity.initial(),
+    days: const <ActivityDayEntity>[],
+  );
 }

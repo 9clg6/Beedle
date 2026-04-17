@@ -7,7 +7,7 @@ abstract interface class DataWipeService {
 
 final class WipeAllDataUseCase extends FutureUseCase<void> {
   WipeAllDataUseCase({required DataWipeService dataWipeService})
-      : _service = dataWipeService;
+    : _service = dataWipeService;
 
   final DataWipeService _service;
 

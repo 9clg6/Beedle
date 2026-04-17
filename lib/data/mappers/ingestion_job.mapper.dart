@@ -6,9 +6,10 @@ import 'package:beedle/domain/enum/ingestion_status.enum.dart';
 
 extension IngestionJobLocalModelX on IngestionJobLocalModel {
   IngestionJobEntity toEntity() {
-    final uuids = (jsonDecode(screenshotUuidsJson) as List<dynamic>)
-        .map((dynamic e) => e.toString())
-        .toList();
+    final List<String> uuids =
+        (jsonDecode(screenshotUuidsJson) as List<dynamic>)
+            .map((dynamic e) => e.toString())
+            .toList();
     return IngestionJobEntity(
       uuid: uuid,
       screenshotUuids: uuids,
@@ -24,14 +25,14 @@ extension IngestionJobLocalModelX on IngestionJobLocalModel {
 
 extension IngestionJobEntityToLocalX on IngestionJobEntity {
   IngestionJobLocalModel toLocalModel({int? id}) => IngestionJobLocalModel(
-        id: id ?? 0,
-        uuid: uuid,
-        screenshotUuidsJson: jsonEncode(screenshotUuids),
-        status: status.name,
-        createdAt: createdAt,
-        attempts: attempts,
-        lastError: lastError,
-        cardUuid: cardUuid,
-        completedAt: completedAt,
-      );
+    id: id ?? 0,
+    uuid: uuid,
+    screenshotUuidsJson: jsonEncode(screenshotUuids),
+    status: status.name,
+    createdAt: createdAt,
+    attempts: attempts,
+    lastError: lastError,
+    cardUuid: cardUuid,
+    completedAt: completedAt,
+  );
 }

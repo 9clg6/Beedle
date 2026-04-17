@@ -10,13 +10,13 @@ import 'package:beedle/domain/repositories/gamification.repository.dart';
 
 final class GamificationRepositoryImpl implements GamificationRepository {
   GamificationRepositoryImpl({required GamificationLocalDataSource dataSource})
-      : _dataSource = dataSource;
+    : _dataSource = dataSource;
 
   final GamificationLocalDataSource _dataSource;
 
   @override
   Future<GamificationStateEntity> loadState() async {
-    final local = await _dataSource.loadState();
+    final GamificationStateLocalModel local = await _dataSource.loadState();
     return local.toEntity();
   }
 
@@ -27,13 +27,17 @@ final class GamificationRepositoryImpl implements GamificationRepository {
 
   @override
   Stream<GamificationStateEntity> watchState() {
-    return _dataSource.watchState().map((m) => m.toEntity());
+    return _dataSource.watchState().map(
+      (GamificationStateLocalModel m) => m.toEntity(),
+    );
   }
 
   @override
   Future<ActivityDayEntity> todayActivity() async {
-    final today = _todayMidnight();
-    final local = await _dataSource.activityForDay(today);
+    final DateTime today = _todayMidnight();
+    final ActivityDayLocalModel? local = await _dataSource.activityForDay(
+      today,
+    );
     return local?.toEntity() ?? ActivityDayEntity(day: today);
   }
 
@@ -44,14 +48,15 @@ final class GamificationRepositoryImpl implements GamificationRepository {
 
   @override
   Future<List<ActivityDayEntity>> last(int days) async {
-    final list = await _dataSource.lastDays(days);
-    return list.map((e) => e.toEntity()).toList();
+    final List<ActivityDayLocalModel> list = await _dataSource.lastDays(days);
+    return list.map((ActivityDayLocalModel e) => e.toEntity()).toList();
   }
 
   @override
   Future<WeeklyChallengeEntity?> currentChallenge() async {
-    final weekStart = _currentWeekStart();
-    final local = await _dataSource.challengeByWeekStart(weekStart);
+    final DateTime weekStart = _currentWeekStart();
+    final WeeklyChallengeLocalModel? local = await _dataSource
+        .challengeByWeekStart(weekStart);
     return local?.toEntity();
   }
 
@@ -64,12 +69,12 @@ final class GamificationRepositoryImpl implements GamificationRepository {
   Future<void> wipe() => _dataSource.wipe();
 
   DateTime _todayMidnight() {
-    final now = DateTime.now();
+    final DateTime now = DateTime.now();
     return DateTime(now.year, now.month, now.day);
   }
 
   DateTime _currentWeekStart() {
-    final today = _todayMidnight();
+    final DateTime today = _todayMidnight();
     // weekday = 1..7 (lundi..dimanche)
     return today.subtract(Duration(days: today.weekday - 1));
   }

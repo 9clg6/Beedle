@@ -1,4 +1,4 @@
-package com.example.beedle
+package fr.yellowstoneapps.beedle
 
 import io.flutter.embedding.android.FlutterActivity
 

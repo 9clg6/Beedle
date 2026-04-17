@@ -7,6 +7,7 @@ import 'package:beedle/foundation/routing/app_router.dart';
 import 'package:beedle/generated/locale_keys.g.dart';
 import 'package:beedle/presentation/theme/app_colors.dart';
 import 'package:beedle/presentation/theme/calm_tokens.dart';
+import 'package:beedle/presentation/widgets/calm_back_button.dart';
 import 'package:beedle/presentation/widgets/calm_empty_state.dart';
 import 'package:beedle/presentation/widgets/glass_card.dart';
 import 'package:beedle/presentation/widgets/gradient_background.dart';
@@ -34,16 +35,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final state = ref.watch(searchViewModelProvider);
+    final SearchState state = ref.watch(searchViewModelProvider);
 
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => context.router.maybePop(),
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              color: AppColors.neutral8),
-        ),
+        leadingWidth: 60,
+        leading: const CalmBackButton(),
       ),
       body: GradientBackground(
         child: SafeArea(
@@ -60,8 +58,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                   elevated: false,
                   child: Row(
                     children: <Widget>[
-                      const Icon(Icons.search_rounded,
-                          size: 18, color: AppColors.neutral6),
+                      const Icon(
+                        Icons.search_rounded,
+                        size: 18,
+                        color: AppColors.neutral6,
+                      ),
                       const Gap(CalmSpace.s4),
                       Expanded(
                         child: TextField(
@@ -71,15 +72,13 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                           cursorColor: AppColors.ink,
                           decoration: InputDecoration(
                             hintText: LocaleKeys.search_placeholder.tr(),
-                            hintStyle: Theme.of(context)
-                                .textTheme
-                                .bodyLarge
+                            hintStyle: Theme.of(context).textTheme.bodyLarge
                                 ?.copyWith(color: AppColors.neutral5),
                             border: InputBorder.none,
                             contentPadding: EdgeInsets.zero,
                             isCollapsed: true,
                           ),
-                          onChanged: (value) => ref
+                          onChanged: (String value) => ref
                               .read(searchViewModelProvider.notifier)
                               .updateQuery(value),
                         ),
@@ -112,7 +111,8 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
     if (state.query.isEmpty) {
       return CalmEmptyState(
         title: LocaleKeys.search_placeholder.tr(),
-        body: 'Tape un mot-clé, un concept, une techno. '
+        body:
+            'Tape un mot-clé, un concept, une techno. '
             'Beedle cherche sémantiquement.',
       );
     }
@@ -124,14 +124,14 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       );
     }
     return ListView.separated(
-      itemBuilder: (context, i) {
-        final c = state.results[i];
+      itemBuilder: (BuildContext context, int i) {
+        final CardEntity c = state.results[i];
         return CardGlassTile(
           card: c,
           onTap: () => context.router.push(CardDetailRoute(uuid: c.uuid)),
         );
       },
-      separatorBuilder: (_, __) => const Gap(CalmSpace.s3),
+      separatorBuilder: (_, _) => const Gap(CalmSpace.s3),
       itemCount: state.results.length,
     );
   }

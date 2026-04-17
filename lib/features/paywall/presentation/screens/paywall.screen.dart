@@ -1,8 +1,14 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
+import 'package:beedle/core/providers/auth.provider.dart';
 import 'package:beedle/core/providers/data_providers.dart';
+import 'package:beedle/domain/entities/auth_user.entity.dart';
+import 'package:beedle/foundation/routing/app_router.dart';
 import 'package:beedle/generated/locale_keys.g.dart';
 import 'package:beedle/presentation/theme/app_colors.dart';
 import 'package:beedle/presentation/theme/calm_tokens.dart';
+import 'package:beedle/presentation/widgets/calm_back_button.dart';
 import 'package:beedle/presentation/widgets/calm_badge.dart';
 import 'package:beedle/presentation/widgets/glass_card.dart';
 import 'package:beedle/presentation/widgets/gradient_background.dart';
@@ -18,14 +24,12 @@ class PaywallScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final textTheme = Theme.of(context).textTheme;
+    final TextTheme textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => context.router.maybePop(),
-          icon: const Icon(Icons.close_rounded, color: AppColors.neutral8),
-        ),
+        leadingWidth: 60,
+        leading: const CalmCloseButton(),
       ),
       body: GradientBackground(
         child: SafeArea(
@@ -50,8 +54,7 @@ class PaywallScreen extends ConsumerWidget {
               const Gap(CalmSpace.s4),
               Text(
                 LocaleKeys.paywall_subtitle.tr(),
-                style: textTheme.bodyLarge
-                    ?.copyWith(color: AppColors.neutral6),
+                style: textTheme.bodyLarge?.copyWith(color: AppColors.neutral6),
               ),
               const Gap(CalmSpace.s8),
               // Benefits list — no gradient circles, neutral tokens only.
@@ -87,14 +90,7 @@ class PaywallScreen extends ConsumerWidget {
                 label: LocaleKeys.paywall_trial_cta.tr(),
                 variant: SquircleButtonVariant.mint,
                 expand: true,
-                onPressed: () async {
-                  try {
-                    await ref
-                        .read(subscriptionRepositoryProvider)
-                        .purchase('beedle_pro_yearly');
-                    if (context.mounted) context.router.maybePop();
-                  } on Exception catch (_) {}
-                },
+                onPressed: () => _onTapSubscribe(context, ref),
               ),
               const Gap(CalmSpace.s3),
               SquircleButton(
@@ -110,6 +106,24 @@ class PaywallScreen extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// Gate l'achat sur l'auth : si l'utilisateur est anonyme, on push
+/// `AuthRoute(required: true)` et on retry l'achat au retour si signed-in.
+Future<void> _onTapSubscribe(BuildContext context, WidgetRef ref) async {
+  AuthUserEntity? user = ref.read(currentUserProvider);
+  if (user == null) {
+    await context.router.push(AuthRoute(required: true));
+    if (!context.mounted) return;
+    user = ref.read(currentUserProvider);
+    if (user == null) return; // user a backé sans s'auth
+  }
+  try {
+    await ref
+        .read(subscriptionRepositoryProvider)
+        .purchase('beedle_pro_yearly');
+    if (context.mounted) unawaited(context.router.maybePop());
+  } on Exception catch (_) {}
 }
 
 class _Benefit extends StatelessWidget {
@@ -128,10 +142,9 @@ class _Benefit extends StatelessWidget {
           Expanded(
             child: Text(
               label,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyLarge
-                  ?.copyWith(color: AppColors.neutral8),
+              style: Theme.of(
+                context,
+              ).textTheme.bodyLarge?.copyWith(color: AppColors.neutral8),
             ),
           ),
         ],

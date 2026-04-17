@@ -1,0 +1,31 @@
+{
+  // Configurations Flutter — Beedle.
+  // Trois modes pour équilibrer DX et performance :
+  //   - Debug    : hot reload, breakpoints, mais blur BackdropFilter rame.
+  //   - Profile  : perf quasi-release, hot restart OK, DevTools dispos.
+  //   - Release  : perf max, pas de debug, pour validation finale.
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Beedle — Debug",
+      "type": "dart",
+      "request": "launch",
+      "program": "lib/main.dart",
+      "flutterMode": "debug"
+    },
+    {
+      "name": "Beedle — Profile (perf réaliste)",
+      "type": "dart",
+      "request": "launch",
+      "program": "lib/main.dart",
+      "flutterMode": "profile"
+    },
+    {
+      "name": "Beedle — Release",
+      "type": "dart",
+      "request": "launch",
+      "program": "lib/main.dart",
+      "flutterMode": "release"
+    }
+  ]
+}

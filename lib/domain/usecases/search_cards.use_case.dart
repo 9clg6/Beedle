@@ -8,25 +8,28 @@ import 'package:beedle/foundation/interfaces/future.usecases.dart';
 ///
 /// 1. Calcule l'embedding de la query via EmbeddingsRepository.
 /// 2. Lance une recherche HNSW sur ObjectBox via CardRepository.
-final class SearchCardsUseCase extends FutureUseCaseWithParams<List<CardEntity>, SearchCardsParam> {
+final class SearchCardsUseCase
+    extends FutureUseCaseWithParams<List<CardEntity>, SearchCardsParam> {
   SearchCardsUseCase({
     required CardRepository cardRepository,
     required EmbeddingsRepository embeddingsRepository,
-  })  : _cardRepository = cardRepository,
-        _embeddingsRepository = embeddingsRepository;
+  }) : _cardRepository = cardRepository,
+       _embeddingsRepository = embeddingsRepository;
 
   final CardRepository _cardRepository;
   final EmbeddingsRepository _embeddingsRepository;
 
   @override
   Future<List<CardEntity>> invoke(SearchCardsParam params) async {
-    final query = params.query.trim();
+    final String query = params.query.trim();
     if (query.isEmpty) return <CardEntity>[];
 
     // 1. Sémantique via embeddings (échoue silencieusement si Worker/embeddings down).
     List<CardEntity> semantic = <CardEntity>[];
     try {
-      final queryEmbedding = await _embeddingsRepository.embed(query);
+      final List<double> queryEmbedding = await _embeddingsRepository.embed(
+        query,
+      );
       semantic = await _cardRepository.semanticSearch(
         queryEmbedding: queryEmbedding,
         limit: params.limit,
@@ -38,10 +41,10 @@ final class SearchCardsUseCase extends FutureUseCaseWithParams<List<CardEntity>,
 
     // 2. Keyword fallback — tourne TOUJOURS, dédoublonne avec semantic.
     //    Case-insensitive sur title + summary + fullContent + tags.
-    final all = await _cardRepository.getAll();
-    final q = query.toLowerCase();
-    final keyword = all.where((c) {
-      final haystack = <String>[
+    final List<CardEntity> all = await _cardRepository.getAll();
+    final String q = query.toLowerCase();
+    final List<CardEntity> keyword = all.where((CardEntity c) {
+      final String haystack = <String>[
         c.title,
         c.summary,
         c.fullContent,
@@ -51,9 +54,9 @@ final class SearchCardsUseCase extends FutureUseCaseWithParams<List<CardEntity>,
     }).toList();
 
     // Merge : semantic d'abord (pertinence), puis keyword pour combler.
-    final seen = <String>{};
-    final merged = <CardEntity>[];
-    for (final c in <CardEntity>[...semantic, ...keyword]) {
+    final Set<String> seen = <String>{};
+    final List<CardEntity> merged = <CardEntity>[];
+    for (final CardEntity c in <CardEntity>[...semantic, ...keyword]) {
       if (seen.add(c.uuid)) merged.add(c);
       if (merged.length >= params.limit) break;
     }

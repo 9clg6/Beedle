@@ -5,12 +5,13 @@ enum ContentCategory {
   business,
   productivity,
   creative,
-  other;
+  other
+  ;
 
   static ContentCategory fromString(String? value) {
     if (value == null) return ContentCategory.other;
     return ContentCategory.values.firstWhere(
-      (e) => e.name == value,
+      (ContentCategory e) => e.name == value,
       orElse: () => ContentCategory.other,
     );
   }

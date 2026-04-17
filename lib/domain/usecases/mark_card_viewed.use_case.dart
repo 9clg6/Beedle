@@ -3,12 +3,13 @@ import 'package:beedle/domain/repositories/card.repository.dart';
 import 'package:beedle/domain/services/gamification_engine.service.dart';
 import 'package:beedle/foundation/interfaces/future.usecases.dart';
 
-final class MarkCardViewedUseCase extends FutureUseCaseWithParams<void, String> {
+final class MarkCardViewedUseCase
+    extends FutureUseCaseWithParams<void, String> {
   MarkCardViewedUseCase({
     required CardRepository cardRepository,
     required GamificationEngine gamificationEngine,
-  })  : _cardRepository = cardRepository,
-        _gamificationEngine = gamificationEngine;
+  }) : _cardRepository = cardRepository,
+       _gamificationEngine = gamificationEngine;
 
   final CardRepository _cardRepository;
   final GamificationEngine _gamificationEngine;
@@ -16,7 +17,7 @@ final class MarkCardViewedUseCase extends FutureUseCaseWithParams<void, String> 
   @override
   Future<void> invoke(String cardUuid) async {
     await _cardRepository.markViewed(cardUuid);
-    final card = await _cardRepository.getByUuid(cardUuid);
+    final CardEntity? card = await _cardRepository.getByUuid(cardUuid);
     if (card != null) {
       await _gamificationEngine.onCardViewed(card);
     }

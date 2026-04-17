@@ -1,4 +1,5 @@
 import 'package:beedle/domain/entities/card.entity.dart';
+import 'package:beedle/domain/enum/card_intent.enum.dart';
 
 abstract interface class CardRepository {
   Future<List<CardEntity>> getAll({int? limit, int? offset});
@@ -28,6 +29,10 @@ abstract interface class CardRepository {
 
   /// Marque une Card comme testée.
   Future<void> markTested(String uuid);
+
+  /// Override l'intent par l'user. Met `intentOverridden = true` pour que
+  /// le LLM ne re-classe pas au prochain re-digest (fusion).
+  Future<void> setIntent(String uuid, CardIntent intent);
 
   /// Stream reactif sur les changements de la collection.
   Stream<List<CardEntity>> watchAll();

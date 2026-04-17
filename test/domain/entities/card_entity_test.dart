@@ -4,19 +4,22 @@ import 'package:beedle/domain/enum/ingestion_status.enum.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  CardEntity make({DateTime? viewedAt, IngestionStatus status = IngestionStatus.completed}) => CardEntity(
-        uuid: 'u',
-        title: 't',
-        summary: 's',
-        fullContent: '# test content',
-        level: CardLevel.beginner,
-        tags: const <String>[],
-        language: 'en',
-        teaserHook: 'h',
-        status: status,
-        createdAt: DateTime.now(),
-        viewedAt: viewedAt,
-      );
+  CardEntity make({
+    DateTime? viewedAt,
+    IngestionStatus status = IngestionStatus.completed,
+  }) => CardEntity(
+    uuid: 'u',
+    title: 't',
+    summary: 's',
+    fullContent: '# test content',
+    level: CardLevel.beginner,
+    tags: const <String>[],
+    language: 'en',
+    teaserHook: 'h',
+    status: status,
+    createdAt: DateTime.now(),
+    viewedAt: viewedAt,
+  );
 
   group('CardEntity extensions', () {
     test('isStale when viewedAt is null', () {
@@ -25,14 +28,18 @@ void main() {
 
     test('isStale when viewedAt > 14 days ago', () {
       expect(
-        make(viewedAt: DateTime.now().subtract(const Duration(days: 30))).isStale,
+        make(
+          viewedAt: DateTime.now().subtract(const Duration(days: 30)),
+        ).isStale,
         isTrue,
       );
     });
 
     test('not stale when viewed recently', () {
       expect(
-        make(viewedAt: DateTime.now().subtract(const Duration(days: 2))).isStale,
+        make(
+          viewedAt: DateTime.now().subtract(const Duration(days: 2)),
+        ).isStale,
         isFalse,
       );
     });

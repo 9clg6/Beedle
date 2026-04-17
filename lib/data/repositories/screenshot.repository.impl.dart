@@ -13,20 +13,22 @@ final class ScreenshotRepositoryImpl implements ScreenshotRepository {
 
   @override
   Future<ScreenshotEntity> upsert(ScreenshotEntity screenshot) async {
-    final saved = await _ds.upsert(screenshot.toLocalModel());
+    final ScreenshotLocalModel saved = await _ds.upsert(
+      screenshot.toLocalModel(),
+    );
     return saved.toEntity();
   }
 
   @override
   Future<ScreenshotEntity?> getByUuid(String uuid) async {
-    final local = await _ds.getByUuid(uuid);
+    final ScreenshotLocalModel? local = await _ds.getByUuid(uuid);
     return local?.toEntity();
   }
 
   @override
   Future<List<ScreenshotEntity>> getByCardUuid(String cardUuid) async {
-    final list = await _ds.getByCardUuid(cardUuid);
-    return list.map((e) => e.toEntity()).toList();
+    final List<ScreenshotLocalModel> list = await _ds.getByCardUuid(cardUuid);
+    return list.map((ScreenshotLocalModel e) => e.toEntity()).toList();
   }
 
   @override
@@ -35,9 +37,11 @@ final class ScreenshotRepositoryImpl implements ScreenshotRepository {
   }
 
   @override
-  Future<List<ScreenshotEntity>> getRecent({Duration within = const Duration(minutes: 5)}) async {
-    final list = await _ds.getRecent(within);
-    return list.map((e) => e.toEntity()).toList();
+  Future<List<ScreenshotEntity>> getRecent({
+    Duration within = const Duration(minutes: 5),
+  }) async {
+    final List<ScreenshotLocalModel> list = await _ds.getRecent(within);
+    return list.map((ScreenshotLocalModel e) => e.toEntity()).toList();
   }
 
   @override

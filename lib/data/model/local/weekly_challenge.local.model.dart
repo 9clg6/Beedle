@@ -3,7 +3,10 @@ import 'package:objectbox/objectbox.dart';
 @Entity()
 class WeeklyChallengeLocalModel {
   WeeklyChallengeLocalModel({
-    required this.weekStart, required this.type, required this.target, this.id = 0,
+    required this.weekStart,
+    required this.type,
+    required this.target,
+    this.id = 0,
     this.progress = 0,
     this.completedAt,
   });

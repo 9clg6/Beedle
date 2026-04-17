@@ -42,61 +42,67 @@ void main() {
   }
 
   CardEntity makeCard(String uuid) => CardEntity(
-        uuid: uuid,
-        title: 'title',
-        summary: 'summary',
-        fullContent: '# content',
-        level: CardLevel.beginner,
-        tags: const <String>[],
-        language: 'en',
-        teaserHook: 'hook',
-        status: IngestionStatus.completed,
-        createdAt: DateTime.now(),
-      );
+    uuid: uuid,
+    title: 'title',
+    summary: 'summary',
+    fullContent: '# content',
+    level: CardLevel.beginner,
+    tags: const <String>[],
+    language: 'en',
+    teaserHook: 'hook',
+    status: IngestionStatus.completed,
+    createdAt: DateTime.now(),
+  );
 
   group('FusionEngine', () {
     test('returns null if OCR text is empty', () async {
-      final newScreen = makeScreenshot(uuid: 'a', ocrText: '');
-      when(() => screenshotRepository.getRecent(within: any(named: 'within')))
-          .thenAnswer((_) async => <ScreenshotEntity>[]);
+      final ScreenshotEntity newScreen = makeScreenshot(uuid: 'a', ocrText: '');
+      when(
+        () => screenshotRepository.getRecent(within: any(named: 'within')),
+      ).thenAnswer((_) async => <ScreenshotEntity>[]);
 
-      final result = await engine.findFusionCandidate(newScreen);
+      final String? result = await engine.findFusionCandidate(newScreen);
       expect(result, isNull);
     });
 
     test('returns null when no recent screenshots match', () async {
-      final newScreen =
-          makeScreenshot(uuid: 'a', ocrText: 'Completely unrelated content about cooking');
-      final other = makeScreenshot(
+      final ScreenshotEntity newScreen = makeScreenshot(
+        uuid: 'a',
+        ocrText: 'Completely unrelated content about cooking',
+      );
+      final ScreenshotEntity other = makeScreenshot(
         uuid: 'b',
         ocrText: 'Claude code hooks automation tutorial',
         cardUuid: 'card-b',
       );
 
-      when(() => screenshotRepository.getRecent(within: any(named: 'within')))
-          .thenAnswer((_) async => <ScreenshotEntity>[other]);
+      when(
+        () => screenshotRepository.getRecent(within: any(named: 'within')),
+      ).thenAnswer((_) async => <ScreenshotEntity>[other]);
 
-      final result = await engine.findFusionCandidate(newScreen);
+      final String? result = await engine.findFusionCandidate(newScreen);
       expect(result, isNull);
     });
 
     test('returns cardUuid when Jaccard ≥ 40 %', () async {
-      final newScreen = makeScreenshot(
+      final ScreenshotEntity newScreen = makeScreenshot(
         uuid: 'a',
         ocrText: 'Claude code hooks automation plugin tutorial step',
       );
-      final existing = makeScreenshot(
+      final ScreenshotEntity existing = makeScreenshot(
         uuid: 'b',
         ocrText: 'Claude code hooks automation plugin tutorial',
         cardUuid: 'card-b',
       );
 
-      when(() => screenshotRepository.getRecent(within: any(named: 'within')))
-          .thenAnswer((_) async => <ScreenshotEntity>[existing]);
-      when(() => cardRepository.getByUuid('card-b'))
-          .thenAnswer((_) async => makeCard('card-b'));
+      when(
+        () => screenshotRepository.getRecent(within: any(named: 'within')),
+      ).thenAnswer((_) async => <ScreenshotEntity>[existing]);
+      when(
+        () => cardRepository.getByUuid('card-b'),
+      ).thenAnswer((_) async => makeCard('card-b'));
 
-      final result = await engine.findFusionCandidate(newScreen);
+      final String? result = await engine.findFusionCandidate(newScreen);
       expect(result, equals('card-b'));
     });
   });

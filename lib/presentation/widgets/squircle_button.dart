@@ -33,11 +33,11 @@ class SquircleButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final brightness = Theme.of(context).brightness;
-    final textTheme = Theme.of(context).textTheme;
-    final spec = _resolveSpec(variant, brightness);
+    final Brightness brightness = Theme.of(context).brightness;
+    final TextTheme textTheme = Theme.of(context).textTheme;
+    final _ButtonSpec spec = _resolveSpec(variant, brightness);
 
-    final shape = SmoothRectangleBorder(
+    final SmoothRectangleBorder shape = SmoothRectangleBorder(
       borderRadius: SmoothBorderRadius(
         cornerRadius: CalmRadius.pill,
       ),
@@ -99,7 +99,7 @@ class SquircleButton extends StatelessWidget {
   }
 
   _ButtonSpec _resolveSpec(SquircleButtonVariant v, Brightness b) {
-    final isDark = b == Brightness.dark;
+    final bool isDark = b == Brightness.dark;
     switch (v) {
       case SquircleButtonVariant.primary:
         return _ButtonSpec(

@@ -10,7 +10,10 @@ abstract interface class CardLocalDataSource {
     int limit = 10,
   });
   Future<CardLocalModel?> oldestUnviewed();
-  Future<List<CardLocalModel>> staleViewed({int limit = 3, Duration staleAfter = const Duration(days: 14)});
+  Future<List<CardLocalModel>> staleViewed({
+    int limit = 3,
+    Duration staleAfter = const Duration(days: 14),
+  });
   Future<void> markViewed(String uuid);
   Future<void> markTested(String uuid);
   Future<int> count();

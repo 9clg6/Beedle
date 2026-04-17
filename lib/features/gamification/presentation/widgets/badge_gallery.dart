@@ -10,7 +10,7 @@ class BadgeGallery extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    const all = BadgeType.values;
+    const List<BadgeType> all = BadgeType.values;
     return GridView.builder(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
@@ -20,9 +20,9 @@ class BadgeGallery extends StatelessWidget {
         crossAxisSpacing: 12,
       ),
       itemCount: all.length,
-      itemBuilder: (context, i) {
-        final b = all[i];
-        final isUnlocked = unlocked.contains(b);
+      itemBuilder: (BuildContext context, int i) {
+        final BadgeType b = all[i];
+        final bool isUnlocked = unlocked.contains(b);
         return _BadgeTile(badge: b, unlocked: isUnlocked);
       },
     );
@@ -37,12 +37,14 @@ class _BadgeTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final cs = Theme.of(context).colorScheme;
+    final TextTheme textTheme = Theme.of(context).textTheme;
+    final ColorScheme cs = Theme.of(context).colorScheme;
     return GlassCard(
       padding: const EdgeInsets.all(10),
       cornerRadius: 18,
-      backgroundColor: unlocked ? null : cs.surfaceContainerLow.withValues(alpha: 0.4),
+      backgroundColor: unlocked
+          ? null
+          : cs.surfaceContainerLow.withValues(alpha: 0.4),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
@@ -54,7 +56,9 @@ class _BadgeTile extends StatelessWidget {
           Text(
             badge.name,
             style: textTheme.labelSmall?.copyWith(
-              color: unlocked ? cs.onSurface : cs.onSurface.withValues(alpha: 0.4),
+              color: unlocked
+                  ? cs.onSurface
+                  : cs.onSurface.withValues(alpha: 0.4),
             ),
             textAlign: TextAlign.center,
             maxLines: 1,

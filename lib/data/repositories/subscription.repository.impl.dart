@@ -21,8 +21,8 @@ final class SubscriptionRepositoryImpl implements SubscriptionRepository {
   SubscriptionRepositoryImpl({
     required SubscriptionSnapshotLocalDataSource dataSource,
     required AppConfig appConfig,
-  })  : _dataSource = dataSource,
-        _appConfig = appConfig;
+  }) : _dataSource = dataSource,
+       _appConfig = appConfig;
 
   final SubscriptionSnapshotLocalDataSource _dataSource;
   final AppConfig _appConfig;
@@ -30,7 +30,7 @@ final class SubscriptionRepositoryImpl implements SubscriptionRepository {
 
   @override
   Future<SubscriptionSnapshotEntity> load() async {
-    final local = await _dataSource.load();
+    final SubscriptionSnapshotLocalModel local = await _dataSource.load();
     return local.toEntity();
   }
 
@@ -45,15 +45,20 @@ final class SubscriptionRepositoryImpl implements SubscriptionRepository {
       return load();
     }
     try {
-      final info = await Purchases.getCustomerInfo();
-      final pro = info.entitlements.active[_kEntitlementPro];
+      final CustomerInfo info = await Purchases.getCustomerInfo();
+      final EntitlementInfo? pro = info.entitlements.active[_kEntitlementPro];
 
-      final tier = pro != null ? SubscriptionTier.pro : SubscriptionTier.free;
-      final trialExpires = pro?.expirationDate != null ? DateTime.tryParse(pro!.expirationDate!) : null;
-      final subscribedAt =
-          pro?.originalPurchaseDate != null ? DateTime.tryParse(pro!.originalPurchaseDate) : null;
+      final SubscriptionTier tier = pro != null
+          ? SubscriptionTier.pro
+          : SubscriptionTier.free;
+      final DateTime? trialExpires = pro?.expirationDate != null
+          ? DateTime.tryParse(pro!.expirationDate!)
+          : null;
+      final DateTime? subscribedAt = pro?.originalPurchaseDate != null
+          ? DateTime.tryParse(pro!.originalPurchaseDate)
+          : null;
 
-      final existing = await _dataSource.load();
+      final SubscriptionSnapshotLocalModel existing = await _dataSource.load();
       existing
         ..tier = tier.name
         ..lastSyncedAt = DateTime.now()
@@ -74,8 +79,8 @@ final class SubscriptionRepositoryImpl implements SubscriptionRepository {
   }
 
   DateTime _resolveMonthlyCycleStart(SubscriptionSnapshotLocalModel existing) {
-    final now = DateTime.now();
-    final currentCycleStart = DateTime(now.year, now.month);
+    final DateTime now = DateTime.now();
+    final DateTime currentCycleStart = DateTime(now.year, now.month);
     if (existing.monthlyCycleStart.isBefore(currentCycleStart)) {
       existing.monthlyGenerationCount = 0;
       return currentCycleStart;
@@ -85,12 +90,14 @@ final class SubscriptionRepositoryImpl implements SubscriptionRepository {
 
   @override
   Stream<SubscriptionSnapshotEntity> watch() {
-    return _dataSource.watch().map((m) => m.toEntity());
+    return _dataSource.watch().map(
+      (SubscriptionSnapshotLocalModel m) => m.toEntity(),
+    );
   }
 
   @override
   Future<void> incrementMonthlyGeneration() async {
-    final existing = await _dataSource.load();
+    final SubscriptionSnapshotLocalModel existing = await _dataSource.load();
     existing
       ..monthlyCycleStart = _resolveMonthlyCycleStart(existing)
       ..monthlyGenerationCount = existing.monthlyGenerationCount + 1;
@@ -104,14 +111,14 @@ final class SubscriptionRepositoryImpl implements SubscriptionRepository {
       return;
     }
     try {
-      final offerings = await Purchases.getOfferings();
-      final current = offerings.current;
+      final Offerings offerings = await Purchases.getOfferings();
+      final Offering? current = offerings.current;
       if (current == null) {
         _log.warn('No RevenueCat offering current');
         return;
       }
       final Package package = current.availablePackages.firstWhere(
-        (p) => p.storeProduct.identifier == productId,
+        (Package p) => p.storeProduct.identifier == productId,
         orElse: () => current.availablePackages.first,
       );
       await Purchases.purchasePackage(package);

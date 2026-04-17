@@ -3,11 +3,12 @@ enum IngestionStatus {
   queued,
   processing,
   completed,
-  failed;
+  failed
+  ;
 
   static IngestionStatus fromString(String value) {
     return IngestionStatus.values.firstWhere(
-      (e) => e.name == value,
+      (IngestionStatus e) => e.name == value,
       orElse: () => IngestionStatus.queued,
     );
   }

@@ -17,18 +17,18 @@ class HomeCardsResult {
 
 final class GetHomeCardsUseCase extends FutureUseCase<HomeCardsResult> {
   GetHomeCardsUseCase({required CardRepository cardRepository})
-      : _cardRepository = cardRepository;
+    : _cardRepository = cardRepository;
 
   final CardRepository _cardRepository;
 
   @override
   Future<HomeCardsResult> invoke() async {
-    final total = await _cardRepository.count();
-    var today = await _cardRepository.pickTodayCard();
+    final int total = await _cardRepository.count();
+    CardEntity? today = await _cardRepository.pickTodayCard();
 
     // Récupère TOUTES les cards, récent en premier (l'ordre par défaut de
     // `getAll` est descending sur createdAt — voir data source impl).
-    final all = await _cardRepository.getAll();
+    final List<CardEntity> all = await _cardRepository.getAll();
 
     // Fallback : si pas de suggestion mais des cards existent, on prend la
     // plus récente.
@@ -36,10 +36,10 @@ final class GetHomeCardsUseCase extends FutureUseCase<HomeCardsResult> {
 
     // "rewatch" devient la liste complète moins la suggestion — la Home
     // affiche tout pour que l'user puisse parcourir.
-    final todaySnapshot = today;
-    final rewatch = todaySnapshot == null
+    final CardEntity? todaySnapshot = today;
+    final List<CardEntity> rewatch = todaySnapshot == null
         ? all
-        : all.where((c) => c.uuid != todaySnapshot.uuid).toList();
+        : all.where((CardEntity c) => c.uuid != todaySnapshot.uuid).toList();
 
     return HomeCardsResult(
       suggestion: today,

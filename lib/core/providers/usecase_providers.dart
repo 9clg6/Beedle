@@ -13,70 +13,75 @@ import 'package:beedle/domain/usecases/wipe_all_data.use_case.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final Provider<ImportScreenshotsUseCase> importScreenshotsUseCaseProvider =
-    Provider<ImportScreenshotsUseCase>((ref) {
-  return ImportScreenshotsUseCase(
-    screenshotRepository: ref.watch(screenshotRepositoryProvider),
-    ingestionJobRepository: ref.watch(ingestionJobRepositoryProvider),
-    gamificationEngine: ref.watch(gamificationEngineProvider),
-  );
-});
+    Provider<ImportScreenshotsUseCase>((Ref ref) {
+      return ImportScreenshotsUseCase(
+        screenshotRepository: ref.watch(screenshotRepositoryProvider),
+        ingestionJobRepository: ref.watch(ingestionJobRepositoryProvider),
+        gamificationEngine: ref.watch(gamificationEngineProvider),
+      );
+    });
 
 final Provider<SearchCardsUseCase> searchCardsUseCaseProvider =
-    Provider<SearchCardsUseCase>((ref) {
-  return SearchCardsUseCase(
-    cardRepository: ref.watch(cardRepositoryProvider),
-    embeddingsRepository: ref.watch(embeddingsRepositoryProvider),
-  );
-});
+    Provider<SearchCardsUseCase>((Ref ref) {
+      return SearchCardsUseCase(
+        cardRepository: ref.watch(cardRepositoryProvider),
+        embeddingsRepository: ref.watch(embeddingsRepositoryProvider),
+      );
+    });
 
 final Provider<GetHomeCardsUseCase> getHomeCardsUseCaseProvider =
-    Provider<GetHomeCardsUseCase>((ref) {
-  return GetHomeCardsUseCase(cardRepository: ref.watch(cardRepositoryProvider));
-});
+    Provider<GetHomeCardsUseCase>((Ref ref) {
+      return GetHomeCardsUseCase(
+        cardRepository: ref.watch(cardRepositoryProvider),
+      );
+    });
 
 final Provider<GetCardUseCase> getCardUseCaseProvider =
-    Provider<GetCardUseCase>((ref) {
-  return GetCardUseCase(cardRepository: ref.watch(cardRepositoryProvider));
-});
+    Provider<GetCardUseCase>((Ref ref) {
+      return GetCardUseCase(cardRepository: ref.watch(cardRepositoryProvider));
+    });
 
 final Provider<MarkCardViewedUseCase> markCardViewedUseCaseProvider =
-    Provider<MarkCardViewedUseCase>((ref) {
-  return MarkCardViewedUseCase(
-    cardRepository: ref.watch(cardRepositoryProvider),
-    gamificationEngine: ref.watch(gamificationEngineProvider),
-  );
-});
+    Provider<MarkCardViewedUseCase>((Ref ref) {
+      return MarkCardViewedUseCase(
+        cardRepository: ref.watch(cardRepositoryProvider),
+        gamificationEngine: ref.watch(gamificationEngineProvider),
+      );
+    });
 
 final Provider<MarkCardTestedUseCase> markCardTestedUseCaseProvider =
-    Provider<MarkCardTestedUseCase>((ref) {
-  return MarkCardTestedUseCase(
-    cardRepository: ref.watch(cardRepositoryProvider),
-    gamificationEngine: ref.watch(gamificationEngineProvider),
-  );
-});
+    Provider<MarkCardTestedUseCase>((Ref ref) {
+      return MarkCardTestedUseCase(
+        cardRepository: ref.watch(cardRepositoryProvider),
+        gamificationEngine: ref.watch(gamificationEngineProvider),
+      );
+    });
 
 final Provider<DeleteCardUseCase> deleteCardUseCaseProvider =
-    Provider<DeleteCardUseCase>((ref) {
-  return DeleteCardUseCase(cardRepository: ref.watch(cardRepositoryProvider));
-});
+    Provider<DeleteCardUseCase>((Ref ref) {
+      return DeleteCardUseCase(
+        cardRepository: ref.watch(cardRepositoryProvider),
+      );
+    });
 
 final Provider<ExportAllDataUseCase> exportAllDataUseCaseProvider =
-    Provider<ExportAllDataUseCase>((ref) {
-  return ExportAllDataUseCase(
-    dataExportService: ref.watch(dataManagementServiceProvider),
-  );
-});
+    Provider<ExportAllDataUseCase>((Ref ref) {
+      return ExportAllDataUseCase(
+        dataExportService: ref.watch(dataManagementServiceProvider),
+      );
+    });
 
 final Provider<WipeAllDataUseCase> wipeAllDataUseCaseProvider =
-    Provider<WipeAllDataUseCase>((ref) {
-  return WipeAllDataUseCase(
-    dataWipeService: ref.watch(dataManagementServiceProvider),
-  );
-});
+    Provider<WipeAllDataUseCase>((Ref ref) {
+      return WipeAllDataUseCase(
+        dataWipeService: ref.watch(dataManagementServiceProvider),
+      );
+    });
 
-final Provider<GetGamificationDashboardUseCase> getGamificationDashboardUseCaseProvider =
-    Provider<GetGamificationDashboardUseCase>((ref) {
-  return GetGamificationDashboardUseCase(
-    gamificationRepository: ref.watch(gamificationRepositoryProvider),
-  );
-});
+final Provider<GetGamificationDashboardUseCase>
+getGamificationDashboardUseCaseProvider =
+    Provider<GetGamificationDashboardUseCase>((Ref ref) {
+      return GetGamificationDashboardUseCase(
+        gamificationRepository: ref.watch(gamificationRepositoryProvider),
+      );
+    });

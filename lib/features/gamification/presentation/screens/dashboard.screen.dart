@@ -7,6 +7,7 @@ import 'package:beedle/features/gamification/presentation/widgets/xp_meter.dart'
 import 'package:beedle/generated/locale_keys.g.dart';
 import 'package:beedle/presentation/theme/app_colors.dart';
 import 'package:beedle/presentation/theme/calm_tokens.dart';
+import 'package:beedle/presentation/widgets/calm_back_button.dart';
 import 'package:beedle/presentation/widgets/calm_digital_number.dart';
 import 'package:beedle/presentation/widgets/calm_segmented_progress.dart';
 import 'package:beedle/presentation/widgets/glass_card.dart';
@@ -22,18 +23,16 @@ class DashboardScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final asyncState =
-        ref.watch(dashboardViewModelProvider);
-    final textTheme = Theme.of(context).textTheme;
+    final AsyncValue<DashboardState> asyncState = ref.watch(
+      dashboardViewModelProvider,
+    );
+    final TextTheme textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => context.router.maybePop(),
-          icon: const Icon(Icons.arrow_back_ios_new_rounded,
-              color: AppColors.neutral8),
-        ),
+        leadingWidth: 60,
+        leading: const CalmBackButton(),
         title: Text(
           LocaleKeys.gamification_dashboard_title.tr(),
           style: textTheme.titleLarge,
@@ -43,9 +42,9 @@ class DashboardScreen extends ConsumerWidget {
         child: SafeArea(
           child: asyncState.when(
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (e, st) =>
+            error: (Object e, StackTrace st) =>
                 Center(child: Text(LocaleKeys.common_error_generic.tr())),
-            data: (state) {
+            data: (DashboardState state) {
               return ListView(
                 padding: const EdgeInsets.all(CalmSpace.s6),
                 children: <Widget>[
@@ -58,7 +57,8 @@ class DashboardScreen extends ConsumerWidget {
                   const Gap(CalmSpace.s7),
                   if (state.currentChallenge != null) ...<Widget>[
                     _SectionTitle(
-                        label: LocaleKeys.gamification_challenge_title.tr()),
+                      label: LocaleKeys.gamification_challenge_title.tr(),
+                    ),
                     const Gap(CalmSpace.s4),
                     GlassCard(
                       padding: const EdgeInsets.all(CalmSpace.s5),
@@ -90,7 +90,8 @@ class DashboardScreen extends ConsumerWidget {
                     const Gap(CalmSpace.s7),
                   ],
                   _SectionTitle(
-                      label: LocaleKeys.gamification_activity_title.tr()),
+                    label: LocaleKeys.gamification_activity_title.tr(),
+                  ),
                   const Gap(CalmSpace.s4),
                   GlassCard(
                     padding: const EdgeInsets.all(CalmSpace.s5),
@@ -99,7 +100,8 @@ class DashboardScreen extends ConsumerWidget {
                   ),
                   const Gap(CalmSpace.s7),
                   _SectionTitle(
-                      label: LocaleKeys.gamification_badges_title.tr()),
+                    label: LocaleKeys.gamification_badges_title.tr(),
+                  ),
                   const Gap(CalmSpace.s4),
                   BadgeGallery(unlocked: state.state.unlockedBadges),
                 ],
@@ -120,7 +122,7 @@ class _StreakCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final TextTheme textTheme = Theme.of(context).textTheme;
 
     return GlassCard(
       child: Row(
@@ -169,8 +171,8 @@ class _SectionTitle extends StatelessWidget {
     return Text(
       label.toUpperCase(),
       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-            color: AppColors.neutral6,
-          ),
+        color: AppColors.neutral6,
+      ),
     );
   }
 }

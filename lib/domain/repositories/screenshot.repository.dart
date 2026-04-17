@@ -9,7 +9,9 @@ abstract interface class ScreenshotRepository {
 
   Future<bool> existsBySha256(String sha256);
 
-  Future<List<ScreenshotEntity>> getRecent({Duration within = const Duration(minutes: 5)});
+  Future<List<ScreenshotEntity>> getRecent({
+    Duration within = const Duration(minutes: 5),
+  });
 
   Future<void> linkToCard(String screenshotUuid, String cardUuid);
 

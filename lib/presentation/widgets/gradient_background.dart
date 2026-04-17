@@ -31,7 +31,7 @@ class AuroraFrame extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final brightness = Theme.of(context).brightness;
+    final Brightness brightness = Theme.of(context).brightness;
     final Gradient gradient = brightness == Brightness.dark
         ? AppColors.dusk
         : (warm ? AppColors.auroraWarm : AppColors.auroraCool);

@@ -1,17 +1,17 @@
 import 'package:beedle/domain/services/analytics.service.dart';
-import 'package:beedle/foundation/config/app_config.dart';
 import 'package:beedle/foundation/logging/logger.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
-import 'package:posthog_flutter/posthog_flutter.dart';
 
-/// Implémentation AnalyticsService via PostHog (région EU).
+/// Implémentation [AnalyticsService] via Firebase Analytics.
 ///
-/// Consent-guarded : si `setConsent(false)`, rien n'est envoyé.
-final class PostHogAnalyticsService implements AnalyticsService {
-  PostHogAnalyticsService({required AppConfig config}) : _config = config;
+/// Consent-guarded : si `setConsent(false)`, la collecte est désactivée
+/// au niveau du SDK (rien ne quitte l'appareil).
+final class FirebaseAnalyticsService implements AnalyticsService {
+  FirebaseAnalyticsService();
 
-  final AppConfig _config;
-  final Log _log = Log.named('PostHogAnalyticsService');
+  final FirebaseAnalytics _analytics = FirebaseAnalytics.instance;
+  final Log _log = Log.named('FirebaseAnalyticsService');
 
   bool _consent = true;
   bool _initialized = false;
@@ -20,36 +20,37 @@ final class PostHogAnalyticsService implements AnalyticsService {
   Future<void> init() async {
     if (_initialized) return;
     try {
-      // Note: PostHog config is also set in native iOS/Android files; this
-      // Dart-level init is a noop once platforms are configured via
-      // PostHogConfig in AppDelegate/MainActivity as per the Flutter SDK docs.
-      // TODO-USER: configurer PostHog dans ios/Runner/AppDelegate.swift et
-      //            android/app/src/main/AndroidManifest.xml avec la clé PostHog.
+      // Firebase Analytics est auto-initialisé via Firebase.initializeApp().
+      // On respecte juste l'état de consent par défaut.
+      await _analytics.setAnalyticsCollectionEnabled(_consent);
       _initialized = true;
-      _log.info('PostHog initialized (key=${_config.postHogApiKey.substring(0, 6)}...)');
+      _log.info('Firebase Analytics initialized (consent=$_consent)');
     } on Exception catch (e) {
-      _log.warn('PostHog init failed: $e');
+      _log.warn('Firebase Analytics init failed: $e');
     }
   }
 
   @override
   Future<void> setConsent(bool consent) async {
     _consent = consent;
-    if (!consent) {
-      await Posthog().disable();
-    } else {
-      await Posthog().enable();
-    }
+    await _analytics.setAnalyticsCollectionEnabled(consent);
   }
 
   @override
   Future<void> identify({required Map<String, Object> properties}) async {
     if (!_consent) return;
     try {
-      await Posthog().identify(
-        userId: properties['distinct_id']?.toString() ?? 'anonymous',
-        userProperties: properties,
-      );
+      final Object? distinctId = properties['distinct_id'];
+      if (distinctId != null) {
+        await _analytics.setUserId(id: distinctId.toString());
+      }
+      for (final MapEntry<String, Object> entry in properties.entries) {
+        if (entry.key == 'distinct_id') continue;
+        await _analytics.setUserProperty(
+          name: entry.key,
+          value: entry.value.toString(),
+        );
+      }
     } on Exception catch (e) {
       if (kDebugMode) _log.warn('identify failed: $e');
     }
@@ -59,7 +60,10 @@ final class PostHogAnalyticsService implements AnalyticsService {
   Future<void> track(String event, {Map<String, Object>? properties}) async {
     if (!_consent) return;
     try {
-      await Posthog().capture(eventName: event, properties: properties);
+      await _analytics.logEvent(
+        name: event,
+        parameters: properties?.cast<String, Object>(),
+      );
     } on Exception catch (e) {
       if (kDebugMode) _log.warn('track $event failed: $e');
     }
@@ -68,7 +72,7 @@ final class PostHogAnalyticsService implements AnalyticsService {
   @override
   Future<void> reset() async {
     try {
-      await Posthog().reset();
+      await _analytics.resetAnalyticsData();
     } on Exception catch (e) {
       _log.warn('reset failed: $e');
     }

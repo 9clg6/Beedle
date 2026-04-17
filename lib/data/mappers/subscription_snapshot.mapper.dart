@@ -4,18 +4,19 @@ import 'package:beedle/domain/enum/subscription_tier.enum.dart';
 
 extension SubscriptionSnapshotLocalModelX on SubscriptionSnapshotLocalModel {
   SubscriptionSnapshotEntity toEntity() => SubscriptionSnapshotEntity(
-        tier: SubscriptionTier.fromString(tier),
-        lastSyncedAt: lastSyncedAt,
-        monthlyGenerationCount: monthlyGenerationCount,
-        monthlyCycleStart: monthlyCycleStart,
-        appUserId: appUserId,
-        trialExpiresAt: trialExpiresAt,
-        subscribedAt: subscribedAt,
-      );
+    tier: SubscriptionTier.fromString(tier),
+    lastSyncedAt: lastSyncedAt,
+    monthlyGenerationCount: monthlyGenerationCount,
+    monthlyCycleStart: monthlyCycleStart,
+    appUserId: appUserId,
+    trialExpiresAt: trialExpiresAt,
+    subscribedAt: subscribedAt,
+  );
 }
 
 extension SubscriptionSnapshotEntityToLocalX on SubscriptionSnapshotEntity {
-  SubscriptionSnapshotLocalModel toLocalModel() => SubscriptionSnapshotLocalModel(
+  SubscriptionSnapshotLocalModel toLocalModel() =>
+      SubscriptionSnapshotLocalModel(
         tier: tier.name,
         lastSyncedAt: lastSyncedAt,
         monthlyGenerationCount: monthlyGenerationCount,

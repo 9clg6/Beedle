@@ -1,5 +1,7 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:beedle/core/providers/auth.provider.dart';
 import 'package:beedle/core/providers/data_providers.dart';
+import 'package:beedle/domain/entities/auth_user.entity.dart';
 import 'package:beedle/domain/entities/user_preferences.entity.dart';
 import 'package:beedle/foundation/routing/app_router.dart';
 import 'package:beedle/generated/locale_keys.g.dart';
@@ -29,8 +31,18 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
     final UserPreferencesEntity prefs = await ref
         .read(userPreferencesRepositoryProvider)
         .load();
+    final AuthUserEntity? user = ref.read(authServiceProvider).currentUser;
+
     await Future<void>.delayed(const Duration(milliseconds: 600));
     if (!mounted) return;
+
+    // Auth resolution : signed-in OU explicitement skipped.
+    final bool authResolved = user != null || prefs.authSkippedAt != null;
+    if (!authResolved) {
+      await context.router.replace(AuthRoute());
+      return;
+    }
+
     if (prefs.hasCompletedOnboarding) {
       await context.router.replace(const HomeRoute());
     } else {

@@ -1,3 +1,5 @@
+// ignore_for_file: lines_longer_than_80_chars
+
 import 'package:beedle/domain/entities/activity_day.entity.dart';
 import 'package:beedle/domain/entities/card.entity.dart';
 import 'package:beedle/domain/entities/gamification_state.entity.dart';
@@ -19,17 +21,17 @@ final class GamificationEngine {
   GamificationEngine({
     required GamificationRepository gamificationRepository,
     required CardRepository cardRepository,
-  })  : _repo = gamificationRepository,
-        _cardRepository = cardRepository;
+  }) : _repo = gamificationRepository,
+       _cardRepository = cardRepository;
 
   final GamificationRepository _repo;
   final CardRepository _cardRepository;
   final Log _log = Log.named('GamificationEngine');
 
   Future<void> onImport() => _process(
-        event: XpEvent.cardImported,
-        cardsImportedDelta: 1,
-      );
+    event: XpEvent.cardImported,
+    cardsImportedDelta: 1,
+  );
 
   Future<void> onCardViewed(CardEntity card) async {
     await _process(
@@ -57,11 +59,11 @@ final class GamificationEngine {
     CardEntity? contextCard,
     bool tested = false,
   }) async {
-    final current = await _repo.loadState();
-    final today = await _repo.todayActivity();
+    final GamificationStateEntity current = await _repo.loadState();
+    final ActivityDayEntity today = await _repo.todayActivity();
 
     // 1. Update activity log du jour.
-    final updatedDay = today.copyWith(
+    final ActivityDayEntity updatedDay = today.copyWith(
       cardsImported: today.cardsImported + cardsImportedDelta,
       cardsViewed: today.cardsViewed + cardsViewedDelta,
       cardsTested: today.cardsTested + cardsTestedDelta,
@@ -69,31 +71,31 @@ final class GamificationEngine {
     await _repo.upsertActivity(updatedDay);
 
     // 2. Compute new streak.
-    final newStreak = _computeNewStreak(
+    final int newStreak = _computeNewStreak(
       lastActiveDay: current.lastActiveDay,
       currentStreak: current.currentStreak,
     );
 
     // 3. XP + bonus streak si le streak a progressé.
-    var bonusXp = 0;
+    int bonusXp = 0;
     if (newStreak > current.currentStreak && newStreak > 1) {
       bonusXp = XpEvent.streakBonus.points;
     }
-    final newXp = current.totalXp + event.points + bonusXp;
+    final int newXp = current.totalXp + event.points + bonusXp;
 
     // 4. Évaluer badges.
-    final unlocked = <BadgeType>{...current.unlockedBadges};
+    final Set<BadgeType> unlocked = <BadgeType>{...current.unlockedBadges};
     _awardIf(unlocked, BadgeType.firstImport, () => cardsImportedDelta > 0);
     _awardIf(unlocked, BadgeType.firstTest, () => cardsTestedDelta > 0);
     _awardIf(unlocked, BadgeType.streak3, () => newStreak >= 3);
     _awardIf(unlocked, BadgeType.streak7, () => newStreak >= 7);
     _awardIf(unlocked, BadgeType.streak30, () => newStreak >= 30);
 
-    final hour = DateTime.now().hour;
+    final int hour = DateTime.now().hour;
     _awardIf(unlocked, BadgeType.earlyBird, () => hour < 9);
     _awardIf(unlocked, BadgeType.nightOwl, () => hour >= 20 && hour < 22);
 
-    final totalCards = await _cardRepository.count();
+    final int totalCards = await _cardRepository.count();
     _awardIf(unlocked, BadgeType.collector50, () => totalCards >= 50);
     _awardIf(unlocked, BadgeType.collector200, () => totalCards >= 200);
 
@@ -106,16 +108,18 @@ final class GamificationEngine {
       }
     }
     if (tested) {
-      final testedCount = await _countTestedCards();
+      final int testedCount = await _countTestedCards();
       _awardIf(unlocked, BadgeType.apprentice, () => testedCount >= 5);
       _awardIf(unlocked, BadgeType.sensei, () => testedCount >= 25);
     }
 
     // 5. Persist.
-    final newState = current.copyWith(
+    final GamificationStateEntity newState = current.copyWith(
       totalXp: newXp,
       currentStreak: newStreak,
-      longestStreak: newStreak > current.longestStreak ? newStreak : current.longestStreak,
+      longestStreak: newStreak > current.longestStreak
+          ? newStreak
+          : current.longestStreak,
       unlockedBadges: unlocked.toList(),
       lastActiveDay: _todayMidnight(),
     );
@@ -127,23 +131,32 @@ final class GamificationEngine {
     );
   }
 
-  int _computeNewStreak({required DateTime? lastActiveDay, required int currentStreak}) {
+  int _computeNewStreak({
+    required DateTime? lastActiveDay,
+    required int currentStreak,
+  }) {
     if (lastActiveDay == null) return 1;
-    final today = _todayMidnight();
-    final last = DateTime(lastActiveDay.year, lastActiveDay.month, lastActiveDay.day);
-    final diffDays = today.difference(last).inDays;
-    if (diffDays == 0) return currentStreak == 0 ? 1 : currentStreak; // déjà actif aujourd'hui
+    final DateTime today = _todayMidnight();
+    final DateTime last = DateTime(
+      lastActiveDay.year,
+      lastActiveDay.month,
+      lastActiveDay.day,
+    );
+    final int diffDays = today.difference(last).inDays;
+    if (diffDays == 0) {
+      return currentStreak == 0 ? 1 : currentStreak; // déjà actif aujourd'hui
+    }
     if (diffDays == 1) return currentStreak + 1; // continuité
     return 1; // reset
   }
 
   Future<int> _countTestedCards() async {
-    final all = await _cardRepository.getAll();
-    return all.where((c) => c.isTested).length;
+    final List<CardEntity> all = await _cardRepository.getAll();
+    return all.where((CardEntity c) => c.isTested).length;
   }
 
   Future<void> _advanceChallenge(ChallengeType expected) async {
-    var challenge = await _repo.currentChallenge();
+    WeeklyChallengeEntity? challenge = await _repo.currentChallenge();
     challenge ??= WeeklyChallengeEntity(
       weekStart: _currentWeekStart(),
       type: expected,
@@ -152,26 +165,30 @@ final class GamificationEngine {
     if (challenge.type != expected) return;
     if (challenge.isCompleted) return;
 
-    final newProgress = challenge.progress + 1;
-    final justCompleted = newProgress >= challenge.target;
+    final int newProgress = challenge.progress + 1;
+    final bool justCompleted = newProgress >= challenge.target;
 
-    final updated = challenge.copyWith(
+    final WeeklyChallengeEntity updated = challenge.copyWith(
       progress: newProgress,
       completedAt: justCompleted ? DateTime.now() : null,
     );
     await _repo.saveChallenge(updated);
 
     if (justCompleted) {
-      final s = await _repo.loadState();
-      final unlocked = <BadgeType>{
+      final GamificationStateEntity s = await _repo.loadState();
+      final Set<BadgeType> unlocked = <BadgeType>{
         ...s.unlockedBadges,
         BadgeType.challengeRookie,
       };
-      await _repo.saveState(s.copyWith(
-        totalXp: s.totalXp + XpEvent.weeklyChallengeCompleted.points,
-        unlockedBadges: unlocked.toList(),
-      ));
-      _log.info('Weekly challenge completed → +${XpEvent.weeklyChallengeCompleted.points} XP');
+      await _repo.saveState(
+        s.copyWith(
+          totalXp: s.totalXp + XpEvent.weeklyChallengeCompleted.points,
+          unlockedBadges: unlocked.toList(),
+        ),
+      );
+      _log.info(
+        'Weekly challenge completed → +${XpEvent.weeklyChallengeCompleted.points} XP',
+      );
     }
   }
 
@@ -186,7 +203,11 @@ final class GamificationEngine {
     }
   }
 
-  void _awardIf(Set<BadgeType> unlocked, BadgeType badge, bool Function() cond) {
+  void _awardIf(
+    Set<BadgeType> unlocked,
+    BadgeType badge,
+    bool Function() cond,
+  ) {
     if (!unlocked.contains(badge) && cond()) {
       unlocked.add(badge);
       _log.info('Badge unlocked: ${badge.name}');
@@ -194,12 +215,12 @@ final class GamificationEngine {
   }
 
   DateTime _todayMidnight() {
-    final now = DateTime.now();
+    final DateTime now = DateTime.now();
     return DateTime(now.year, now.month, now.day);
   }
 
   DateTime _currentWeekStart() {
-    final today = _todayMidnight();
+    final DateTime today = _todayMidnight();
     return today.subtract(Duration(days: today.weekday - 1));
   }
 }

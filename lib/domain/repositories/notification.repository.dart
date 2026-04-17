@@ -4,7 +4,10 @@ import 'package:beedle/domain/enum/notification_type.enum.dart';
 abstract interface class NotificationRecordRepository {
   Future<NotificationRecordEntity> persist(NotificationRecordEntity record);
 
-  Future<List<NotificationRecordEntity>> byType(NotificationType type, {Duration within = const Duration(days: 1)});
+  Future<List<NotificationRecordEntity>> byType(
+    NotificationType type, {
+    Duration within = const Duration(days: 1),
+  });
 
   Future<void> markSent(String uuid);
 

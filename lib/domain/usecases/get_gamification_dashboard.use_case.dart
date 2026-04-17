@@ -17,17 +17,19 @@ class GamificationDashboard {
   final WeeklyChallengeEntity? currentChallenge;
 }
 
-final class GetGamificationDashboardUseCase extends FutureUseCase<GamificationDashboard> {
-  GetGamificationDashboardUseCase({required GamificationRepository gamificationRepository})
-      : _repo = gamificationRepository;
+final class GetGamificationDashboardUseCase
+    extends FutureUseCase<GamificationDashboard> {
+  GetGamificationDashboardUseCase({
+    required GamificationRepository gamificationRepository,
+  }) : _repo = gamificationRepository;
 
   final GamificationRepository _repo;
 
   @override
   Future<GamificationDashboard> invoke() async {
-    final state = await _repo.loadState();
-    final days = await _repo.last(84);
-    final challenge = await _repo.currentChallenge();
+    final GamificationStateEntity state = await _repo.loadState();
+    final List<ActivityDayEntity> days = await _repo.last(84);
+    final WeeklyChallengeEntity? challenge = await _repo.currentChallenge();
     return GamificationDashboard(
       state: state,
       last84Days: days,

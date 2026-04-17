@@ -5,14 +5,15 @@ import 'package:beedle/domain/entities/user_preferences.entity.dart';
 import 'package:beedle/domain/repositories/user_preferences.repository.dart';
 
 final class UserPreferencesRepositoryImpl implements UserPreferencesRepository {
-  UserPreferencesRepositoryImpl({required UserPreferencesLocalDataSource dataSource})
-      : _dataSource = dataSource;
+  UserPreferencesRepositoryImpl({
+    required UserPreferencesLocalDataSource dataSource,
+  }) : _dataSource = dataSource;
 
   final UserPreferencesLocalDataSource _dataSource;
 
   @override
   Future<UserPreferencesEntity> load() async {
-    final local = await _dataSource.load();
+    final UserPreferencesLocalModel local = await _dataSource.load();
     return local.toEntity();
   }
 
@@ -23,6 +24,8 @@ final class UserPreferencesRepositoryImpl implements UserPreferencesRepository {
 
   @override
   Stream<UserPreferencesEntity> watch() {
-    return _dataSource.watch().map((m) => m.toEntity());
+    return _dataSource.watch().map(
+      (UserPreferencesLocalModel m) => m.toEntity(),
+    );
   }
 }

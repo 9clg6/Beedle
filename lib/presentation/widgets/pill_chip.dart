@@ -27,23 +27,23 @@ class PillChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final brightness = Theme.of(context).brightness;
-    final isDark = brightness == Brightness.dark;
-    final textTheme = Theme.of(context).textTheme;
+    final Brightness brightness = Theme.of(context).brightness;
+    final bool isDark = brightness == Brightness.dark;
+    final TextTheme textTheme = Theme.of(context).textTheme;
 
-    final foreground = selected
+    final Color foreground = selected
         ? (isDark ? AppColors.canvasDark : AppColors.canvas)
         : (isDark ? AppColors.neutral8Dark : AppColors.neutral8);
 
-    final background = selected
+    final Color background = selected
         ? (isDark ? AppColors.inkDark : AppColors.ink)
         : (isDark ? AppColors.glassDarkSoft : AppColors.glassSoft);
 
-    final borderColor = selected
+    final Color borderColor = selected
         ? Colors.transparent
         : (isDark ? AppColors.glassDarkBorder : AppColors.neutral3);
 
-    final shape = SmoothRectangleBorder(
+    final SmoothRectangleBorder shape = SmoothRectangleBorder(
       borderRadius: SmoothBorderRadius(
         cornerRadius: CalmRadius.pill,
       ),

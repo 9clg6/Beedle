@@ -1,67 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
+<dict>
+	<key>CADisableMinimumFrameDurationOnPhone</key>
+	<true/>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>$(DEVELOPMENT_LANGUAGE)</string>
+	<key>CFBundleDisplayName</key>
+	<string>Beedle</string>
+	<key>CFBundleExecutable</key>
+	<string>$(EXECUTABLE_NAME)</string>
+	<key>CFBundleIdentifier</key>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>beedle</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>$(FLUTTER_BUILD_NAME)</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>$(FLUTTER_BUILD_NUMBER)</string>
+	<key>LSRequiresIPhoneOS</key>
+	<true/>
+	<key>MinimumOSVersion</key>
+	<string>15.0</string>
+	<key>NSAppTransportSecurity</key>
 	<dict>
-		<key>CFBundleDevelopmentRegion</key>
-		<string>$(DEVELOPMENT_LANGUAGE)</string>
-		<key>CFBundleDisplayName</key>
-		<string>Beedle</string>
-		<key>CFBundleExecutable</key>
-		<string>$(EXECUTABLE_NAME)</string>
-		<key>CFBundleIdentifier</key>
-		<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-		<key>CFBundleInfoDictionaryVersion</key>
-		<string>6.0</string>
-		<key>CFBundleName</key>
-		<string>beedle</string>
-		<key>CFBundlePackageType</key>
-		<string>APPL</string>
-		<key>CFBundleShortVersionString</key>
-		<string>$(FLUTTER_BUILD_NAME)</string>
-		<key>CFBundleSignature</key>
-		<string>????</string>
-		<key>CFBundleVersion</key>
-		<string>$(FLUTTER_BUILD_NUMBER)</string>
-		<key>LSRequiresIPhoneOS</key>
-		<true/>
-		<key>UILaunchStoryboardName</key>
-		<string>LaunchScreen</string>
-		<key>UIMainStoryboardFile</key>
-		<string>Main</string>
-		<key>UISupportedInterfaceOrientations</key>
-		<array>
-			<string>UIInterfaceOrientationPortrait</string>
-		</array>
-		<key>UISupportedInterfaceOrientations~ipad</key>
-		<array>
-			<string>UIInterfaceOrientationPortrait</string>
-			<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		</array>
-		<key>CADisableMinimumFrameDurationOnPhone</key>
-		<true/>
-		<key>UIApplicationSupportsIndirectInputEvents</key>
-		<true/>
-		<key>MinimumOSVersion</key>
-		<string>15.0</string>
-		<!-- Privacy usage descriptions -->
-		<key>NSPhotoLibraryUsageDescription</key>
-		<string>Beedle utilise ta pellicule pour importer tes screenshots à digérer en fiches IA. Tes photos ne quittent jamais ton téléphone.</string>
-		<key>NSPhotoLibraryAddUsageDescription</key>
-		<string>Beedle peut enregistrer tes fiches exportées dans Photos.</string>
-		<!-- Share extension support (receive_sharing_intent) -->
-		<key>NSUserActivityTypes</key>
-		<array>
-			<string>INSendMessageIntent</string>
-		</array>
-		<!-- App Transport Security : enforce HTTPS -->
-		<key>NSAppTransportSecurity</key>
-		<dict>
-			<key>NSAllowsArbitraryLoads</key>
-			<false/>
-		</dict>
-		<!-- TODO-USER: configurer une Share Extension iOS dans Xcode pour SC5.
-	     receive_sharing_intent fournit une extension template dans son README. -->
-		<key>UIStatusBarHidden</key>
+		<key>NSAllowsArbitraryLoads</key>
 		<false/>
 	</dict>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>Beedle peut enregistrer tes fiches exportées dans Photos.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Beedle utilise ta pellicule pour importer tes screenshots à digérer en fiches IA. Tes photos ne quittent jamais ton téléphone.</string>
+	<key>NSUserActivityTypes</key>
+	<array>
+		<string>INSendMessageIntent</string>
+	</array>
+	<key>UIApplicationSupportsIndirectInputEvents</key>
+	<true/>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
+	</array>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen</string>
+	<key>UIMainStoryboardFile</key>
+	<string>Main</string>
+	<key>UIStatusBarHidden</key>
+	<false/>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+	</array>
+	<!--
+		Google Sign-In URL scheme (REVERSED_CLIENT_ID).
+
+		TODO-USER : avant de pouvoir utiliser Google Sign-In sur iOS :
+		1. Console Firebase → Authentication → Sign-in method → activer Google
+		2. Re-télécharger ios/Runner/GoogleService-Info.plist
+		3. Lire la valeur REVERSED_CLIENT_ID (ex: com.googleusercontent.apps.161459867336-XXXX)
+		4. Remplacer le placeholder ci-dessous par cette valeur
+		5. Pour Apple Sign-In : activer la capability "Sign in with Apple" dans
+		   Xcode → Signing & Capabilities → +Capability
+	-->
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.REPLACE_WITH_REVERSED_CLIENT_ID</string>
+			</array>
+		</dict>
+	</array>
+</dict>
 </plist>

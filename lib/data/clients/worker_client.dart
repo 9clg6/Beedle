@@ -27,7 +27,7 @@ class WorkerClient {
   }
 
   static Dio _buildDio(AppConfig config) {
-    final dio = Dio(
+    final Dio dio = Dio(
       BaseOptions(
         baseUrl: config.workerBaseUrl,
         connectTimeout: const Duration(seconds: 10),
