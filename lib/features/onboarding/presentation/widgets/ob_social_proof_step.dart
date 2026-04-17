@@ -113,22 +113,25 @@ class _Testimonial extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
-    return GlassCard(
-      elevated: false,
-      padding: const EdgeInsets.all(CalmSpace.s5),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          Text(
-            '« $quote »',
-            style: textTheme.bodyLarge?.copyWith(color: AppColors.ink),
-          ),
-          const Gap(CalmSpace.s3),
-          Text(
-            '$author · $persona',
-            style: textTheme.labelSmall?.copyWith(color: AppColors.neutral6),
-          ),
-        ],
+    return Semantics(
+      label: '$author, $persona : $quote',
+      child: GlassCard(
+        elevated: false,
+        padding: const EdgeInsets.all(CalmSpace.s5),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              '« $quote »',
+              style: textTheme.bodyLarge?.copyWith(color: AppColors.ink),
+            ),
+            const Gap(CalmSpace.s3),
+            Text(
+              '$author · $persona',
+              style: textTheme.labelSmall?.copyWith(color: AppColors.neutral6),
+            ),
+          ],
+        ),
       ),
     );
   }

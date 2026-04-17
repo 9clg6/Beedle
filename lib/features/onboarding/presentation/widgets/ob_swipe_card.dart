@@ -16,32 +16,35 @@ class OnboardingSwipeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
-    return GlassCard(
-      padding: const EdgeInsets.all(CalmSpace.s7),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          const Spacer(),
-          Text(
-            statement,
-            style: textTheme.headlineSmall?.copyWith(color: AppColors.ink),
-            textAlign: TextAlign.center,
-          ),
-          const Spacer(),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              _SwipeHint(
-                icon: Icons.close_rounded,
-                color: AppColors.neutral6,
-              ),
-              _SwipeHint(
-                icon: Icons.check_rounded,
-                color: AppColors.ember,
-              ),
-            ],
-          ),
-        ],
+    return Semantics(
+      label: '$statement — swipe à droite pour accepter, à gauche pour passer',
+      child: GlassCard(
+        padding: const EdgeInsets.all(CalmSpace.s7),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            const Spacer(),
+            Text(
+              statement,
+              style: textTheme.headlineSmall?.copyWith(color: AppColors.ink),
+              textAlign: TextAlign.center,
+            ),
+            const Spacer(),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: const <Widget>[
+                _SwipeHint(
+                  icon: Icons.close_rounded,
+                  color: AppColors.neutral6,
+                ),
+                _SwipeHint(
+                  icon: Icons.check_rounded,
+                  color: AppColors.ember,
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -235,52 +235,60 @@ class _PlanTile extends StatelessWidget {
         ? (isMint ? AppColors.ink : AppColors.mint)
         : AppColors.neutral6;
 
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(CalmRadius.lg),
-        child: Container(
-          padding: const EdgeInsets.all(CalmSpace.s5),
-          decoration: BoxDecoration(
-            color: background,
-            borderRadius: BorderRadius.circular(CalmRadius.lg),
-            border: selected ? null : Border.all(color: AppColors.neutral3),
-          ),
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      label,
-                      style: textTheme.titleMedium?.copyWith(
-                        color: foreground,
-                      ),
-                    ),
-                    if (badge != null)
-                      Padding(
-                        padding: const EdgeInsets.only(top: CalmSpace.s1),
-                        child: Text(
-                          badge!.toUpperCase(),
-                          style: textTheme.labelSmall?.copyWith(
-                            color: subForeground,
-                          ),
+    final String semanticsLabel = badge != null
+        ? '$label, $price$period, $badge'
+        : '$label, $price$period';
+    return Semantics(
+      label: semanticsLabel,
+      button: true,
+      selected: selected,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(CalmRadius.lg),
+          child: Container(
+            padding: const EdgeInsets.all(CalmSpace.s5),
+            decoration: BoxDecoration(
+              color: background,
+              borderRadius: BorderRadius.circular(CalmRadius.lg),
+              border: selected ? null : Border.all(color: AppColors.neutral3),
+            ),
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(
+                        label,
+                        style: textTheme.titleMedium?.copyWith(
+                          color: foreground,
                         ),
                       ),
-                  ],
+                      if (badge != null)
+                        Padding(
+                          padding: const EdgeInsets.only(top: CalmSpace.s1),
+                          child: Text(
+                            badge!.toUpperCase(),
+                            style: textTheme.labelSmall?.copyWith(
+                              color: subForeground,
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-              Text(
-                price,
-                style: textTheme.headlineMedium?.copyWith(color: foreground),
-              ),
-              Text(
-                period,
-                style: textTheme.bodyMedium?.copyWith(color: subForeground),
-              ),
-            ],
+                Text(
+                  price,
+                  style: textTheme.headlineMedium?.copyWith(color: foreground),
+                ),
+                Text(
+                  period,
+                  style: textTheme.bodyMedium?.copyWith(color: subForeground),
+                ),
+              ],
+            ),
           ),
         ),
       ),

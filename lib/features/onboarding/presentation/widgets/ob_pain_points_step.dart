@@ -71,32 +71,38 @@ class _PainPointCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
-    return GlassCard(
-      onTap: onTap,
-      elevated: false,
-      borderColor: selected ? AppColors.ink : null,
-      backgroundColor: selected ? AppColors.glassMedium : null,
-      padding: const EdgeInsets.symmetric(
-        horizontal: CalmSpace.s5,
-        vertical: CalmSpace.s4,
-      ),
-      child: Row(
-        children: <Widget>[
-          Icon(
-            selected
-                ? Icons.check_box_rounded
-                : Icons.check_box_outline_blank_rounded,
-            color: selected ? AppColors.ember : AppColors.neutral3,
-            size: 22,
-          ),
-          const Gap(CalmSpace.s4),
-          Expanded(
-            child: Text(
-              _labelKeyFor(point).tr(),
-              style: textTheme.bodyLarge?.copyWith(color: AppColors.ink),
+    final String label = _labelKeyFor(point).tr();
+    return Semantics(
+      label: label,
+      button: true,
+      checked: selected,
+      child: GlassCard(
+        onTap: onTap,
+        elevated: false,
+        borderColor: selected ? AppColors.ink : null,
+        backgroundColor: selected ? AppColors.glassMedium : null,
+        padding: const EdgeInsets.symmetric(
+          horizontal: CalmSpace.s5,
+          vertical: CalmSpace.s4,
+        ),
+        child: Row(
+          children: <Widget>[
+            Icon(
+              selected
+                  ? Icons.check_box_rounded
+                  : Icons.check_box_outline_blank_rounded,
+              color: selected ? AppColors.ember : AppColors.neutral3,
+              size: 22,
             ),
-          ),
-        ],
+            const Gap(CalmSpace.s4),
+            Expanded(
+              child: Text(
+                label,
+                style: textTheme.bodyLarge?.copyWith(color: AppColors.ink),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
