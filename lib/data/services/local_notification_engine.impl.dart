@@ -74,21 +74,27 @@ final class LocalNotificationEngineImpl implements LocalNotificationEngine {
   }) async {
     final tz.TZDateTime scheduled = tz.TZDateTime.from(at, tz.local);
 
-    const AndroidNotificationDetails
-    androidDetails = AndroidNotificationDetails(
-      'beedle_default',
-      'Beedle',
-      channelDescription: 'Teasers et rappels quotidiens Beedle',
-      importance: Importance.high,
-      priority: Priority.high,
-      // Status bar icon (Android impose une silhouette blanche/transparente).
-      // `ic_launcher_monochrome` est généré par flutter_launcher_icons à
-      // partir de `assets/branding/icon-notification-monochrome-1024.png`.
-      icon: 'ic_launcher_monochrome',
-      // Tinte la silhouette + le badge avec l'ember Beedle (#FF6B2E).
-      color: Color(0xFFFF6B2E),
-      colorized: true,
-    );
+    const AndroidNotificationDetails androidDetails =
+        AndroidNotificationDetails(
+          'beedle_default',
+          'Beedle',
+          channelDescription: 'Teasers et rappels quotidiens Beedle',
+          importance: Importance.high,
+          priority: Priority.high,
+          // ── Small icon (status bar) ──────────────────────────────────────
+          // Android impose ici une silhouette monochrome (toute couleur est
+          // strippée par l'OS depuis API 21). `ic_launcher_monochrome` est
+          // généré par flutter_launcher_icons à partir de
+          // `assets/branding/icon-notification-monochrome-1024.png`.
+          icon: 'ic_launcher_monochrome',
+          // Teinte la silhouette + le badge avec l'ember Beedle (#FF6B2E).
+          color: Color(0xFFFF6B2E),
+          colorized: true,
+          // ── Large icon (corps de la notif) ───────────────────────────────
+          // Affiche le Dot-b coloré (le vrai logo de l'app, source SVG
+          // `assets/branding/icon-dot-b.svg`) à droite du contenu de la notif.
+          largeIcon: DrawableResourceAndroidBitmap('ic_launcher'),
+        );
     const DarwinNotificationDetails iosDetails = DarwinNotificationDetails();
 
     const NotificationDetails details = NotificationDetails(
