@@ -161,22 +161,19 @@ void main() {
   });
 
   group('OnboardingViewModel — demo', () {
-    test('recordDemoSwipe() collects kept indices', () {
+    test('markDemoCompleted() flips the flag idempotently', () {
       final ProviderContainer c = _buildContainer();
       addTearDown(c.dispose);
       final OnboardingViewModel vm = c.read(
         onboardingViewModelProvider.notifier,
       );
 
-      vm
-        ..recordDemoSwipe(0, keep: true)
-        ..recordDemoSwipe(1, keep: false)
-        ..recordDemoSwipe(3, keep: true);
-
-      expect(
-        c.read(onboardingViewModelProvider).demoSwipedRightIndices,
-        <int>{0, 3},
-      );
+      expect(c.read(onboardingViewModelProvider).demoCompleted, isFalse);
+      vm.markDemoCompleted();
+      expect(c.read(onboardingViewModelProvider).demoCompleted, isTrue);
+      // Idempotent — second call doesn't toggle.
+      vm.markDemoCompleted();
+      expect(c.read(onboardingViewModelProvider).demoCompleted, isTrue);
     });
   });
 
@@ -204,8 +201,7 @@ void main() {
         ..selectGoal(OnboardingGoal.stayAIUpToDate)
         ..togglePainPoint(PainPoint.reGoogle)
         ..togglePainPoint(PainPoint.notionHeavy)
-        ..recordDemoSwipe(0, keep: true)
-        ..recordDemoSwipe(2, keep: true);
+        ..markDemoCompleted();
 
       await vm.finishOnboarding();
 
@@ -222,7 +218,7 @@ void main() {
 
       expect(payload['goal'], 'stayAIUpToDate');
       expect(payload['pain_points_count'], 2);
-      expect(payload['demo_picked_count'], 2);
+      expect(payload['demo_completed'], isTrue);
     });
 
     test('clears isSubmitting when complete', () async {

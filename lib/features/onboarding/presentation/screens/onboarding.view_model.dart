@@ -59,6 +59,16 @@ class OnboardingViewModel extends _$OnboardingViewModel {
 
   // ── Demo (écran 13) ─────────────────────────────────────────────────
 
+  /// Marqueur "l'utilisateur a tapé sur le bouton *Digérer ce screenshot*
+  /// au moins une fois" — débloque la sortie de l'écran de démo simulée.
+  void markDemoCompleted() {
+    if (state.demoCompleted) return;
+    state = state.copyWith(demoCompleted: true);
+  }
+
+  /// Deprecated — l'ancien Tinder-demo n'existe plus. Conservé pour ne
+  /// pas casser les tests legacy. À supprimer dans le prochain refactor
+  /// state.
   void recordDemoSwipe(int index, {required bool keep}) {
     final Set<int> updated = <int>{...state.demoSwipedRightIndices};
     if (keep) {
@@ -138,7 +148,7 @@ class OnboardingViewModel extends _$OnboardingViewModel {
               'teaser_count': state.teaserCountPerDay,
               'photos_granted': state.photosGranted,
               'notifications_granted': state.notificationsGranted,
-              'demo_picked_count': state.demoSwipedRightIndices.length,
+              'demo_completed': state.demoCompleted,
             },
           );
     } finally {

@@ -13,7 +13,11 @@ abstract class OnboardingState with _$OnboardingState {
     OnboardingGoal? goal,
     @Default(<PainPoint>{}) Set<PainPoint> painPoints,
     @Default(<int>{}) Set<int> tinderAgreedIndices,
-    // Demo (interactive practice swipe)
+    // Demo (interactive simulation — user has tapped "digest" once)
+    @Default(false) bool demoCompleted,
+    // Legacy: kept for backwards-compat with the old Tinder-demo
+    // (deprecated, no longer driven by the UI but still in the analytics
+    // payload until the next analytics schema change).
     @Default(<int>{}) Set<int> demoSwipedRightIndices,
     // Preferences (existing — unchanged)
     @Default(<ContentCategory>[]) List<ContentCategory> contentCategories,

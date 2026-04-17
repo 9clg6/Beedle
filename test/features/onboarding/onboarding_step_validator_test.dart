@@ -54,19 +54,12 @@ void main() {
       );
     });
 
-    test('step 12 (Demo) requires at least 3 kept indices', () {
+    test('step 12 (Demo) requires demoCompleted = true', () {
       expect(OnboardingStepValidator.canAdvance(12, empty), isFalse);
       expect(
         OnboardingStepValidator.canAdvance(
           12,
-          empty.copyWith(demoSwipedRightIndices: <int>{0, 1}),
-        ),
-        isFalse,
-      );
-      expect(
-        OnboardingStepValidator.canAdvance(
-          12,
-          empty.copyWith(demoSwipedRightIndices: <int>{0, 1, 2}),
+          empty.copyWith(demoCompleted: true),
         ),
         isTrue,
       );
