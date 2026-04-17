@@ -1,6 +1,7 @@
 import 'package:beedle/data/services/auth_service.impl.dart';
 import 'package:beedle/domain/entities/auth_user.entity.dart';
 import 'package:beedle/domain/enum/auth_provider.enum.dart';
+import 'package:beedle/domain/services/analytics.service.dart';
 import 'package:beedle/domain/services/auth.service.dart';
 import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import 'package:flutter/services.dart';
@@ -24,6 +25,8 @@ class _MockUser extends Mock implements User {}
 class _MockUserMetadata extends Mock implements UserMetadata {}
 
 class _MockUserInfo extends Mock implements UserInfo {}
+
+class _MockAnalyticsService extends Mock implements AnalyticsService {}
 
 class _FakeAuthCredential extends Fake implements AuthCredential {}
 
@@ -246,6 +249,25 @@ void main() {
 
       verify(auth.signOut).called(1);
       verify(google.signOut).called(1);
+    });
+
+    test('track authSignout via AnalyticsService injecté', () async {
+      final _MockFirebaseAuth auth = _MockFirebaseAuth();
+      final _MockGoogleSignIn google = _MockGoogleSignIn();
+      final _MockAnalyticsService analytics = _MockAnalyticsService();
+      when(auth.signOut).thenAnswer((_) async {});
+      when(google.signOut).thenAnswer((_) async => null);
+      when(() => analytics.track(any())).thenAnswer((_) async {});
+
+      final FirebaseAuthService service = FirebaseAuthService(
+        firebaseAuth: auth,
+        googleSignIn: google,
+        analytics: analytics,
+      );
+
+      await service.signOut();
+
+      verify(() => analytics.track(AnalyticsEvent.authSignout)).called(1);
     });
   });
 }

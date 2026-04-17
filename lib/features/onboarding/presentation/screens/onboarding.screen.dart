@@ -102,24 +102,39 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     return Scaffold(
       body: GradientBackground(
         child: SafeArea(
+          // Children list shape is kept CONSTANT across immersive ↔
+          // non-immersive transitions. Switching the slot count caused
+          // Flutter to reconcile the PageView at a different position in
+          // the list, dropping its current page and snapping back to 0.
+          // Visibility hides the chrome instead of removing it.
           child: Column(
             children: <Widget>[
-              if (!isImmersive)
-                _ProgressIndicator(
+              Visibility(
+                visible: !isImmersive,
+                maintainState: true,
+                maintainAnimation: true,
+                maintainSize: false,
+                child: _ProgressIndicator(
                   currentIndex: state.currentIndex,
                   total: kOnboardingTotalScreens,
                 ),
+              ),
               Expanded(
-                child: PageView(
+                child: PageView.builder(
+                  key: const PageStorageKey<String>('onboarding-pageview'),
                   controller: _controller,
                   physics: const NeverScrollableScrollPhysics(),
-                  children: <Widget>[
-                    for (int i = 0; i < kOnboardingTotalScreens; i++)
-                      _buildStep(i),
-                  ],
+                  itemCount: kOnboardingTotalScreens,
+                  itemBuilder: (BuildContext _, int i) => _buildStep(i),
                 ),
               ),
-              if (!isImmersive) _NavBar(state: state, onFinish: _finish),
+              Visibility(
+                visible: !isImmersive,
+                maintainState: true,
+                maintainAnimation: true,
+                maintainSize: false,
+                child: _NavBar(state: state, onFinish: _finish),
+              ),
             ],
           ),
         ),

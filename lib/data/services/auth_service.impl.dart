@@ -1,6 +1,7 @@
 import 'package:beedle/data/mappers/auth_user.mapper.dart';
 import 'package:beedle/domain/entities/auth_user.entity.dart';
 import 'package:beedle/domain/enum/auth_provider.enum.dart';
+import 'package:beedle/domain/services/analytics.service.dart';
 import 'package:beedle/domain/services/auth.service.dart';
 import 'package:beedle/foundation/logging/logger.dart';
 // `firebase_auth` exporte aussi un type `AuthProvider`. On le cache pour
@@ -19,11 +20,14 @@ final class FirebaseAuthService implements AuthService {
   FirebaseAuthService({
     FirebaseAuth? firebaseAuth,
     GoogleSignIn? googleSignIn,
+    AnalyticsService? analytics,
   }) : _auth = firebaseAuth ?? FirebaseAuth.instance,
-       _google = googleSignIn ?? GoogleSignIn(scopes: const <String>['email']);
+       _google = googleSignIn ?? GoogleSignIn(scopes: const <String>['email']),
+       _analytics = analytics;
 
   final FirebaseAuth _auth;
   final GoogleSignIn _google;
+  final AnalyticsService? _analytics;
   final Log _log = Log.named('FirebaseAuthService');
 
   @override
@@ -108,6 +112,7 @@ final class FirebaseAuthService implements AuthService {
       _auth.signOut(),
       _google.signOut(),
     ]);
+    await _analytics?.track(AnalyticsEvent.authSignout);
     _log.info('Signed out');
   }
 }
