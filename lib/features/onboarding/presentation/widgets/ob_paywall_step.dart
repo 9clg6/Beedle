@@ -139,7 +139,6 @@ class _OnboardingPaywallStepState extends ConsumerState<OnboardingPaywallStep> {
         CalmSpace.s5,
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           const CalmBadge(label: 'BEEDLE PRO', variant: CalmBadgeVariant.mint),
           const Gap(CalmSpace.s5),

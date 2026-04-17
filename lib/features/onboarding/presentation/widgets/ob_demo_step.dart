@@ -77,7 +77,6 @@ class _OnboardingDemoStepState extends ConsumerState<OnboardingDemoStep> {
         CalmSpace.s5,
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Text(
             LocaleKeys.onboarding_ob13_title.tr(),
@@ -99,7 +98,6 @@ class _OnboardingDemoStepState extends ConsumerState<OnboardingDemoStep> {
             SquircleButton(
               label: LocaleKeys.onboarding_ob13_cta_digest.tr(),
               icon: Icons.auto_awesome_rounded,
-              variant: SquircleButtonVariant.primary,
               expand: true,
               onPressed: _onDigest,
             ),

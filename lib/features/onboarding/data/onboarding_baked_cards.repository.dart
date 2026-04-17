@@ -42,7 +42,7 @@ class OnboardingBakedCardsRepository {
 
   /// Charge les 3 fiches baked depuis les assets et retourne leur
   /// version "preview" (pas encore persistée) — utilisée par l'écran 14
-  /// pour afficher la stack visuelle avant de la persister.
+  /// pour afficher la grid visuelle avant de les persister.
   Future<List<CardEntity>> loadPreview() async {
     final List<CardEntity> cards = <CardEntity>[];
     for (final String slug in _kCardSlugs) {
@@ -54,6 +54,25 @@ class OnboardingBakedCardsRepository {
       }
     }
     return cards;
+  }
+
+  /// Persiste les 3 fiches baked SANS calculer leur embedding (call
+  /// synchrone, zéro network). Utilisé au moment où l'utilisateur
+  /// atteint l'écran 14 pour que le tap sur une card ouvre le détail
+  /// immédiatement (l'embedding est rattrappé plus tard via [persistAll]
+  /// au `finishOnboarding()`, upsert idempotent grâce aux UUID v5).
+  Future<List<CardEntity>> persistPreview() async {
+    final List<CardEntity> persisted = <CardEntity>[];
+    for (final String slug in _kCardSlugs) {
+      try {
+        final CardEntity card = await _loadOne(slug, withEmbedding: false);
+        await _cardRepository.upsert(card);
+        persisted.add(card);
+      } on Exception catch (e) {
+        _log.warn('Failed to persist preview card $slug: $e');
+      }
+    }
+    return persisted;
   }
 
   /// Persiste les 3 fiches baked dans le `cardRepository` (avec embedding

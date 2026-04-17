@@ -113,7 +113,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 visible: !isImmersive,
                 maintainState: true,
                 maintainAnimation: true,
-                maintainSize: false,
                 child: _ProgressIndicator(
                   currentIndex: state.currentIndex,
                   total: kOnboardingTotalScreens,
@@ -132,7 +131,6 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
                 visible: !isImmersive,
                 maintainState: true,
                 maintainAnimation: true,
-                maintainSize: false,
                 child: _NavBar(state: state, onFinish: _finish),
               ),
             ],

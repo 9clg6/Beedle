@@ -2,10 +2,12 @@ import 'dart:io';
 import 'dart:typed_data' show ByteData;
 import 'dart:ui' as ui;
 
+import 'package:auto_route/auto_route.dart';
 import 'package:beedle/domain/entities/card.entity.dart';
 import 'package:beedle/domain/enum/card_intent.enum.dart';
 import 'package:beedle/features/onboarding/data/onboarding_baked_cards.provider.dart';
 import 'package:beedle/features/onboarding/presentation/screens/onboarding.view_model.dart';
+import 'package:beedle/foundation/routing/app_router.dart';
 import 'package:beedle/generated/locale_keys.g.dart';
 import 'package:beedle/presentation/theme/app_colors.dart';
 import 'package:beedle/presentation/theme/calm_tokens.dart';
@@ -22,12 +24,20 @@ import 'package:share_plus/share_plus.dart';
 
 /// Écran 14 — Viral moment (full-immersion).
 ///
-/// Affiche les 3 fiches qui seront persistées dans la bibliothèque
-/// (chargées via `OnboardingBakedCardsRepository.loadPreview()`,
-/// `withEmbedding: false` — l'embedding est calculé seulement à
-/// `finishOnboarding()` côté ViewModel). Le bouton *Partager* capture
-/// la stack via `RepaintBoundary.toImage()` puis lance le native share
-/// sheet via `share_plus`.
+/// Affiche les 3 fiches déjà persistées en bibliothèque dans une colonne
+/// compacte (pas de scroll, les 3 cards se partagent équitablement
+/// l'espace vertical disponible). Tap sur une card → ouvre
+/// `CardDetailRoute` en push (retour arrière ramène sur l'onboarding).
+///
+/// Persistence :
+/// - Au `initState()` : `persistPreview()` upsert les 3 cards SANS
+///   embedding (zéro network) — l'UUID est désormais valide dans
+///   ObjectBox donc le tap peut naviguer vers le détail immédiatement.
+/// - Au `finishOnboarding()` (ViewModel) : `persistAll()` upsert avec
+///   embedding cette fois — idempotent grâce aux UUID v5.
+///
+/// Le bouton *Partager* capture la colonne via `RepaintBoundary.toImage()`
+/// puis lance le native share sheet via `share_plus`.
 class OnboardingViralMomentStep extends ConsumerStatefulWidget {
   const OnboardingViralMomentStep({super.key});
 
@@ -41,7 +51,7 @@ class _OnboardingViralMomentStepState
   final GlobalKey _previewKey = GlobalKey();
   late final Future<List<CardEntity>> _cardsFuture = ref
       .read(onboardingBakedCardsRepositoryProvider)
-      .loadPreview();
+      .persistPreview();
   bool _sharing = false;
 
   Future<void> _onShare() async {
@@ -91,6 +101,10 @@ class _OnboardingViralMomentStepState
 
   void _onContinue() => ref.read(onboardingViewModelProvider.notifier).next();
 
+  void _onCardTap(CardEntity card) {
+    context.router.push(CardDetailRoute(uuid: card.uuid));
+  }
+
   @override
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
@@ -103,7 +117,6 @@ class _OnboardingViralMomentStepState
         CalmSpace.s5,
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           CalmDigitalNumber(
             value: LocaleKeys.onboarding_ob14_eyebrow.tr(),
@@ -111,19 +124,19 @@ class _OnboardingViralMomentStepState
             color: AppColors.ember,
             letterSpacing: 4,
           ),
-          const Gap(CalmSpace.s4),
-          Text(
-            LocaleKeys.onboarding_ob14_title.tr(),
-            style: textTheme.headlineMedium?.copyWith(color: AppColors.ink),
-            textAlign: TextAlign.center,
-          ),
           const Gap(CalmSpace.s3),
           Text(
-            LocaleKeys.onboarding_ob14_subtitle.tr(),
-            style: textTheme.bodyMedium?.copyWith(color: AppColors.neutral6),
+            LocaleKeys.onboarding_ob14_title.tr(),
+            style: textTheme.titleLarge?.copyWith(color: AppColors.ink),
             textAlign: TextAlign.center,
           ),
-          const Gap(CalmSpace.s5),
+          const Gap(CalmSpace.s2),
+          Text(
+            LocaleKeys.onboarding_ob14_subtitle.tr(),
+            style: textTheme.bodySmall?.copyWith(color: AppColors.neutral6),
+            textAlign: TextAlign.center,
+          ),
+          const Gap(CalmSpace.s4),
           Expanded(
             child: FutureBuilder<List<CardEntity>>(
               future: _cardsFuture,
@@ -139,16 +152,18 @@ class _OnboardingViralMomentStepState
                     }
                     return RepaintBoundary(
                       key: _previewKey,
-                      child: _CardStack(cards: snap.data!),
+                      child: _CardColumn(
+                        cards: snap.data!,
+                        onCardTap: _onCardTap,
+                      ),
                     );
                   },
             ),
           ),
-          const Gap(CalmSpace.s5),
+          const Gap(CalmSpace.s4),
           SquircleButton(
             label: LocaleKeys.onboarding_ob14_share_cta.tr(),
             icon: Icons.ios_share_rounded,
-            variant: SquircleButtonVariant.primary,
             expand: true,
             loading: _sharing,
             onPressed: _onShare,
@@ -166,10 +181,14 @@ class _OnboardingViralMomentStepState
   }
 }
 
-class _CardStack extends StatelessWidget {
-  const _CardStack({required this.cards});
+/// Colonne compacte affichant les N fiches les unes sous les autres.
+/// Chaque card prend une part égale de l'espace vertical — calibrée
+/// pour que 3 cards tiennent dans la hauteur restante sans scroll.
+class _CardColumn extends StatelessWidget {
+  const _CardColumn({required this.cards, required this.onCardTap});
 
   final List<CardEntity> cards;
+  final void Function(CardEntity card) onCardTap;
 
   @override
   Widget build(BuildContext context) {
@@ -183,78 +202,73 @@ class _CardStack extends StatelessWidget {
       );
     }
 
-    final List<Widget> stack = <Widget>[];
-    for (int i = cards.length - 1; i >= 0; i--) {
-      final CardEntity card = cards[i];
-      stack.add(
-        Positioned.fill(
-          top: i * 16.0,
-          left: i * 12.0,
-          right: i * 12.0,
-          child: _OnboardingPreviewCard(card: card),
-        ),
-      );
-    }
-    return Stack(children: stack);
+    return Column(
+      children: <Widget>[
+        for (int i = 0; i < cards.length; i++) ...<Widget>[
+          Expanded(
+            child: _OnboardingPreviewCard(
+              card: cards[i],
+              onTap: () => onCardTap(cards[i]),
+            ),
+          ),
+          if (i < cards.length - 1) const Gap(CalmSpace.s3),
+        ],
+      ],
+    );
   }
 }
 
 class _OnboardingPreviewCard extends StatelessWidget {
-  const _OnboardingPreviewCard({required this.card});
+  const _OnboardingPreviewCard({required this.card, required this.onTap});
 
   final CardEntity card;
+  final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
     return GlassCard(
-      padding: const EdgeInsets.all(CalmSpace.s5),
-      child: Column(
+      onTap: onTap,
+      padding: const EdgeInsets.all(CalmSpace.s4),
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(
-            _intentLabel(card.intent),
-            style: textTheme.labelSmall?.copyWith(color: AppColors.ember),
-          ),
-          const Gap(CalmSpace.s2),
-          Text(
-            card.title,
-            style: textTheme.titleMedium?.copyWith(color: AppColors.ink),
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const Gap(CalmSpace.s3),
-          Text(
-            card.summary,
-            style: textTheme.bodySmall?.copyWith(color: AppColors.neutral6),
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const Spacer(),
-          if (card.tags.isNotEmpty)
-            Wrap(
-              spacing: CalmSpace.s2,
-              runSpacing: CalmSpace.s2,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                for (final String tag in card.tags.take(3))
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: CalmSpace.s3,
-                      vertical: CalmSpace.s1,
+                Text(
+                  _intentLabel(card.intent),
+                  style: textTheme.labelSmall?.copyWith(color: AppColors.ember),
+                ),
+                const Gap(CalmSpace.s1),
+                Text(
+                  card.title,
+                  style: textTheme.titleSmall?.copyWith(color: AppColors.ink),
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const Gap(CalmSpace.s2),
+                Flexible(
+                  child: Text(
+                    card.summary,
+                    style: textTheme.bodySmall?.copyWith(
+                      color: AppColors.neutral6,
                     ),
-                    decoration: BoxDecoration(
-                      color: AppColors.glassSoft,
-                      borderRadius: BorderRadius.circular(CalmRadius.pill),
-                    ),
-                    child: Text(
-                      '#$tag',
-                      style: textTheme.labelSmall?.copyWith(
-                        color: AppColors.neutral6,
-                      ),
-                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
+                ),
               ],
             ),
+          ),
+          const Gap(CalmSpace.s3),
+          const Icon(
+            Icons.chevron_right_rounded,
+            color: AppColors.neutral3,
+            size: 22,
+          ),
         ],
       ),
     );

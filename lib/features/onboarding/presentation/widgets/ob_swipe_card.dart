@@ -30,9 +30,9 @@ class OnboardingSwipeCard extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
             const Spacer(),
-            Row(
+            const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: const <Widget>[
+              children: <Widget>[
                 _SwipeHint(
                   icon: Icons.close_rounded,
                   color: AppColors.neutral6,

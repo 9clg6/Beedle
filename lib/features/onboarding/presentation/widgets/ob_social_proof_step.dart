@@ -58,12 +58,10 @@ class OnboardingSocialProofStep extends StatelessWidget {
           const Gap(CalmSpace.s7),
           GlassCard(
             elevated: false,
-            padding: const EdgeInsets.all(CalmSpace.s6),
             child: Row(
               children: <Widget>[
                 CalmDigitalNumber(
                   value: LocaleKeys.onboarding_ob05_stat_value.tr(),
-                  size: 36,
                   color: AppColors.ink,
                 ),
                 const Gap(CalmSpace.s4),
