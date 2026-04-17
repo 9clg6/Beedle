@@ -129,6 +129,7 @@ flutter:
     - assets/branding/
     - assets/onboarding/
     - assets/onboarding/samples/
+    - assets/onboarding/baked/cards/
 
 flutter_gen:
   output: lib/gen

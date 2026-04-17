@@ -20,9 +20,24 @@ export interface Env {
 
 const OPENAI_BASE_URL = 'https://api.openai.com';
 
-const RATE_LIMITS: Record<'free' | 'pro', { perHour: number; perDay: number }> = {
-  free: { perHour: 10, perDay: 30 },
-  pro: { perHour: 50, perDay: 200 },
+/**
+ * Server-side quotas. Source de vérité pour la facturation et l'anti-abus.
+ *
+ * - `perMonth` est aligné avec le paywall client :
+ *     free = 15 scans IA / mois calendaire (UTC)
+ *     pro  = 500 scans / mois (fair-use, bien au-dessus de P95)
+ * - `perHour` / `perDay` sont des garde-fous anti-burst (abus / runaway loop).
+ *
+ * Un "scan" ici = 1 requête vers /v1/chat/completions ou /v1/embeddings.
+ * L'app en émet 2 par carte (chat + embedding) — tenir compte de ça si on
+ * tune les limites.
+ */
+const RATE_LIMITS: Record<
+  'free' | 'pro',
+  { perHour: number; perDay: number; perMonth: number }
+> = {
+  free: { perHour: 10, perDay: 30, perMonth: 30 }, // 15 cartes × 2 reqs = 30
+  pro: { perHour: 120, perDay: 500, perMonth: 1000 }, // 500 cartes × 2 reqs
 };
 
 export default {
@@ -94,30 +109,53 @@ function corsHeaders(): Record<string, string> {
   };
 }
 
+/**
+ * Vérifie et incrémente les compteurs hour / day / month pour cet user.
+ * Renvoie `true` si la requête doit être bloquée (quota dépassé).
+ *
+ * Le compteur mensuel utilise une clé `YYYY-MM` (UTC) — pas un rolling-30-days.
+ * C'est ce qui permet au user de "recharger" le 1er du mois, comme côté client.
+ */
 async function checkRateLimit(
   kv: KVNamespace,
   userId: string,
   tier: 'free' | 'pro'
 ): Promise<boolean> {
   const limits = RATE_LIMITS[tier];
-  const now = Date.now();
-  const hourWindow = Math.floor(now / (60 * 60 * 1000));
-  const dayWindow = Math.floor(now / (24 * 60 * 60 * 1000));
+  const now = new Date();
+  const hourWindow = Math.floor(now.getTime() / (60 * 60 * 1000));
+  const dayWindow = Math.floor(now.getTime() / (24 * 60 * 60 * 1000));
+  const monthWindow = `${now.getUTCFullYear()}-${String(
+    now.getUTCMonth() + 1
+  ).padStart(2, '0')}`;
 
   const hourKey = `rl:${userId}:h:${hourWindow}`;
   const dayKey = `rl:${userId}:d:${dayWindow}`;
+  const monthKey = `rl:${userId}:m:${monthWindow}`;
 
-  const [hourRaw, dayRaw] = await Promise.all([kv.get(hourKey), kv.get(dayKey)]);
+  const [hourRaw, dayRaw, monthRaw] = await Promise.all([
+    kv.get(hourKey),
+    kv.get(dayKey),
+    kv.get(monthKey),
+  ]);
   const hourCount = parseInt(hourRaw || '0', 10);
   const dayCount = parseInt(dayRaw || '0', 10);
+  const monthCount = parseInt(monthRaw || '0', 10);
 
-  if (hourCount >= limits.perHour || dayCount >= limits.perDay) {
+  if (
+    hourCount >= limits.perHour ||
+    dayCount >= limits.perDay ||
+    monthCount >= limits.perMonth
+  ) {
     return true;
   }
 
+  // TTL du compteur mensuel = 45 jours (survit au changement de mois avec marge).
+  const monthTtl = 45 * 24 * 60 * 60;
   await Promise.all([
     kv.put(hourKey, String(hourCount + 1), { expirationTtl: 7200 }),
     kv.put(dayKey, String(dayCount + 1), { expirationTtl: 172800 }),
+    kv.put(monthKey, String(monthCount + 1), { expirationTtl: monthTtl }),
   ]);
 
   return false;
