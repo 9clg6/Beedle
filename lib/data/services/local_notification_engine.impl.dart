@@ -1,5 +1,6 @@
 import 'package:beedle/domain/services/notification_scheduler.service.dart';
 import 'package:beedle/foundation/logging/logger.dart';
+import 'package:flutter/material.dart' show Color;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest_all.dart' as tz_init;
 import 'package:timezone/timezone.dart' as tz;
@@ -73,14 +74,21 @@ final class LocalNotificationEngineImpl implements LocalNotificationEngine {
   }) async {
     final tz.TZDateTime scheduled = tz.TZDateTime.from(at, tz.local);
 
-    const AndroidNotificationDetails androidDetails =
-        AndroidNotificationDetails(
-          'beedle_default',
-          'Beedle',
-          channelDescription: 'Teasers et rappels quotidiens Beedle',
-          importance: Importance.high,
-          priority: Priority.high,
-        );
+    const AndroidNotificationDetails
+    androidDetails = AndroidNotificationDetails(
+      'beedle_default',
+      'Beedle',
+      channelDescription: 'Teasers et rappels quotidiens Beedle',
+      importance: Importance.high,
+      priority: Priority.high,
+      // Status bar icon (Android impose une silhouette blanche/transparente).
+      // `ic_launcher_monochrome` est généré par flutter_launcher_icons à
+      // partir de `assets/branding/icon-notification-monochrome-1024.png`.
+      icon: 'ic_launcher_monochrome',
+      // Tinte la silhouette + le badge avec l'ember Beedle (#FF6B2E).
+      color: Color(0xFFFF6B2E),
+      colorized: true,
+    );
     const DarwinNotificationDetails iosDetails = DarwinNotificationDetails();
 
     const NotificationDetails details = NotificationDetails(

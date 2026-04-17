@@ -62,6 +62,19 @@
             android:name="flutterEmbedding"
             android:value="2" />
 
+        <!-- Firebase Cloud Messaging — small icon par défaut pour les push
+             remote (Android impose une silhouette blanche/transparente,
+             sinon affiche un placeholder gris générique). -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_launcher_monochrome" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/notification_accent" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_channel_id"
+            android:value="beedle_default" />
+
         <!-- TODO-USER: une fois l'auto-import Android implémenté (STORY-017 + workmanager), enregistrer le worker ici. -->
         <!-- <receiver android:name="be.tramckrijte.workmanager.BackgroundWorker" /> -->
     </application>

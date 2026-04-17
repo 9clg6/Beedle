@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="ic_launcher_background">#FFFBF5</color>
+    <!-- Beedle ember — accent appliqué à la silhouette monochrome du
+         status bar et au badge des notifications (FCM + flutter_local_notifications). -->
+    <color name="notification_accent">#FFFF6B2E</color>
 </resources>
