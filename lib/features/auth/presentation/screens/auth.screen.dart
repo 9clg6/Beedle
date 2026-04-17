@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:auto_route/auto_route.dart';
 import 'package:beedle/core/providers/service_providers.dart';
 import 'package:beedle/domain/services/analytics.service.dart';
@@ -43,7 +45,11 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      ref.read(analyticsServiceProvider).track(AnalyticsEvent.authScreenViewed);
+      unawaited(
+        ref
+            .read(analyticsServiceProvider)
+            .track(AnalyticsEvent.authScreenViewed),
+      );
     });
   }
 
