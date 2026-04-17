@@ -123,7 +123,22 @@ Future<void> _onTapSubscribe(BuildContext context, WidgetRef ref) async {
         .read(subscriptionRepositoryProvider)
         .purchase('beedle_pro_yearly');
     if (context.mounted) unawaited(context.router.maybePop());
-  } on Exception catch (_) {}
+  } on Exception catch (_) {
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          backgroundColor: AppColors.ink,
+          behavior: SnackBarBehavior.floating,
+          shape: const StadiumBorder(),
+          margin: const EdgeInsets.all(CalmSpace.s5),
+          content: Text(
+            LocaleKeys.common_error_generic.tr(),
+            style: const TextStyle(color: AppColors.canvas),
+          ),
+        ),
+      );
+    }
+  }
 }
 
 class _Benefit extends StatelessWidget {

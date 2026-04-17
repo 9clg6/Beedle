@@ -48,5 +48,39 @@ void main() {
 
       expect(c.read(currentUserProvider), isNull);
     });
+
+    test('reflète une transition entity1 → entity2 (re-login)', () async {
+      final _MockAuthService auth = _MockAuthService();
+      final StreamController<AuthUserEntity?> controller =
+          StreamController<AuthUserEntity?>();
+      when(auth.authStateChanges).thenAnswer((_) => controller.stream);
+
+      final ProviderContainer c = ProviderContainer(
+        overrides: <Override>[authServiceProvider.overrideWithValue(auth)],
+      );
+      addTearDown(c.dispose);
+      addTearDown(controller.close);
+
+      c.listen(authStateProvider, (_, __) {});
+
+      final AuthUserEntity e1 = AuthUserEntity(
+        uid: 'uid-1',
+        provider: AuthProvider.google,
+        createdAt: DateTime.utc(2026, 1, 1),
+      );
+      final AuthUserEntity e2 = AuthUserEntity(
+        uid: 'uid-2',
+        provider: AuthProvider.apple,
+        createdAt: DateTime.utc(2026, 2, 1),
+      );
+
+      controller.add(e1);
+      await Future<void>.delayed(Duration.zero);
+      expect(c.read(currentUserProvider), e1);
+
+      controller.add(e2);
+      await Future<void>.delayed(Duration.zero);
+      expect(c.read(currentUserProvider), e2);
+    });
   });
 }

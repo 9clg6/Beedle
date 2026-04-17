@@ -1,10 +1,7 @@
-import 'package:auto_route/auto_route.dart';
 import 'package:beedle/core/providers/auth.provider.dart';
 import 'package:beedle/core/providers/data_providers.dart';
 import 'package:beedle/core/providers/service_providers.dart';
-import 'package:beedle/domain/entities/auth_user.entity.dart';
 import 'package:beedle/domain/entities/user_preferences.entity.dart';
-import 'package:beedle/domain/enum/auth_provider.enum.dart';
 import 'package:beedle/domain/repositories/user_preferences.repository.dart';
 import 'package:beedle/domain/services/analytics.service.dart';
 import 'package:beedle/domain/services/auth.service.dart';

@@ -17,7 +17,7 @@ part 'auth.view_model.g.dart';
 @riverpod
 class AuthViewModel extends _$AuthViewModel {
   @override
-  AuthScreenState build() => AuthScreenState.initial();
+  AuthScreenState build() => const AuthScreenState();
 
   Future<bool> signInWithGoogle() => _signIn(
     provider: 'google',

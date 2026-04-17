@@ -41,8 +41,11 @@ sealed class AuthFailure implements Exception {
 }
 
 /// L'utilisateur a fermé le sheet d'auth (ou refusé sur Apple).
+///
+/// Le message n'est **pas** remonté à l'UI — on revient simplement à l'état
+/// idle. Il reste en anglais pour les logs/analytics uniquement.
 final class AuthCancelledByUser extends AuthFailure {
-  const AuthCancelledByUser() : super('Authentication cancelled by user');
+  const AuthCancelledByUser() : super('auth_cancelled_by_user');
 }
 
 /// Erreur réseau lors de l'auth (timeout, offline, DNS…).
