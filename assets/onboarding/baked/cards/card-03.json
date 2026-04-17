@@ -1,0 +1,14 @@
+{
+  "title": "Métriques essentielles pour les applications mobiles",
+  "summary": "Découvrez les métriques clés à suivre pour optimiser l'acquisition, la monétisation et la rétention de votre application mobile.",
+  "fullContent": "> Killian Sowa sur LinkedIn\n\n## Acquisition\n\n↳ **CPI - Cost Per Install**  \nCe que tu paies pour chaque téléchargement via tes campagnes.  \n✅ Bonne zone : 0,5 – 2.5 $ sur Meta/TikTok.  \n⚠️ Au-delà de 2.5 $ : ta LTV doit suivre, sinon tu es mort.  \n→ TikTok = CPI plus bas, mais audience moins qualifiée  \n→ En France + petits budgets : les chiffres sont naturellement meilleurs  \n\n↳ **CAC - Customer Acquisition Cost**  \nDépenses marketing ÷ nouveaux clients.  \n✅ Règle d'or : CAC < LTV ÷ 3  \n⚠️ Si ce ratio est mauvais, oublie le scale.  \n\n↳ **CVR - Conversion Rate App Store**  \n% de visiteurs qui passent à l'install.  \n→ C'est le levier le plus sous-estimé de l'acquisition  \n→ Meilleure fiche = CPI qui baisse sans dépenser un € de plus  \n→ Ping The Screenshot First Company pour une fiche qui cartonne.  \n\n## Monétisation\n\n↳ **LTV - Lifetime Value**  \nRevenu total généré par un utilisateur sur toute sa durée de vie.  \n✅ LTV / CAC > 3 : ton modèle tient  \n⚠️ En dessous : ton modèle ne tient pas  \n→ Les LTV sont naturellement plus hautes aux USA et dans les pays nordiques  \n\n↳ **ARPU - Average Revenue Per User**  \nRevenus ÷ utilisateurs actifs.  \nSimple. À surveiller chaque mois sans exception.  \n\n↳ **Taux de conversion freemium**  \n% d'utilisateurs gratuits → payants.  \n✅ Bonne zone : 2 – 5 %  \n⚠️ Sous 2 % : ton offre payante ou ton onboarding a un problème  \n\n## Rétention\n\n↳ **Day-1 Retention**  \n% d'utilisateurs qui reviennent le lendemain de l'install.  \n→ Premier signal de la qualité réelle de ton produit.  \n\n↳ **Day-30 Retention**  \n% encore actifs 30 jours après.  \n→ Les utilisateurs d'apps sont volatiles. Craquer ça = avantage massif.  \n\n↳ **Churn Rate**  \n% d'abonnés perdus chaque mois.  \n→ À surveiller, c'est le nerf de la guerre dans les apps.  \n\n↳ **DAU / MAU**  \nActifs quotidiens ÷ actifs mensuels.  \n→ Ce ratio te dit si ton app crée une vraie habitude - ou juste un usage ponctuel.  \n\nLa plupart des créateurs regardent leurs revenus.  \nLes meilleurs regardent toutes ces métriques, ensemble.  \nEt c'est exactement là que se creuse l'écart.  \n\nC'est quoi la métrique que tu surveilles le plus sur ton app ? (ou celle que tu négligeais jusqu'ici 👇)",
+  "level": "intermediate",
+  "intent": "reference",
+  "tags": [
+    "app-business",
+    "product",
+    "metrics"
+  ],
+  "language": "fr",
+  "teaserHook": "Voici les données que tu dois ABSOLUMENT savoir sur ton app mobile."
+}
