@@ -1,6 +1,8 @@
 import 'package:beedle/core/providers/data_providers.dart';
 import 'package:beedle/core/providers/scan_quota.provider.dart';
+import 'package:beedle/core/providers/service_providers.dart';
 import 'package:beedle/domain/entities/subscription_snapshot.entity.dart';
+import 'package:beedle/domain/services/analytics.service.dart';
 import 'package:beedle/domain/services/scan_quota.service.dart';
 import 'package:beedle/features/paywall/presentation/widgets/contextual_paywall_sheet.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +43,14 @@ class ScanGate {
       ScanAllowed() => true,
       ScanWarning() => true, // allow, l'UI peut choisir d'afficher un hint
       ScanBlocked(reason: ScanBlockedReason.monthlyLimitReached) => () async {
+          await _ref
+              .read(analyticsServiceProvider)
+              .track(
+                AnalyticsEvent.freemiumCapReached,
+                properties: <String, Object>{
+                  'limit': ScanQuotaService.freeMonthlyLimit,
+                },
+              );
           if (!context.mounted) return false;
           await showContextualPaywall(
             context,

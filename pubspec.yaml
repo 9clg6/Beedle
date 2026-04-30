@@ -1,7 +1,7 @@
 name: beedle
 description: "La veille qui se rappelle à toi — screenshots tech transformés en fiches IA."
 publish_to: "none"
-version: 0.1.0
+version: 0.1.0+3
 
 environment:
   sdk: ^3.10.3
@@ -43,6 +43,11 @@ dependencies:
   image_picker: ^1.0.7
   receive_sharing_intent: ^1.8.0
   workmanager: ^0.9.0+3
+
+  # Screenshot storage (R2 upload + display)
+  flutter_image_compress: ^2.3.0
+  cached_network_image: ^3.4.1
+  photo_view: ^0.15.0
 
   # Native share sheet (viral moment — onboarding écran 14)
   share_plus: ^10.0.0
@@ -87,6 +92,9 @@ dependencies:
   firebase_analytics: ^11.3.5
   firebase_auth: ^5.3.3
   firebase_messaging: ^15.1.5
+
+  # Microsoft Clarity — session recording + heatmaps (consent-aware)
+  clarity_flutter: ^1.0.0
 
   # Auth providers (Google + Apple Sign In)
   google_sign_in: ^6.2.1

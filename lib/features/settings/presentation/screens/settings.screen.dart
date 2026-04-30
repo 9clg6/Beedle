@@ -1,14 +1,17 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:beedle/core/providers/auth.provider.dart';
 import 'package:beedle/core/providers/data_providers.dart';
+import 'package:beedle/core/providers/pro_status.provider.dart';
 import 'package:beedle/core/providers/service_providers.dart';
 import 'package:beedle/core/providers/usecase_providers.dart';
 import 'package:beedle/domain/entities/auth_user.entity.dart';
 import 'package:beedle/domain/entities/subscription_snapshot.entity.dart';
 import 'package:beedle/domain/entities/user_preferences.entity.dart';
+import 'package:beedle/domain/services/notification_scheduler.service.dart';
 import 'package:beedle/features/home/presentation/providers/upload_display_state.provider.dart';
 import 'package:beedle/features/home/presentation/screens/engagement_home.view_model.dart';
 import 'package:beedle/features/home/presentation/screens/home.view_model.dart';
+import 'package:beedle/features/paywall/presentation/widgets/contextual_paywall_sheet.dart';
 import 'package:beedle/foundation/interfaces/results.usecases.dart';
 import 'package:beedle/foundation/routing/app_router.dart';
 import 'package:beedle/generated/locale_keys.g.dart';
@@ -107,12 +110,17 @@ class SettingsScreen extends ConsumerWidget {
                         _QuotaSliderTile(
                           title: LocaleKeys.settings_voice_quota.tr(),
                           value: prefs.voicePushQuotaPerDay.clamp(0, 3),
+                          isPro: ref.watch(proStatusProvider).value ?? false,
                           onChanged: (int v) async {
                             await ref
                                 .read(userPreferencesRepositoryProvider)
                                 .save(prefs.copyWith(voicePushQuotaPerDay: v));
                             ref.invalidate(_prefsProvider);
                           },
+                          onLockedTap: () => showContextualPaywall(
+                            context,
+                            reason: ContextualPaywallReason.adaptiveReminders,
+                          ),
                         ),
                         const _Divider(),
                         _SwitchTile(
@@ -141,7 +149,7 @@ class SettingsScreen extends ConsumerWidget {
                           title: LocaleKeys.settings_daily_lesson_push.tr(),
                           value: prefs.dailyLessonPushEnabled,
                           onChanged: (bool v) async {
-                            final updated = prefs.copyWith(
+                            final UserPreferencesEntity updated = prefs.copyWith(
                               dailyLessonPushEnabled: v,
                             );
                             await ref
@@ -156,7 +164,7 @@ class SettingsScreen extends ConsumerWidget {
                           title: LocaleKeys.settings_daily_lesson_hour.tr(),
                           value: prefs.dailyLessonHour,
                           onChanged: (int v) async {
-                            final updated = prefs.copyWith(dailyLessonHour: v);
+                            final UserPreferencesEntity updated = prefs.copyWith(dailyLessonHour: v);
                             await ref
                                 .read(userPreferencesRepositoryProvider)
                                 .save(updated);
@@ -222,6 +230,21 @@ class SettingsScreen extends ConsumerWidget {
                     variant: SquircleButtonVariant.secondary,
                     expand: true,
                     onPressed: () async {
+                      // Gate Pro : l'export (Notion / Obsidian / Markdown)
+                      // est réservé aux users Pro. On charge le snapshot
+                      // directement depuis le repo pour éviter une race
+                      // avec un refresh() en cours.
+                      final SubscriptionSnapshotEntity snapshot = await ref
+                          .read(subscriptionRepositoryProvider)
+                          .load();
+                      if (!snapshot.isPro) {
+                        if (!context.mounted) return;
+                        await showContextualPaywall(
+                          context,
+                          reason: ContextualPaywallReason.export,
+                        );
+                        return;
+                      }
                       final ResultState<String> path = await ref
                           .read(exportAllDataUseCaseProvider)
                           .execute();
@@ -356,7 +379,7 @@ Future<void> _rescheduleLesson(
     final SubscriptionSnapshotEntity sub = await ref
         .read(subscriptionRepositoryProvider)
         .load();
-    final scheduler = ref.read(notificationSchedulerServiceProvider);
+    final NotificationSchedulerService scheduler = ref.read(notificationSchedulerServiceProvider);
     await scheduler.scheduleDailyLesson(prefs: prefs);
     await scheduler.scheduleTeasersForToday(
       prefs: prefs,
@@ -518,13 +541,30 @@ class _QuotaSliderTile extends StatelessWidget {
     required this.title,
     required this.value,
     required this.onChanged,
+    required this.isPro,
+    required this.onLockedTap,
   });
   final String title;
   final int value;
   final ValueChanged<int> onChanged;
 
+  /// Si true, max slider = 3. Sinon free max = 1 (avec hint upsell).
+  final bool isPro;
+
+  /// Callback appelé quand le user free tape le hint pro.
+  final VoidCallback onLockedTap;
+
+  /// Quota max côté slider en fonction du tier.
+  ///
+  /// Free = 1 push / jour max. Pro = 3 push / jour.
+  static const int _freeMax = 1;
+  static const int _proMax = 3;
+
   @override
   Widget build(BuildContext context) {
+    final int effectiveMax = isPro ? _proMax : _freeMax;
+    final double clampedValue = value.toDouble().clamp(0.0, effectiveMax.toDouble());
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(
         CalmSpace.s6,
@@ -545,7 +585,7 @@ class _QuotaSliderTile extends StatelessWidget {
               ),
               Text(
                 LocaleKeys.settings_voice_quota_value.tr(
-                  namedArgs: <String, String>{'count': '$value'},
+                  namedArgs: <String, String>{'count': '${clampedValue.toInt()}'},
                 ),
                 style: Theme.of(context).textTheme.labelSmall?.copyWith(
                   color: AppColors.neutral6,
@@ -562,12 +602,35 @@ class _QuotaSliderTile extends StatelessWidget {
               trackHeight: 2,
             ),
             child: Slider(
-              value: value.toDouble(),
-              max: 3,
-              divisions: 3,
+              value: clampedValue,
+              max: effectiveMax.toDouble(),
+              divisions: effectiveMax,
               onChanged: (double v) => onChanged(v.round()),
             ),
           ),
+          if (!isPro) ...<Widget>[
+            const Gap(CalmSpace.s2),
+            GestureDetector(
+              onTap: onLockedTap,
+              behavior: HitTestBehavior.opaque,
+              child: Row(
+                children: <Widget>[
+                  const Icon(
+                    Icons.lock_rounded,
+                    size: 12,
+                    color: AppColors.neutral5,
+                  ),
+                  const Gap(CalmSpace.s2),
+                  Text(
+                    'Passe Pro pour aller jusqu\u2019à 3 rappels / jour',
+                    style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                      color: AppColors.neutral5,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ],
       ),
     );

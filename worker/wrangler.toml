@@ -13,10 +13,22 @@ compatibility_date = "2024-09-25"
 # binding = "RATE_LIMIT_KV"
 # id = "YOUR_KV_NAMESPACE_ID"
 
+[[r2_buckets]]
+binding = "SCREENSHOTS"
+bucket_name = "beedle-screenshots"
+
 [env.production]
 name = "beedle-proxy"
 workers_dev = true
 
+[[env.production.r2_buckets]]
+binding = "SCREENSHOTS"
+bucket_name = "beedle-screenshots"
+
 [env.development]
 name = "beedle-proxy-dev"
 workers_dev = true
+
+[[env.development.r2_buckets]]
+binding = "SCREENSHOTS"
+bucket_name = "beedle-screenshots-dev"

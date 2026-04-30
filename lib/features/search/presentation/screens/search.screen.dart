@@ -1,6 +1,8 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:beedle/core/providers/pro_status.provider.dart';
 import 'package:beedle/domain/entities/card.entity.dart';
 import 'package:beedle/features/home/presentation/widgets/card_glass_tile.dart';
+import 'package:beedle/features/paywall/presentation/widgets/contextual_paywall_sheet.dart';
 import 'package:beedle/features/search/presentation/screens/search.state.dart';
 import 'package:beedle/features/search/presentation/screens/search.view_model.dart';
 import 'package:beedle/foundation/routing/app_router.dart';
@@ -95,7 +97,11 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
                     ],
                   ),
                 ),
-                const Gap(CalmSpace.s6),
+                const Gap(CalmSpace.s4),
+                // Free-only : bannière gating recherche sémantique cross-months.
+                // Apparaît seulement si le user a déjà tapé quelque chose.
+                if (state.query.isNotEmpty) const _ProSearchBanner(),
+                const Gap(CalmSpace.s4),
                 Expanded(
                   child: _buildResults(state),
                 ),
@@ -133,6 +139,71 @@ class _SearchScreenState extends ConsumerState<SearchScreen> {
       },
       separatorBuilder: (_, _) => const Gap(CalmSpace.s3),
       itemCount: state.results.length,
+    );
+  }
+}
+
+/// Bannière affichée aux users Free pour indiquer que leur recherche
+/// est limitée au mois courant. Tap → paywall contextuel `semanticSearch`.
+///
+/// Rendu `glass.soft` pour rester discret — la bannière ne doit pas
+/// gêner la lecture des résultats, juste signaler la limite.
+class _ProSearchBanner extends ConsumerWidget {
+  const _ProSearchBanner();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bool isPro = ref.watch(proStatusProvider).value ?? false;
+    if (isPro) return const SizedBox.shrink();
+
+    final TextTheme textTheme = Theme.of(context).textTheme;
+    return GlassCard(
+      elevated: false,
+      cornerRadius: CalmRadius.lg,
+      padding: const EdgeInsets.symmetric(
+        horizontal: CalmSpace.s5,
+        vertical: CalmSpace.s4,
+      ),
+      onTap: () => showContextualPaywall(
+        context,
+        reason: ContextualPaywallReason.semanticSearch,
+      ),
+      child: Row(
+        children: <Widget>[
+          const Icon(
+            Icons.travel_explore_rounded,
+            size: 18,
+            color: AppColors.ember,
+          ),
+          const Gap(CalmSpace.s4),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Text(
+                  'Recherche limitée à ce mois-ci',
+                  style: textTheme.titleSmall?.copyWith(
+                    color: AppColors.neutral8,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  'Passe Pro pour chercher dans toutes tes cartes.',
+                  style: textTheme.bodySmall?.copyWith(
+                    color: AppColors.neutral6,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const Gap(CalmSpace.s3),
+          const Icon(
+            Icons.arrow_forward_rounded,
+            size: 16,
+            color: AppColors.neutral5,
+          ),
+        ],
+      ),
     );
   }
 }

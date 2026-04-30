@@ -1,7 +1,6 @@
 import 'package:beedle/core/providers/data_providers.dart';
 import 'package:beedle/core/providers/service_providers.dart';
 import 'package:beedle/domain/entities/engagement_message.entity.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'engagement_home.view_model.g.dart';
@@ -16,12 +15,12 @@ class EngagementHomeState {
     required this.history,
   });
 
-  final EngagementMessageEntity? current;
-  final List<EngagementMessageEntity> history;
-
   EngagementHomeState.empty()
     : current = null,
       history = const <EngagementMessageEntity>[];
+
+  final EngagementMessageEntity? current;
+  final List<EngagementMessageEntity> history;
 }
 
 @riverpod

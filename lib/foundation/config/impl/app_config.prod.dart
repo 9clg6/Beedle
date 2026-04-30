@@ -13,8 +13,7 @@ final class AppConfigProd extends AppConfig {
         // l'ancienne URL `beedle-proxy.workers.dev` n'est pas déployée.
         workerBaseUrl: 'https://beedle-proxy-dev.beedleapp.workers.dev',
         env: Environment.production,
-        // TODO-USER: remplacer par les vraies clés RevenueCat prod.
-        revenueCatApiKeyIos: 'appl_PROD_IOS_KEY_TODO',
-        revenueCatApiKeyAndroid: 'goog_PROD_ANDROID_KEY_TODO',
+        revenueCatApiKeyIos: 'appl_ffiLeSkyMhzlprfaiTjAyunkmpf',
+        revenueCatApiKeyAndroid: 'goog_YSzzPQUhDMYVkRChbaFPMjfABdv',
       );
 }

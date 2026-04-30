@@ -1,5 +1,6 @@
 import 'package:beedle/presentation/theme/app_colors.dart';
 import 'package:beedle/presentation/theme/calm_tokens.dart';
+import 'package:beedle/presentation/widgets/squircle_button.dart' show SquircleButton;
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
@@ -92,7 +93,7 @@ class AuthProviderButton extends StatelessWidget {
           background: AppColors.ink,
         );
       case AuthProviderButtonVariant.google:
-        return _ButtonSpec(
+        return const _ButtonSpec(
           icon: Icons.g_mobiledata_rounded,
           foreground: AppColors.ink,
           background: AppColors.canvas,

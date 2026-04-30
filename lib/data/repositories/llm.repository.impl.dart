@@ -43,7 +43,10 @@ final class LLMRepositoryImpl implements LLMRepository {
         },
       ],
       'temperature': 0.2,
-      'max_tokens': 2000,
+      // Le LLM doit préserver le contenu — avec plusieurs captures, la sortie
+      // peut être longue. gpt-4o-mini supporte 16384 tokens d'output ; 8000
+      // laisse une marge confortable tout en restant économique.
+      'max_tokens': 8000,
       'response_format': <String, dynamic>{
         'type': 'json_schema',
         'json_schema': _jsonSchema(),
@@ -59,27 +62,118 @@ final class LLMRepositoryImpl implements LLMRepository {
       final Map<String, dynamic> body = response.data as Map<String, dynamic>;
       final List<dynamic> choices = body['choices'] as List<dynamic>;
       if (choices.isEmpty) {
-        throw const LLMException('Empty choices array from LLM');
+        throw const LLMException(
+          'Empty choices array from LLM',
+          userMessage:
+              "Le service de digestion n'a rien renvoyé. Réessaie dans un instant.",
+          kind: LLMErrorKind.empty,
+        );
       }
+      final Map<String, dynamic> choice =
+          choices.first as Map<String, dynamic>;
+      final String? finishReason = choice['finish_reason'] as String?;
       final Map<String, dynamic> message =
-          (choices.first as Map<String, dynamic>)['message']
-              as Map<String, dynamic>;
+          choice['message'] as Map<String, dynamic>;
       final String rawContent = message['content'] as String;
 
-      final Map<String, dynamic> parsed =
-          jsonDecode(rawContent) as Map<String, dynamic>;
+      // Si le modèle a atteint sa limite de tokens, le JSON est tronqué —
+      // inutile d'essayer de le parser. Message actionnable pour l'user :
+      // réduire le nombre de captures.
+      if (finishReason == 'length') {
+        throw const LLMException(
+          'LLM response truncated (finish_reason=length)',
+          userMessage:
+              "Le contenu est trop long à analyser d'un coup. Essaie avec moins de captures à la fois.",
+          kind: LLMErrorKind.truncated,
+        );
+      }
+
+      final Map<String, dynamic> parsed;
+      try {
+        parsed = jsonDecode(rawContent) as Map<String, dynamic>;
+      } on FormatException catch (e) {
+        throw LLMException(
+          'LLM returned invalid JSON: ${e.message}',
+          cause: e,
+          userMessage:
+              'La réponse du service de digestion est illisible. Réessaie — '
+              'si le problème persiste, réduis le nombre de captures.',
+          kind: LLMErrorKind.invalidJson,
+        );
+      }
       return _parseDigestion(parsed);
+    } on LLMException {
+      rethrow;
     } on DioException catch (e) {
       _log.error('LLM request failed: ${e.message}', e);
+      final int? status = e.response?.statusCode;
+      final (String userMsg, LLMErrorKind kind) = _mapDioError(e, status);
       throw LLMException(
         'LLM request failed: ${e.message}',
         cause: e,
-        statusCode: e.response?.statusCode,
+        statusCode: status,
+        userMessage: userMsg,
+        kind: kind,
       );
     } on Exception catch (e) {
       _log.error('LLM unexpected error: $e', e);
-      throw LLMException('LLM unexpected error', cause: e);
+      throw LLMException(
+        'LLM unexpected error',
+        cause: e,
+        userMessage:
+            'Une erreur inattendue est survenue pendant la digestion. Réessaie dans un instant.',
+      );
     }
+  }
+
+  /// Map une erreur réseau Dio vers un message utilisateur + kind. Les codes
+  /// 429/402 sont les cas dont on veut informer clairement (rate-limit côté
+  /// Worker, quota OpenAI côté fournisseur).
+  (String userMsg, LLMErrorKind kind) _mapDioError(
+    DioException e,
+    int? status,
+  ) {
+    switch (e.type) {
+      case DioExceptionType.connectionTimeout:
+      case DioExceptionType.sendTimeout:
+      case DioExceptionType.receiveTimeout:
+        return (
+          'Le service de digestion met trop de temps à répondre. Vérifie ta connexion et réessaie.',
+          LLMErrorKind.network,
+        );
+      case DioExceptionType.connectionError:
+        return (
+          'Impossible de joindre le service de digestion. Vérifie ta connexion internet.',
+          LLMErrorKind.network,
+        );
+      case DioExceptionType.cancel:
+      case DioExceptionType.badCertificate:
+      case DioExceptionType.unknown:
+      case DioExceptionType.badResponse:
+        break;
+    }
+    if (status == 429) {
+      return (
+        "Trop de captures envoyées d'un coup. Attends quelques minutes avant de réessayer.",
+        LLMErrorKind.rateLimited,
+      );
+    }
+    if (status == 402) {
+      return (
+        'Quota du service de digestion atteint. Réessaie plus tard.',
+        LLMErrorKind.quotaExhausted,
+      );
+    }
+    if (status != null && status >= 500) {
+      return (
+        'Le service de digestion rencontre un problème. Réessaie dans un instant.',
+        LLMErrorKind.server,
+      );
+    }
+    return (
+      'La digestion a échoué. Vérifie ta connexion et réessaie.',
+      LLMErrorKind.network,
+    );
   }
 
   String _systemPrompt(
@@ -391,7 +485,7 @@ Output in the **same language as the source OCR** (French source → French outp
   /// primaryAction doit : exister, ≤ 80 chars, start par un verbe (minimal
   /// heuristique — on rejette les débuts avec "You should", "Tu devrais").
   static final RegExp _softVerbPattern = RegExp(
-    r'^(you should|tu devrais|maybe|perhaps|peut-être)',
+    '^(you should|tu devrais|maybe|perhaps|peut-être)',
     caseSensitive: false,
   );
 
@@ -415,7 +509,7 @@ Output in the **same language as the source OCR** (French source → French outp
   /// Safety net côté Dart — le LLM peut déraper malgré le prompt.
   /// On rejette les messages culpabilisants ou vides.
   static final RegExp _shamePattern = RegExp(
-    r"(tu n'?as pas|you forgot|you haven'?t|you should have|tu aurais d[ûu])",
+    "(tu n'?as pas|you forgot|you haven'?t|you should have|tu aurais d[ûu])",
     caseSensitive: false,
   );
 

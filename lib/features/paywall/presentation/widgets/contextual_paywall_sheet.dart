@@ -258,7 +258,7 @@ class _InlinePricing extends StatelessWidget {
       ),
       child: Row(
         children: <Widget>[
-          Icon(
+          const Icon(
             Icons.workspace_premium_rounded,
             size: 20,
             color: AppColors.ember,

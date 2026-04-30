@@ -1,10 +1,12 @@
 import 'package:beedle/core/providers/app_config.provider.dart';
 import 'package:beedle/core/providers/data_providers.dart';
 import 'package:beedle/data/services/analytics_service.impl.dart';
+import 'package:beedle/data/services/clarity_service.impl.dart';
 import 'package:beedle/data/services/crash_reporter_service.impl.dart';
 import 'package:beedle/data/services/data_management.service.impl.dart';
 import 'package:beedle/data/services/local_notification_engine.impl.dart';
 import 'package:beedle/domain/services/analytics.service.dart';
+import 'package:beedle/domain/services/clarity.service.dart';
 import 'package:beedle/domain/services/crash_reporter.service.dart';
 import 'package:beedle/domain/services/daily_lesson.service.dart';
 import 'package:beedle/domain/services/engagement_scheduler.service.dart';
@@ -12,6 +14,7 @@ import 'package:beedle/domain/services/fusion_engine.service.dart';
 import 'package:beedle/domain/services/gamification_engine.service.dart';
 import 'package:beedle/domain/services/ingestion_pipeline.service.dart';
 import 'package:beedle/domain/services/notification_scheduler.service.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 final Provider<FusionEngine> fusionEngineProvider = Provider<FusionEngine>((
@@ -45,6 +48,12 @@ final Provider<IngestionPipelineService> ingestionPipelineServiceProvider =
         engagementMessageRepository: ref.watch(
           engagementMessageRepositoryProvider,
         ),
+        subscriptionRepository: ref.watch(subscriptionRepositoryProvider),
+        screenshotStorageRepository: ref.watch(
+          screenshotStorageRepositoryProvider,
+        ),
+        crashReporter: ref.watch(crashReporterServiceProvider),
+        analytics: ref.watch(analyticsServiceProvider),
       );
       ref.onDispose(service.dispose);
       return service;
@@ -100,6 +109,28 @@ notificationSchedulerServiceProvider = Provider<NotificationSchedulerService>((
 final Provider<AnalyticsService> analyticsServiceProvider =
     Provider<AnalyticsService>((Ref ref) {
       return FirebaseAnalyticsService();
+    });
+
+/// Singleton Clarity — wrappé dans `ClarityWidget` au bootstrap.
+final Provider<MicrosoftClarityService> clarityServiceImplProvider =
+    Provider<MicrosoftClarityService>((Ref ref) {
+      return MicrosoftClarityService();
+    });
+
+final Provider<ClarityService> clarityServiceProvider =
+    Provider<ClarityService>(
+      (Ref ref) => ref.watch(clarityServiceImplProvider),
+    );
+
+/// [FirebaseAnalyticsObserver] branché sur `MaterialApp.router` pour
+/// auto-tracker les `screen_view` à chaque push/replace/pop de route.
+///
+/// Nommage dérivé de la route AutoRoute (ex: `HomeRoute` → `Home`).
+final Provider<FirebaseAnalyticsObserver> firebaseAnalyticsObserverProvider =
+    Provider<FirebaseAnalyticsObserver>((Ref ref) {
+      return FirebaseAnalyticsObserver(
+        analytics: FirebaseAnalytics.instance,
+      );
     });
 
 final Provider<CrashReporterService> crashReporterServiceProvider =

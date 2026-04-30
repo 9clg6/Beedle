@@ -56,17 +56,15 @@ final class EngagementSchedulerService {
         : eligible
               .where((EngagementMessageEntity m) => m.type != lastType)
               .toList();
-    final List<EngagementMessageEntity> candidates = primary.isNotEmpty
-        ? primary
-        : eligible;
-
-    // Score by card recency : newer card = higher score.
-    candidates.sort((EngagementMessageEntity a, EngagementMessageEntity b) {
-      final CardEntity? ca = cardByUuid[a.cardUuid];
-      final CardEntity? cb = cardByUuid[b.cardUuid];
-      if (ca == null || cb == null) return 0;
-      return cb.createdAt.compareTo(ca.createdAt);
-    });
+    final List<EngagementMessageEntity> candidates =
+        primary.isNotEmpty ? primary : eligible
+          // Score by card recency : newer card = higher score.
+          ..sort((EngagementMessageEntity a, EngagementMessageEntity b) {
+            final CardEntity? ca = cardByUuid[a.cardUuid];
+            final CardEntity? cb = cardByUuid[b.cardUuid];
+            if (ca == null || cb == null) return 0;
+            return cb.createdAt.compareTo(ca.createdAt);
+          });
 
     return candidates.first;
   }
@@ -84,22 +82,22 @@ final class EngagementSchedulerService {
 
     final Map<String, CardEntity> cardByUuid = await _loadCardMap(pool);
 
-    final List<EngagementMessageEntity> eligible = pool.where((
-      EngagementMessageEntity m,
-    ) {
-      if (m.format != EngagementMessageFormat.short) return false;
-      if (m.isScheduled) return false;
-      final CardEntity? card = cardByUuid[m.cardUuid];
-      if (card == null) return false;
-      return m.isEligibleAt(ref, card.createdAt);
-    }).toList();
-
-    eligible.sort((EngagementMessageEntity a, EngagementMessageEntity b) {
-      final CardEntity? ca = cardByUuid[a.cardUuid];
-      final CardEntity? cb = cardByUuid[b.cardUuid];
-      if (ca == null || cb == null) return 0;
-      return cb.createdAt.compareTo(ca.createdAt);
-    });
+    final List<EngagementMessageEntity> eligible =
+        pool.where((
+            EngagementMessageEntity m,
+          ) {
+            if (m.format != EngagementMessageFormat.short) return false;
+            if (m.isScheduled) return false;
+            final CardEntity? card = cardByUuid[m.cardUuid];
+            if (card == null) return false;
+            return m.isEligibleAt(ref, card.createdAt);
+          }).toList()
+          ..sort((EngagementMessageEntity a, EngagementMessageEntity b) {
+            final CardEntity? ca = cardByUuid[a.cardUuid];
+            final CardEntity? cb = cardByUuid[b.cardUuid];
+            if (ca == null || cb == null) return 0;
+            return cb.createdAt.compareTo(ca.createdAt);
+          });
 
     return eligible.take(limit).toList();
   }

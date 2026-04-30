@@ -4,6 +4,7 @@ import 'package:beedle/core/providers/service_providers.dart';
 import 'package:beedle/core/providers/usecase_providers.dart';
 import 'package:beedle/domain/entities/ingestion_job.entity.dart';
 import 'package:beedle/domain/params/import_screenshot.param.dart';
+import 'package:beedle/domain/services/analytics.service.dart';
 import 'package:beedle/features/capture/presentation/screens/import/import.state.dart';
 import 'package:beedle/foundation/exceptions/app_exceptions.dart';
 import 'package:beedle/foundation/interfaces/results.usecases.dart';
@@ -20,6 +21,9 @@ class ImportViewModel extends _$ImportViewModel {
   ImportState build() => ImportState.initial();
 
   Future<void> pickImages() async {
+    await ref
+        .read(analyticsServiceProvider)
+        .track(AnalyticsEvent.captureStarted);
     final ImagePicker picker = ImagePicker();
     final List<XFile> files = await picker.pickMultiImage(
       imageQuality: 90,
@@ -60,6 +64,16 @@ class ImportViewModel extends _$ImportViewModel {
 
     result.when(
       success: (_) {
+        unawaited(
+          ref
+              .read(analyticsServiceProvider)
+              .track(
+                AnalyticsEvent.capturedViaImport,
+                properties: <String, Object>{
+                  'count': state.selectedPaths.length,
+                },
+              ),
+        );
         // Force le pipeline à traiter le job immédiatement (l'app est foreground).
         unawaited(ref.read(ingestionPipelineServiceProvider).processNext());
         // On passe en "launched" — l'écran observe cette phase pour afficher
@@ -69,6 +83,17 @@ class ImportViewModel extends _$ImportViewModel {
         state = state.copyWith(phase: ImportPhase.launched);
       },
       failure: (Exception e) {
+        unawaited(
+          ref
+              .read(analyticsServiceProvider)
+              .track(
+                AnalyticsEvent.captureFailed,
+                properties: <String, Object>{
+                  'reason': e.runtimeType.toString(),
+                  'count': state.selectedPaths.length,
+                },
+              ),
+        );
         state = state.copyWith(
           phase: ImportPhase.error,
           error: _humanizeError(e),

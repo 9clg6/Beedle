@@ -1,9 +1,10 @@
 import 'package:beedle/core/providers/data_providers.dart';
 import 'package:beedle/domain/entities/ingestion_job.entity.dart';
 import 'package:beedle/domain/enum/ingestion_status.enum.dart';
+import 'package:beedle/features/home/presentation/widgets/upload_progress_card.dart' show UploadProgressCard;
+import 'package:beedle/generated/locale_keys.g.dart';
 import 'package:beedle/presentation/theme/app_colors.dart';
 import 'package:beedle/presentation/theme/app_typography.dart';
-import 'package:beedle/generated/locale_keys.g.dart';
 import 'package:beedle/presentation/theme/calm_tokens.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';

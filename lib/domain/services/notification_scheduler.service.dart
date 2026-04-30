@@ -215,7 +215,7 @@ final class NotificationSchedulerService {
       id: _dailyLessonId,
       at: at,
       title: _appConfig.appName,
-      body: 'Aujourd\'hui : ${card.title}',
+      body: "Aujourd'hui : ${card.title}",
       payload: 'beedle://lesson',
     );
     await _notificationRecordRepository.persist(

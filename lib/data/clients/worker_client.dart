@@ -1,3 +1,5 @@
+import 'package:beedle/data/clients/analytics_interceptor.dart';
+import 'package:beedle/domain/services/analytics.service.dart';
 import 'package:beedle/foundation/config/app_config.dart';
 import 'package:dio/dio.dart';
 
@@ -26,12 +28,23 @@ class WorkerClient {
     _dio.options.headers['X-User-Tier'] = tier;
   }
 
+  /// Branche l'interceptor analytics — appelé depuis `finalizeKernel`
+  /// après que `AnalyticsService.init()` soit complet. Idempotent.
+  void attachAnalytics(AnalyticsService analytics) {
+    final bool alreadyAttached = _dio.interceptors.any(
+      (Interceptor i) => i is AnalyticsInterceptor,
+    );
+    if (alreadyAttached) return;
+    _dio.interceptors.add(AnalyticsInterceptor(analytics: analytics));
+  }
+
   static Dio _buildDio(AppConfig config) {
     final Dio dio = Dio(
       BaseOptions(
         baseUrl: config.workerBaseUrl,
-        connectTimeout: const Duration(seconds: 10),
-        receiveTimeout: const Duration(seconds: 30),
+        connectTimeout: const Duration(seconds: 15),
+        receiveTimeout: const Duration(minutes: 5),
+        sendTimeout: const Duration(minutes: 2),
         headers: <String, String>{
           'Content-Type': 'application/json',
         },

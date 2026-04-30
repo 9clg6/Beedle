@@ -36,7 +36,7 @@ void main() {
   });
 
   // ── Helper : un User Firebase pré-câblé pour qu'on puisse mapper. ─────
-  _MockUser _buildUser({String providerId = 'google.com'}) {
+  _MockUser buildUser({String providerId = 'google.com'}) {
     final _MockUser user = _MockUser();
     final _MockUserMetadata meta = _MockUserMetadata();
     final _MockUserInfo info = _MockUserInfo();
@@ -45,7 +45,7 @@ void main() {
     when(() => user.displayName).thenReturn('Test');
     when(() => user.photoURL).thenReturn(null);
     when(() => user.metadata).thenReturn(meta);
-    when(() => meta.creationTime).thenReturn(DateTime.utc(2026, 1, 1));
+    when(() => meta.creationTime).thenReturn(DateTime.utc(2026));
     when(() => info.providerId).thenReturn(providerId);
     when(() => user.providerData).thenReturn(<UserInfo>[info]);
     return user;
@@ -66,7 +66,7 @@ void main() {
 
     test('renvoie une entity avec le provider mappé depuis providerData', () {
       final _MockFirebaseAuth auth = _MockFirebaseAuth();
-      final _MockUser user = _buildUser(providerId: 'apple.com');
+      final _MockUser user = buildUser(providerId: 'apple.com');
       when(() => auth.currentUser).thenReturn(user);
 
       final FirebaseAuthService service = FirebaseAuthService(
@@ -82,10 +82,10 @@ void main() {
   });
 
   group('FirebaseAuthService.authStateChanges', () {
-    test('émet null puis l\'entity quand l\'auth state change', () async {
+    test("émet null puis l'entity quand l'auth state change", () async {
       final _MockFirebaseAuth auth = _MockFirebaseAuth();
-      final _MockUser user = _buildUser();
-      when(() => auth.authStateChanges()).thenAnswer(
+      final _MockUser user = buildUser();
+      when(auth.authStateChanges).thenAnswer(
         (_) => Stream<User?>.fromIterable(<User?>[null, user]),
       );
 
@@ -113,9 +113,9 @@ void main() {
       final _MockGoogleSignInAuthentication googleAuth =
           _MockGoogleSignInAuthentication();
       final _MockUserCredential cred = _MockUserCredential();
-      final _MockUser user = _buildUser();
+      final _MockUser user = buildUser();
 
-      when(() => google.signIn()).thenAnswer((_) async => account);
+      when(google.signIn).thenAnswer((_) async => account);
       when(() => account.authentication).thenAnswer((_) async => googleAuth);
       when(() => googleAuth.accessToken).thenReturn('access-token');
       when(() => googleAuth.idToken).thenReturn('id-token');
@@ -140,7 +140,7 @@ void main() {
       () async {
         final _MockFirebaseAuth auth = _MockFirebaseAuth();
         final _MockGoogleSignIn google = _MockGoogleSignIn();
-        when(() => google.signIn()).thenAnswer((_) async => null);
+        when(google.signIn).thenAnswer((_) async => null);
 
         final FirebaseAuthService service = FirebaseAuthService(
           firebaseAuth: auth,
@@ -148,7 +148,7 @@ void main() {
         );
 
         expect(
-          () => service.signInWithGoogle(),
+          service.signInWithGoogle,
           throwsA(isA<AuthCancelledByUser>()),
         );
       },
@@ -159,7 +159,7 @@ void main() {
       () async {
         final _MockFirebaseAuth auth = _MockFirebaseAuth();
         final _MockGoogleSignIn google = _MockGoogleSignIn();
-        when(() => google.signIn()).thenThrow(
+        when(google.signIn).thenThrow(
           PlatformException(code: 'network_error', message: 'No internet'),
         );
 
@@ -169,7 +169,7 @@ void main() {
         );
 
         expect(
-          () => service.signInWithGoogle(),
+          service.signInWithGoogle,
           throwsA(isA<AuthNetworkFailure>()),
         );
       },
@@ -182,7 +182,7 @@ void main() {
       final _MockGoogleSignInAuthentication googleAuth =
           _MockGoogleSignInAuthentication();
 
-      when(() => google.signIn()).thenAnswer((_) async => account);
+      when(google.signIn).thenAnswer((_) async => account);
       when(() => account.authentication).thenAnswer((_) async => googleAuth);
       when(() => googleAuth.accessToken).thenReturn('a');
       when(() => googleAuth.idToken).thenReturn('i');
@@ -196,7 +196,7 @@ void main() {
       );
 
       expect(
-        () => service.signInWithGoogle(),
+        service.signInWithGoogle,
         throwsA(isA<AuthProviderFailure>()),
       );
     });
@@ -208,7 +208,7 @@ void main() {
       () async {
         final _MockFirebaseAuth auth = _MockFirebaseAuth();
         final _MockUserCredential cred = _MockUserCredential();
-        final _MockUser user = _buildUser(providerId: 'apple.com');
+        final _MockUser user = buildUser(providerId: 'apple.com');
 
         when(
           () => auth.signInWithCredential(any()),

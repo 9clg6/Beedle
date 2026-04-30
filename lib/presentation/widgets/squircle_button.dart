@@ -1,7 +1,12 @@
+import 'dart:async';
+
+import 'package:beedle/core/providers/service_providers.dart';
+import 'package:beedle/domain/services/analytics.service.dart';
 import 'package:beedle/presentation/theme/app_colors.dart';
 import 'package:beedle/presentation/theme/calm_tokens.dart';
 import 'package:figma_squircle/figma_squircle.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 /// Variantes CalmSurface §3 Button.
 ///
@@ -13,7 +18,14 @@ import 'package:flutter/material.dart';
 enum SquircleButtonVariant { primary, mint, secondary, ghost, destructive }
 
 /// CalmSurface Button — squircle pill, flat fill, no shadow at rest.
-class SquircleButton extends StatelessWidget {
+///
+/// Auto-track : chaque tap logge `button_tap` (Firebase Analytics) avec
+/// `label`, `variant` et `screen` (route courante). [analyticsTag] permet
+/// de surcharger le label pour un identifiant plus stable en analytics
+/// — à utiliser quand le label affiché est dynamique (ex: prix, compteur).
+/// [trackingEnabled] = false pour désactiver (ex: boutons de design-system
+/// internes, boutons qui re-déclenchent eux-mêmes un event custom).
+class SquircleButton extends ConsumerWidget {
   const SquircleButton({
     required this.label,
     required this.onPressed,
@@ -21,6 +33,8 @@ class SquircleButton extends StatelessWidget {
     this.icon,
     this.expand = false,
     this.loading = false,
+    this.analyticsTag,
+    this.trackingEnabled = true,
     super.key,
   });
 
@@ -30,9 +44,11 @@ class SquircleButton extends StatelessWidget {
   final IconData? icon;
   final bool expand;
   final bool loading;
+  final String? analyticsTag;
+  final bool trackingEnabled;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final Brightness brightness = Theme.of(context).brightness;
     final TextTheme textTheme = Theme.of(context).textTheme;
     final _ButtonSpec spec = _resolveSpec(variant, brightness);
@@ -83,7 +99,25 @@ class SquircleButton extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         customBorder: shape,
-        onTap: loading ? null : onPressed,
+        onTap: loading || onPressed == null
+            ? null
+            : () {
+                if (trackingEnabled) {
+                  // Fire-and-forget — on ne veut pas retarder le tap.
+                  unawaited(
+                    ref
+                        .read(analyticsServiceProvider)
+                        .track(
+                          AnalyticsEvent.buttonTapped,
+                          properties: <String, Object>{
+                            'label': analyticsTag ?? label,
+                            'variant': variant.name,
+                          },
+                        ),
+                  );
+                }
+                onPressed!.call();
+              },
         child: AnimatedContainer(
           duration: CalmDuration.quick,
           curve: CalmCurves.standard,

@@ -1,9 +1,9 @@
 import 'package:beedle/domain/entities/gamification_state.entity.dart';
+import 'package:beedle/generated/locale_keys.g.dart';
 import 'package:beedle/presentation/theme/app_colors.dart';
 import 'package:beedle/presentation/theme/app_typography.dart';
 import 'package:beedle/presentation/theme/calm_tokens.dart';
 import 'package:beedle/presentation/widgets/calm_digital_number.dart';
-import 'package:beedle/generated/locale_keys.g.dart';
 import 'package:beedle/presentation/widgets/glass_card.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
@@ -30,10 +30,7 @@ class StreakHomeCard extends StatelessWidget {
 
     return GlassCard(
       onTap: onTap,
-      cornerRadius: CalmRadius.xl2,
-      padding: const EdgeInsets.all(CalmSpace.s6),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           CalmDigitalNumber(
             value: state.currentStreak.toString().padLeft(2, '0'),

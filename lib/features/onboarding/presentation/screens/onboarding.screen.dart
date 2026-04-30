@@ -6,18 +6,18 @@ import 'package:beedle/features/onboarding/presentation/screens/onboarding.view_
 import 'package:beedle/features/onboarding/presentation/screens/onboarding_step_validator.dart';
 import 'package:beedle/features/onboarding/presentation/widgets/ob_category_step.dart';
 import 'package:beedle/features/onboarding/presentation/widgets/ob_comparison_step.dart';
-import 'package:beedle/features/onboarding/presentation/widgets/ob_goal_step.dart';
 import 'package:beedle/features/onboarding/presentation/widgets/ob_demo_step.dart';
+import 'package:beedle/features/onboarding/presentation/widgets/ob_goal_step.dart';
 import 'package:beedle/features/onboarding/presentation/widgets/ob_pain_points_step.dart';
 import 'package:beedle/features/onboarding/presentation/widgets/ob_paywall_step.dart';
 import 'package:beedle/features/onboarding/presentation/widgets/ob_permission_notifs_step.dart';
 import 'package:beedle/features/onboarding/presentation/widgets/ob_permission_photos_step.dart';
 import 'package:beedle/features/onboarding/presentation/widgets/ob_processing_step.dart';
 import 'package:beedle/features/onboarding/presentation/widgets/ob_reminder_step.dart';
-import 'package:beedle/features/onboarding/presentation/widgets/ob_viral_moment_step.dart';
 import 'package:beedle/features/onboarding/presentation/widgets/ob_social_proof_step.dart';
 import 'package:beedle/features/onboarding/presentation/widgets/ob_solution_step.dart';
 import 'package:beedle/features/onboarding/presentation/widgets/ob_tinder_step.dart';
+import 'package:beedle/features/onboarding/presentation/widgets/ob_viral_moment_step.dart';
 import 'package:beedle/features/onboarding/presentation/widgets/ob_welcome_step.dart';
 import 'package:beedle/foundation/routing/app_router.dart';
 import 'package:beedle/generated/locale_keys.g.dart';
@@ -102,6 +102,11 @@ class _OnboardingScreenState extends ConsumerState<OnboardingScreen> {
     return Scaffold(
       body: GradientBackground(
         child: SafeArea(
+          // En mode immersif (welcome / paywall / viral / processing), on
+          // laisse le sticky bottom / CTA du step coller au bord de l'écran
+          // et gérer lui-même son padding safe-area. Le SafeArea top reste
+          // actif pour protéger la progress bar quand elle est visible.
+          bottom: !isImmersive,
           // Children list shape is kept CONSTANT across immersive ↔
           // non-immersive transitions. Switching the slot count caused
           // Flutter to reconcile the PageView at a different position in

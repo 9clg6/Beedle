@@ -1,7 +1,6 @@
 import 'package:beedle/core/providers/data_providers.dart';
 import 'package:beedle/core/providers/service_providers.dart';
 import 'package:beedle/domain/entities/card.entity.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'today.view_model.g.dart';

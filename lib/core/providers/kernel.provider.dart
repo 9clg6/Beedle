@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:beedle/core/providers/app_config.provider.dart';
 import 'package:beedle/core/providers/data_providers.dart';
 import 'package:beedle/core/providers/service_providers.dart';
@@ -6,10 +8,12 @@ import 'package:beedle/data/services/local_notification_engine.impl.dart';
 import 'package:beedle/domain/entities/subscription_snapshot.entity.dart';
 import 'package:beedle/domain/entities/user_preferences.entity.dart';
 import 'package:beedle/domain/services/analytics.service.dart';
+import 'package:beedle/domain/services/clarity.service.dart';
 import 'package:beedle/domain/services/ingestion_pipeline.service.dart';
 import 'package:beedle/domain/services/notification_scheduler.service.dart';
 import 'package:beedle/foundation/config/app_config.dart';
 import 'package:beedle/foundation/logging/logger.dart';
+import 'package:beedle/shared/share_intake/share_intake_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:purchases_flutter/purchases_flutter.dart' as rc;
 
@@ -37,9 +41,16 @@ Future<void> finalizeKernel(
   // 1. AppConfig.
   final AppConfig config = ref.read(appConfigProvider);
 
-  // 2. Analytics.
+  // 2. Analytics + Clarity.
   final AnalyticsService analytics = ref.read(analyticsServiceProvider);
   await analytics.init();
+  // Clarity est auto-initialisé par [ClarityWidget] dans BeedleApp — on
+  // aligne juste le consent ici (même source de vérité qu'analytics).
+  final ClarityService clarity = ref.read(clarityServiceProvider);
+  await clarity.setConsent(true);
+  // Attache l'interceptor analytics au WorkerClient (déferred pour éviter
+  // une dépendance circulaire service_providers ⇄ data_providers).
+  ref.read(workerClientProvider).attachAnalytics(analytics);
 
   // 3. RevenueCat (best-effort : skip silencieux si clés placeholder).
   try {
@@ -86,6 +97,9 @@ Future<void> finalizeKernel(
     ingestionPipelineServiceProvider,
   );
   await pipeline.start();
+
+  // 7b. Démarrer l'écoute du share sheet système (iOS + Android).
+  unawaited(ShareIntakeService(ref).start());
 
   // 8. Planifier Daily Lesson + teasers selon prefs (best-effort).
   try {

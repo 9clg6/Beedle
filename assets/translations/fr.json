@@ -386,8 +386,12 @@
   },
   "voice": {
     "standby": "> standby. capture something.",
-    "log_header": "[VOICE LOG]",
-    "streak_line": "[STREAK] day {days}"
+    "standby_line_1": "> beedle veille sur tes cartes.",
+    "standby_line_2": "> importe un screenshot pour commencer.",
+    "idle_line_1": "> en écoute.",
+    "idle_line_2": "> la prochaine carte à faire chanter arrive.",
+    "log_header": "[BEEDLE · VOICE]",
+    "streak_line": "[STREAK] jour {days}"
   },
   "intent": {
     "apply": "À TESTER",

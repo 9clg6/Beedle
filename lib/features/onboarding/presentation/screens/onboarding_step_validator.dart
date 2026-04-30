@@ -6,20 +6,21 @@ const int kOnboardingTotalScreens = 15;
 /// Index du dernier écran (cap pour [`OnboardingViewModel.next()`]).
 const int kOnboardingLastIndex = kOnboardingTotalScreens - 1;
 
-/// Indices "full immersion" — pas de NavBar, l'écran auto-pilote l'avance.
+/// Indices "full immersion" — pas de NavBar ni de ProgressIndicator,
+/// l'écran auto-pilote l'avance.
 ///
 /// - 0  : Welcome → CTA dans la page
 /// - 11 : Processing → auto-advance après 2 s
 /// - 13 : Viral moment → CTAs Share / Continuer dans la page
-const Set<int> kFullImmersionSteps = <int>{0, 11, 13};
+/// - 14 : Paywall → sticky pricing bottom + croix fermer in-page, la
+///        NavBar gêne le flow commercial (back ghost + padding inutile).
+const Set<int> kFullImmersionSteps = <int>{0, 11, 13, 14};
 
 /// Indices "auto-advance" — le widget gère lui-même la sortie de l'écran
 /// (auto-advance, CTAs internes…). La NavBar n'expose pas *Continuer*.
 ///
 /// - 3  : Tinder → next() quand les 5 cards ont été swipées
-/// - 14 : Paywall → CTAs *Démarrer l'essai* / *Continuer en gratuit* /
-///        *Restaurer* sont dans le widget
-const Set<int> kAutoAdvanceSteps = <int>{3, 14};
+const Set<int> kAutoAdvanceSteps = <int>{3};
 
 /// Indices à validation gate — le bouton *Continuer* reste grisé tant
 /// que l'input minimum n'est pas rempli.

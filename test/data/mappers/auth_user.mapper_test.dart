@@ -120,7 +120,7 @@ void main() {
       final AuthUserEntity original = AuthUserEntity(
         uid: 'uid-1',
         provider: AuthProvider.google,
-        createdAt: DateTime.utc(2026, 1, 1),
+        createdAt: DateTime.utc(2026),
       );
 
       final AuthUserEntity restored = AuthUserEntity.fromJson(

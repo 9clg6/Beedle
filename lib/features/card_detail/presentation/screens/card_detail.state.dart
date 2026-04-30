@@ -1,4 +1,5 @@
 import 'package:beedle/domain/entities/card.entity.dart';
+import 'package:beedle/domain/entities/screenshot.entity.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'card_detail.state.freezed.dart';
@@ -7,6 +8,7 @@ part 'card_detail.state.freezed.dart';
 abstract class CardDetailState with _$CardDetailState {
   const factory CardDetailState({
     CardEntity? card,
+    @Default(<ScreenshotEntity>[]) List<ScreenshotEntity> screenshots,
     @Default(false) bool codeCopied,
   }) = _CardDetailState;
 

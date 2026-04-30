@@ -387,7 +387,11 @@
   },
   "voice": {
     "standby": "> standby. capture something.",
-    "log_header": "[VOICE LOG]",
+    "standby_line_1": "> beedle is watching your cards.",
+    "standby_line_2": "> import a screenshot to get started.",
+    "idle_line_1": "> listening.",
+    "idle_line_2": "> next card to bring back soon.",
+    "log_header": "[BEEDLE · VOICE]",
     "streak_line": "[STREAK] day {days}"
   },
   "intent": {

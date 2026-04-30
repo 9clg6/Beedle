@@ -8,5 +8,9 @@
 	<array>
 		<string>Default</string>
 	</array>
+	<key>com.apple.security.application-groups</key>
+	<array>
+		<string>group.fr.yellowstoneapps.beedle</string>
+	</array>
 </dict>
 </plist>

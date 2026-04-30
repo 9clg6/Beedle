@@ -1,5 +1,6 @@
 import 'package:beedle/domain/entities/card.entity.dart';
 import 'package:beedle/presentation/theme/app_colors.dart';
+import 'package:beedle/presentation/theme/app_typography.dart';
 import 'package:beedle/presentation/theme/calm_tokens.dart';
 import 'package:beedle/presentation/widgets/glass_card.dart';
 import 'package:beedle/presentation/widgets/intent_badge.dart';
@@ -32,11 +33,24 @@ class CardGlassTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Text(
-                  card.title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: textTheme.titleMedium,
+                // Title row avec badge NEW inline quand la card vient
+                // d'être scannée et pas encore ouverte.
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        card.title,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: textTheme.titleMedium,
+                      ),
+                    ),
+                    if (card.isNew) ...<Widget>[
+                      const Gap(CalmSpace.s3),
+                      const _NewBadge(),
+                    ],
+                  ],
                 ),
                 const Gap(CalmSpace.s2),
                 Text(
@@ -55,6 +69,42 @@ class CardGlassTile extends StatelessWidget {
             color: isDark ? AppColors.neutral4Dark : AppColors.neutral4,
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Badge « NEW » — affiché sur les cartes fraîchement scannées et
+/// pas encore ouvertes (cf. `CardEntity.isNew`).
+///
+/// Style : fill ember pill, texte canvas mono bold. Taille volontairement
+/// petite pour s'insérer à côté du titre sans le pousser. Conforme à
+/// §3 Badge (variant `badge.ember` de DESIGN.md).
+class _NewBadge extends StatelessWidget {
+  const _NewBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: CalmSpace.s3,
+        vertical: 2,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.ember,
+        borderRadius: BorderRadius.circular(CalmRadius.pill),
+      ),
+      child: Text(
+        'NEW',
+        style: AppTypography.mono(
+          const TextStyle(
+            fontSize: 9,
+            fontWeight: FontWeight.w700,
+            color: AppColors.canvas,
+            letterSpacing: 0.8,
+            height: 1,
+          ),
+        ),
       ),
     );
   }

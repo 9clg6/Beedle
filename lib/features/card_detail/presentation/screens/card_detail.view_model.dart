@@ -1,5 +1,9 @@
+import 'package:beedle/core/providers/data_providers.dart';
+import 'package:beedle/core/providers/service_providers.dart';
 import 'package:beedle/core/providers/usecase_providers.dart';
 import 'package:beedle/domain/entities/card.entity.dart';
+import 'package:beedle/domain/entities/screenshot.entity.dart';
+import 'package:beedle/domain/services/analytics.service.dart';
 import 'package:beedle/features/card_detail/presentation/screens/card_detail.state.dart';
 import 'package:beedle/foundation/interfaces/results.usecases.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -18,16 +22,37 @@ class CardDetailViewModel extends _$CardDetailViewModel {
         .read(getCardUseCaseProvider)
         .execute(uuid);
     final CardEntity? card = result.data;
+    List<ScreenshotEntity> screenshots = const <ScreenshotEntity>[];
     if (card != null) {
       await ref.read(markCardViewedUseCaseProvider).execute(uuid);
+      screenshots = await ref
+          .read(screenshotRepositoryProvider)
+          .getByCardUuid(uuid);
+      await ref
+          .read(analyticsServiceProvider)
+          .track(
+            AnalyticsEvent.cardOpened,
+            properties: <String, Object>{
+              'card_uuid': uuid,
+              'intent': card.intent.name,
+              'language': card.language,
+              'viewed_count': card.viewedCount,
+            },
+          );
     }
-    return CardDetailState(card: card);
+    return CardDetailState(card: card, screenshots: screenshots);
   }
 
   Future<void> markTested() async {
     final String? uuid = state.value?.card?.uuid;
     if (uuid == null) return;
     await ref.read(markCardTestedUseCaseProvider).execute(uuid);
+    await ref
+        .read(analyticsServiceProvider)
+        .track(
+          AnalyticsEvent.cardMarkedTested,
+          properties: <String, Object>{'card_uuid': uuid},
+        );
     state = await AsyncValue.guard<CardDetailState>(() => _load(uuid));
   }
 
@@ -35,6 +60,12 @@ class CardDetailViewModel extends _$CardDetailViewModel {
     final String? uuid = state.value?.card?.uuid;
     if (uuid == null) return;
     await ref.read(deleteCardUseCaseProvider).execute(uuid);
+    await ref
+        .read(analyticsServiceProvider)
+        .track(
+          AnalyticsEvent.cardDeleted,
+          properties: <String, Object>{'card_uuid': uuid},
+        );
   }
 
   void setCodeCopied(bool copied) {

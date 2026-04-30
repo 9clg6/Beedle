@@ -1,13 +1,15 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:beedle/core/providers/data_providers.dart';
 import 'package:beedle/domain/entities/card.entity.dart';
+import 'package:beedle/domain/enum/card_intent.enum.dart';
 import 'package:beedle/features/card_detail/presentation/screens/card_detail.state.dart';
 import 'package:beedle/features/card_detail/presentation/screens/card_detail.view_model.dart';
+import 'package:beedle/domain/entities/screenshot.entity.dart';
 import 'package:beedle/features/card_detail/presentation/widgets/card_markdown_body.dart';
+import 'package:beedle/features/card_detail/presentation/widgets/screenshot_thumbnail_strip.dart';
 import 'package:beedle/generated/locale_keys.g.dart';
 import 'package:beedle/presentation/theme/app_colors.dart';
 import 'package:beedle/presentation/theme/calm_tokens.dart';
-import 'package:beedle/core/providers/data_providers.dart';
-import 'package:beedle/domain/enum/card_intent.enum.dart';
 import 'package:beedle/presentation/widgets/calm_back_button.dart';
 import 'package:beedle/presentation/widgets/glass_card.dart';
 import 'package:beedle/presentation/widgets/gradient_background.dart';
@@ -53,7 +55,11 @@ class _CardDetailScreenState extends ConsumerState<CardDetailScreen> {
             if (card == null) {
               return Center(child: Text(LocaleKeys.common_empty.tr()));
             }
-            return _Body(card: card, uuid: widget.uuid);
+            return _Body(
+              card: card,
+              screenshots: state.screenshots,
+              uuid: widget.uuid,
+            );
           },
         ),
       ),
@@ -62,8 +68,13 @@ class _CardDetailScreenState extends ConsumerState<CardDetailScreen> {
 }
 
 class _Body extends ConsumerWidget {
-  const _Body({required this.card, required this.uuid});
+  const _Body({
+    required this.card,
+    required this.screenshots,
+    required this.uuid,
+  });
   final CardEntity card;
+  final List<ScreenshotEntity> screenshots;
   final String uuid;
 
   @override
@@ -128,6 +139,10 @@ class _Body extends ConsumerWidget {
               ),
             ),
           const Gap(CalmSpace.s7),
+          if (screenshots.isNotEmpty) ...<Widget>[
+            ScreenshotThumbnailStrip(screenshots: screenshots),
+            const Gap(CalmSpace.s7),
+          ],
           if (card.tags.isNotEmpty) ...<Widget>[
             Wrap(
               spacing: CalmSpace.s3,

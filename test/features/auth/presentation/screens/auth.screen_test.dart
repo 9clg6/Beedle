@@ -83,7 +83,7 @@ void main() {
   );
 
   testWidgets(
-    'required=true → n\'affiche PAS le bouton skip',
+    "required=true → n'affiche PAS le bouton skip",
     (WidgetTester tester) async {
       await tester.pumpWidget(
         _wrap(
