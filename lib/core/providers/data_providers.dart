@@ -23,6 +23,7 @@ import 'package:beedle/data/repositories/llm.repository.impl.dart';
 import 'package:beedle/data/repositories/notification.repository.impl.dart';
 import 'package:beedle/data/repositories/ocr.repository.impl.dart';
 import 'package:beedle/data/repositories/screenshot.repository.impl.dart';
+import 'package:beedle/data/repositories/screenshot_storage.repository.impl.dart';
 import 'package:beedle/data/repositories/subscription.repository.impl.dart';
 import 'package:beedle/data/repositories/user_preferences.repository.impl.dart';
 import 'package:beedle/domain/repositories/card.repository.dart';
@@ -34,6 +35,7 @@ import 'package:beedle/domain/repositories/llm.repository.dart';
 import 'package:beedle/domain/repositories/notification.repository.dart';
 import 'package:beedle/domain/repositories/ocr.repository.dart';
 import 'package:beedle/domain/repositories/screenshot.repository.dart';
+import 'package:beedle/domain/repositories/screenshot_storage.repository.dart';
 import 'package:beedle/domain/repositories/subscription.repository.dart';
 import 'package:beedle/domain/repositories/user_preferences.repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -56,6 +58,9 @@ objectBoxStoreProvider = Provider<ObjectBoxStore>((Ref ref) {
 });
 
 /// Worker Cloudflare (LLM + Embeddings proxy).
+///
+/// L'interceptor analytics est attaché à la volée dans `finalizeKernel`
+/// (pour ne pas créer de dépendance circulaire avec service_providers.dart).
 final Provider<WorkerClient> workerClientProvider = Provider<WorkerClient>((
   Ref ref,
 ) {
@@ -217,5 +222,14 @@ engagementMessageRepositoryProvider = Provider<EngagementMessageRepository>((
 ) {
   return EngagementMessageRepositoryImpl(
     dataSource: ref.watch(engagementMessageLocalDataSourceProvider),
+  );
+});
+
+final Provider<ScreenshotStorageRepository>
+screenshotStorageRepositoryProvider = Provider<ScreenshotStorageRepository>((
+  Ref ref,
+) {
+  return ScreenshotStorageRepositoryImpl(
+    workerClient: ref.watch(workerClientProvider),
   );
 });

@@ -16,5 +16,6 @@ abstract class ScreenshotEntity with _$ScreenshotEntity {
     @Default(0.0) double ocrConfidence,
     String? cardUuid,
     String? detectedLanguage,
+    String? remoteUrl,
   }) = _ScreenshotEntity;
 }

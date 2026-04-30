@@ -49,7 +49,7 @@ AuthUserEntity _entity({
 }) => AuthUserEntity(
   uid: uid,
   provider: provider,
-  createdAt: DateTime.utc(2026, 1, 1),
+  createdAt: DateTime.utc(2026),
 );
 
 void main() {
@@ -62,7 +62,7 @@ void main() {
       final _MockAuthService auth = _MockAuthService();
       final _MockAnalyticsService analytics = _MockAnalyticsService();
 
-      when(() => auth.signInWithGoogle()).thenAnswer((_) async => _entity());
+      when(auth.signInWithGoogle).thenAnswer((_) async => _entity());
       when(
         () => analytics.track(any(), properties: any(named: 'properties')),
       ).thenAnswer((_) async {});
@@ -96,7 +96,7 @@ void main() {
       final _MockAnalyticsService analytics = _MockAnalyticsService();
 
       when(
-        () => auth.signInWithGoogle(),
+        auth.signInWithGoogle,
       ).thenThrow(const AuthCancelledByUser());
       when(
         () => analytics.track(any(), properties: any(named: 'properties')),
@@ -123,7 +123,7 @@ void main() {
       final _MockAnalyticsService analytics = _MockAnalyticsService();
 
       when(
-        () => auth.signInWithGoogle(),
+        auth.signInWithGoogle,
       ).thenThrow(const AuthNetworkFailure('boom'));
       when(
         () => analytics.track(any(), properties: any(named: 'properties')),
@@ -152,7 +152,7 @@ void main() {
       final _MockAnalyticsService analytics = _MockAnalyticsService();
 
       when(
-        () => auth.signInWithApple(),
+        auth.signInWithApple,
       ).thenAnswer((_) async => _entity(provider: AuthProvider.apple));
       when(
         () => analytics.track(any(), properties: any(named: 'properties')),
@@ -184,7 +184,7 @@ void main() {
       final _MockAuthService auth = _MockAuthService();
       final _MockAnalyticsService analytics = _MockAnalyticsService();
 
-      when(() => auth.signInWithApple()).thenThrow(const AuthCancelledByUser());
+      when(auth.signInWithApple).thenThrow(const AuthCancelledByUser());
       when(
         () => analytics.track(any(), properties: any(named: 'properties')),
       ).thenAnswer((_) async {});
@@ -210,7 +210,7 @@ void main() {
       final _MockAnalyticsService analytics = _MockAnalyticsService();
 
       when(
-        () => auth.signInWithApple(),
+        auth.signInWithApple,
       ).thenThrow(const AuthProviderFailure('apple:invalid-credential'));
       when(
         () => analytics.track(any(), properties: any(named: 'properties')),

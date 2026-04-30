@@ -21,7 +21,7 @@ final class ScanQuotaServiceImpl implements ScanQuotaService {
     }
     final SubscriptionSnapshotEntity snapshot = await _subscriptionRepo.load();
     final int used = snapshot.monthlyGenerationCount;
-    final int limit = ScanQuotaService.freeMonthlyLimit;
+    const int limit = ScanQuotaService.freeMonthlyLimit;
 
     if (used >= limit) {
       return const ScanDecision.blocked(

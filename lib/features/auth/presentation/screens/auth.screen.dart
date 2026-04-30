@@ -76,7 +76,7 @@ class _AuthScreenState extends ConsumerState<AuthScreen> {
             child: Column(
               children: <Widget>[
                 const Spacer(flex: 2),
-                const BeedleIconAsset(size: 96),
+                const BeedleIconAsset(),
                 const Gap(CalmSpace.s7),
                 Text(
                   LocaleKeys.auth_title.tr(),

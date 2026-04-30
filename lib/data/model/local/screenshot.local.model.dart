@@ -37,4 +37,6 @@ class ScreenshotLocalModel {
   String? cardUuid;
 
   String? detectedLanguage;
+
+  String? remoteUrl;
 }

@@ -22,3 +22,22 @@ subprojects {
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
+
+gradle.projectsEvaluated {
+    subprojects {
+        val android = extensions.findByType<com.android.build.gradle.BaseExtension>()
+        if (android != null) {
+            val javaTarget = android.compileOptions.sourceCompatibility
+            val kotlinTarget = when {
+                javaTarget <= JavaVersion.VERSION_1_8 -> org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8
+                javaTarget <= JavaVersion.VERSION_11 -> org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11
+                else -> org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17
+            }
+            tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+                compilerOptions {
+                    jvmTarget.set(kotlinTarget)
+                }
+            }
+        }
+    }
+}

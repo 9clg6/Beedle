@@ -5,6 +5,7 @@ import 'package:beedle/domain/entities/auth_user.entity.dart';
 import 'package:beedle/domain/entities/user_preferences.entity.dart';
 import 'package:beedle/domain/services/analytics.service.dart';
 import 'package:beedle/domain/services/auth.service.dart';
+import 'package:beedle/features/auth/presentation/screens/auth.screen.dart' show AuthScreen;
 import 'package:beedle/features/auth/presentation/screens/auth.state.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

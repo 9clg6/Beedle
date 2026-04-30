@@ -11,6 +11,7 @@ extension ScreenshotLocalModelX on ScreenshotLocalModel {
     ocrConfidence: ocrConfidence,
     cardUuid: cardUuid,
     detectedLanguage: detectedLanguage,
+    remoteUrl: remoteUrl,
   );
 }
 
@@ -25,5 +26,5 @@ extension ScreenshotEntityToLocalX on ScreenshotEntity {
     ocrConfidence: ocrConfidence,
     cardUuid: cardUuid,
     detectedLanguage: detectedLanguage,
-  );
+  )..remoteUrl = remoteUrl;
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:beedle/core/providers/data_providers.dart';
 import 'package:beedle/core/providers/service_providers.dart';
 import 'package:beedle/domain/entities/user_preferences.entity.dart';
@@ -20,17 +22,53 @@ class OnboardingViewModel extends _$OnboardingViewModel {
 
   void next() {
     if (state.currentIndex < kOnboardingLastIndex) {
-      state = state.copyWith(currentIndex: state.currentIndex + 1);
+      final int from = state.currentIndex;
+      final int to = from + 1;
+      unawaited(
+        ref
+            .read(analyticsServiceProvider)
+            .track(
+              AnalyticsEvent.onboardingStepCompleted,
+              properties: <String, Object>{'from': from, 'to': to},
+            ),
+      );
+      unawaited(
+        ref
+            .read(analyticsServiceProvider)
+            .track(
+              AnalyticsEvent.onboardingStepViewed,
+              properties: <String, Object>{'step': to},
+            ),
+      );
+      state = state.copyWith(currentIndex: to);
     }
   }
 
   void previous() {
     if (state.currentIndex > 0) {
-      state = state.copyWith(currentIndex: state.currentIndex - 1);
+      final int from = state.currentIndex;
+      final int to = from - 1;
+      unawaited(
+        ref
+            .read(analyticsServiceProvider)
+            .track(
+              AnalyticsEvent.onboardingStepBack,
+              properties: <String, Object>{'from': from, 'to': to},
+            ),
+      );
+      state = state.copyWith(currentIndex: to);
     }
   }
 
   void goTo(int index) {
+    unawaited(
+      ref
+          .read(analyticsServiceProvider)
+          .track(
+            AnalyticsEvent.onboardingStepViewed,
+            properties: <String, Object>{'step': index},
+          ),
+    );
     state = state.copyWith(currentIndex: index);
   }
 
@@ -106,6 +144,14 @@ class OnboardingViewModel extends _$OnboardingViewModel {
     final bool granted = await ref
         .read(localNotificationEngineInterfaceProvider)
         .requestPermission();
+    await ref
+        .read(analyticsServiceProvider)
+        .track(
+          granted
+              ? AnalyticsEvent.permissionGranted
+              : AnalyticsEvent.permissionDenied,
+          properties: <String, Object>{'permission': 'notifications'},
+        );
     state = state.copyWith(notificationsGranted: granted);
   }
 
@@ -119,6 +165,17 @@ class OnboardingViewModel extends _$OnboardingViewModel {
     final PermissionStatus status = await Permission.photos.request();
     final bool granted =
         status.isGranted || status.isLimited || status.isProvisional;
+    await ref
+        .read(analyticsServiceProvider)
+        .track(
+          granted
+              ? AnalyticsEvent.permissionGranted
+              : AnalyticsEvent.permissionDenied,
+          properties: <String, Object>{
+            'permission': 'photos',
+            'status': status.name,
+          },
+        );
     state = state.copyWith(photosGranted: granted);
   }
 

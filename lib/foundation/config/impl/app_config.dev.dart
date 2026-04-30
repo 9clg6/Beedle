@@ -8,8 +8,7 @@ final class AppConfigDev extends AppConfig {
         appName: 'Beedle Dev',
         workerBaseUrl: 'https://beedle-proxy-dev.beedleapp.workers.dev',
         env: Environment.development,
-        // TODO-USER: remplacer par les vraies clés RevenueCat sandbox.
-        revenueCatApiKeyIos: 'appl_DEV_IOS_KEY_TODO',
-        revenueCatApiKeyAndroid: 'goog_DEV_ANDROID_KEY_TODO',
+        revenueCatApiKeyIos: 'appl_ffiLeSkyMhzlprfaiTjAyunkmpf',
+        revenueCatApiKeyAndroid: 'goog_YSzzPQUhDMYVkRChbaFPMjfABdv',
       );
 }

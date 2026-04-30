@@ -17,8 +17,13 @@ import 'package:beedle/domain/repositories/ingestion_job.repository.dart';
 import 'package:beedle/domain/repositories/llm.repository.dart';
 import 'package:beedle/domain/repositories/ocr.repository.dart';
 import 'package:beedle/domain/repositories/screenshot.repository.dart';
+import 'package:beedle/domain/repositories/screenshot_storage.repository.dart';
+import 'package:beedle/domain/repositories/subscription.repository.dart';
 import 'package:beedle/domain/repositories/user_preferences.repository.dart';
+import 'package:beedle/domain/services/analytics.service.dart';
+import 'package:beedle/domain/services/crash_reporter.service.dart';
 import 'package:beedle/domain/services/fusion_engine.service.dart';
+import 'package:beedle/foundation/exceptions/app_exceptions.dart';
 import 'package:beedle/foundation/logging/logger.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:uuid/uuid.dart';
@@ -38,6 +43,10 @@ final class IngestionPipelineService {
     required UserPreferencesRepository userPreferencesRepository,
     required FusionEngine fusionEngine,
     required EngagementMessageRepository engagementMessageRepository,
+    required SubscriptionRepository subscriptionRepository,
+    required ScreenshotStorageRepository screenshotStorageRepository,
+    required CrashReporterService crashReporter,
+    required AnalyticsService analytics,
   }) : _screenshotRepository = screenshotRepository,
        _ingestionJobRepository = ingestionJobRepository,
        _cardRepository = cardRepository,
@@ -46,7 +55,11 @@ final class IngestionPipelineService {
        _embeddingsRepository = embeddingsRepository,
        _userPreferencesRepository = userPreferencesRepository,
        _fusionEngine = fusionEngine,
-       _engagementMessageRepository = engagementMessageRepository;
+       _engagementMessageRepository = engagementMessageRepository,
+       _subscriptionRepository = subscriptionRepository,
+       _screenshotStorageRepository = screenshotStorageRepository,
+       _crashReporter = crashReporter,
+       _analytics = analytics;
 
   final ScreenshotRepository _screenshotRepository;
   final IngestionJobRepository _ingestionJobRepository;
@@ -57,6 +70,10 @@ final class IngestionPipelineService {
   final UserPreferencesRepository _userPreferencesRepository;
   final FusionEngine _fusionEngine;
   final EngagementMessageRepository _engagementMessageRepository;
+  final SubscriptionRepository _subscriptionRepository;
+  final ScreenshotStorageRepository _screenshotStorageRepository;
+  final CrashReporterService _crashReporter;
+  final AnalyticsService _analytics;
 
   final Log _log = Log.named('IngestionPipeline');
   final Uuid _uuid = const Uuid();
@@ -151,10 +168,13 @@ final class IngestionPipelineService {
       }
 
       if (screenshots.isEmpty) {
-        throw Exception(
+        throw BeedleException(
           missingFiles > 0
-              ? 'Captures introuvables — ont été supprimées ou déplacées ($missingFiles fichier(s) manquant(s))'
+              ? 'Screenshots missing on disk ($missingFiles file(s))'
               : 'No screenshots found for job ${job.uuid}',
+          userMessage: missingFiles > 0
+              ? "Les captures d'origine sont introuvables — elles ont été supprimées du téléphone."
+              : 'Aucune capture exploitable pour cet import.',
         );
       }
 
@@ -275,20 +295,96 @@ final class IngestionPipelineService {
         await _screenshotRepository.linkToCard(s.uuid, saved.uuid);
       }
 
+      // 9. Upload screenshots vers R2 (non-fatal — la card est déjà sauvée).
+      //    Compresse en WebP, upload, puis supprime la copie locale pour
+      //    libérer l'espace téléphone. En cas d'échec : on log et on garde
+      //    le fichier local — un retry pourra le tenter plus tard.
+      for (final ScreenshotEntity s in screenshots) {
+        if (s.remoteUrl != null) continue;
+        final File localFile = File(s.filePath);
+        if (!localFile.existsSync()) continue;
+        try {
+          final String url = await _screenshotStorageRepository
+              .uploadScreenshot(s.filePath, s.uuid);
+          await _screenshotRepository.upsert(s.copyWith(remoteUrl: url));
+          try {
+            localFile.deleteSync();
+          } on Exception catch (e) {
+            _log.warn('Could not delete local screenshot ${s.uuid}: $e');
+          }
+        } on Exception catch (e, st) {
+          _log.warn('Screenshot upload failed (non-fatal): $e', e, st);
+        }
+      }
+
       await _ingestionJobRepository.updateStatus(
         job.uuid,
         IngestionStatus.completed,
         cardUuid: saved.uuid,
       );
 
+      // Consomme 1 scan du quota mensuel (no-op côté repo pour les users
+      // Pro — `SubscriptionRepository` gère lui-même le reset sur
+      // changement de mois calendaire).
+      // NB : on incrémente uniquement après succès complet (OCR + LLM +
+      // embedding + persist). Un job failed n'impacte pas le quota.
+      try {
+        await _subscriptionRepository.incrementMonthlyGeneration();
+      } on Exception catch (e, st) {
+        // Ne pas faire échouer la card si le compteur merde — on préfère
+        // donner un scan gratuit plutôt que perdre la card.
+        _log.warn('Failed to increment monthly quota counter: $e', e, st);
+      }
+
       cardGeneratedStream.add(saved);
+      unawaited(
+        _analytics.track(
+          AnalyticsEvent.cardGenerated,
+          properties: <String, Object>{
+            'card_uuid': saved.uuid,
+            'screenshot_count': job.screenshotUuids.length,
+            'fused': existing != null,
+            'language': digestion.language,
+            'intent': digestion.intent.name,
+            'tag_count': digestion.tags.length,
+          },
+        ),
+      );
       _log.info('Card generated: ${saved.title} (${saved.uuid})');
     } on Exception catch (e, st) {
       _log.error('Job ${job.uuid} failed: $e', e, st);
+      unawaited(
+        _analytics.track(
+          AnalyticsEvent.cardGenerationFailed,
+          properties: <String, Object>{
+            'job_uuid': job.uuid,
+            'screenshot_count': job.screenshotUuids.length,
+            'reason': e.runtimeType.toString(),
+            if (e is LLMException) 'llm_kind': e.kind.name,
+          },
+        ),
+      );
+      final String userMessage = e is BeedleException
+          ? e.userMessage
+          : 'Une erreur inattendue est survenue. Réessaie dans un instant.';
       await _ingestionJobRepository.updateStatus(
         job.uuid,
         IngestionStatus.failed,
-        error: e.toString(),
+        error: userMessage,
+      );
+      unawaited(
+        _crashReporter.recordError(
+          e,
+          st,
+          reason: 'ingestion_pipeline',
+          context: <String, Object>{
+            'job_uuid': job.uuid,
+            'screenshot_count': job.screenshotUuids.length,
+            if (e is LLMException) 'llm_kind': e.kind.name,
+            if (e is LLMException && e.statusCode != null)
+              'llm_status': e.statusCode!,
+          },
+        ),
       );
     }
   }

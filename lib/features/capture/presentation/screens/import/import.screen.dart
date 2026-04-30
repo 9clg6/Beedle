@@ -5,6 +5,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:beedle/features/capture/presentation/screens/import/import.state.dart';
 import 'package:beedle/features/capture/presentation/screens/import/import.view_model.dart';
 import 'package:beedle/features/home/presentation/widgets/upload_progress_card.dart';
+import 'package:beedle/features/paywall/presentation/scan_gate.dart';
 import 'package:beedle/generated/locale_keys.g.dart';
 import 'package:beedle/presentation/theme/app_colors.dart';
 import 'package:beedle/presentation/theme/calm_tokens.dart';
@@ -147,11 +148,18 @@ class _ImportActionArea extends ConsumerWidget {
               onPressed: () async {
                 if (state.selectedPaths.isEmpty) {
                   await ref.read(importViewModelProvider.notifier).pickImages();
-                } else {
-                  await ref
-                      .read(importViewModelProvider.notifier)
-                      .confirmImport();
+                  return;
                 }
+                // Gate quota scan IA AVANT d'enqueuer le job.
+                // Si le user free a atteint sa limite mensuelle, le
+                // bottom sheet paywall contextuel s'ouvre — l'import est
+                // silencieusement annulé jusqu'à upgrade ou mois suivant.
+                final bool allowed =
+                    await ScanGate.of(ref).requestPermission(context);
+                if (!allowed) return;
+                await ref
+                    .read(importViewModelProvider.notifier)
+                    .confirmImport();
               },
             ),
     );

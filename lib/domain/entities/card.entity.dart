@@ -67,4 +67,15 @@ extension CardEntityX on CardEntity {
     final Duration? d = sinceViewed;
     return d == null || d.inDays > 14;
   }
+
+  /// Une carte est « NEW » si elle vient d'être scannée et pas encore vue.
+  ///
+  /// Règle : jamais ouverte (`viewedAt == null` ET `viewedCount == 0`) ET
+  /// créée dans les 48 dernières heures. La fenêtre de 48h évite d'afficher
+  /// NEW sur de vieilles cartes oubliées (UX pollution sinon).
+  bool get isNew {
+    if (viewedAt != null || viewedCount > 0) return false;
+    final Duration sinceCreated = DateTime.now().difference(createdAt);
+    return sinceCreated.inHours < 48;
+  }
 }

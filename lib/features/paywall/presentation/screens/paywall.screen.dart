@@ -3,17 +3,21 @@ import 'dart:async';
 import 'package:auto_route/auto_route.dart';
 import 'package:beedle/core/providers/auth.provider.dart';
 import 'package:beedle/core/providers/data_providers.dart';
+import 'package:beedle/core/providers/service_providers.dart';
 import 'package:beedle/domain/entities/auth_user.entity.dart';
+import 'package:beedle/domain/services/analytics.service.dart';
 import 'package:beedle/foundation/routing/app_router.dart';
 import 'package:beedle/presentation/theme/app_colors.dart';
 import 'package:beedle/presentation/theme/app_typography.dart';
 import 'package:beedle/presentation/theme/calm_tokens.dart';
+import 'package:beedle/features/paywall/presentation/widgets/testimonial_carousel.dart';
 import 'package:beedle/presentation/widgets/calm_back_button.dart';
 import 'package:beedle/presentation/widgets/calm_digital_number.dart';
 import 'package:beedle/presentation/widgets/glass_card.dart';
 import 'package:beedle/presentation/widgets/gradient_background.dart';
 import 'package:beedle/presentation/widgets/squircle_button.dart';
 import 'package:figma_squircle/figma_squircle.dart';
+import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -42,16 +46,46 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
   _Plan _selected = _Plan.yearly;
 
   @override
+  void initState() {
+    super.initState();
+    // Impression event — source='standalone' pour distinguer le paywall
+    // route du paywall onboarding step (déjà loggé dans ob_paywall_step).
+    unawaited(
+      ref
+          .read(analyticsServiceProvider)
+          .track(
+            AnalyticsEvent.paywallShown,
+            properties: <String, Object>{'source': 'standalone'},
+          ),
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
 
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        surfaceTintColor: Colors.transparent,
         leadingWidth: 60,
         leading: const CalmCloseButton(),
         actions: <Widget>[
           TextButton(
-            onPressed: () => ref.read(subscriptionRepositoryProvider).restore(),
+            onPressed: () async {
+              await ref
+                  .read(analyticsServiceProvider)
+                  .track(
+                    AnalyticsEvent.subscriptionRestored,
+                    properties: const <String, Object>{
+                      'source': 'paywall_button',
+                    },
+                  );
+              await ref.read(subscriptionRepositoryProvider).restore();
+            },
             child: Text(
               'Restaurer',
               style: textTheme.labelLarge?.copyWith(color: AppColors.neutral6),
@@ -62,114 +96,121 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
       ),
       body: GradientBackground(
         child: SafeArea(
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(
-              CalmSpace.s7,
-              CalmSpace.s3,
-              CalmSpace.s7,
-              CalmSpace.s9,
-            ),
+          bottom: false,
+          child: Stack(
             children: <Widget>[
-              // ───── Hero : Ember accent + Doto lockup ─────
-              const _EmberHeroLockup(),
-              const Gap(CalmSpace.s8),
+              // ───── Scrollable content ─────
+              // Le padding bottom réserve la place du sticky + safe-area,
+              // sinon le dernier item est masqué sous le glass panel.
+              ListView(
+                padding: EdgeInsets.fromLTRB(
+                  0,
+                  CalmSpace.s3,
+                  0,
+                  _kStickyHeight + MediaQuery.paddingOf(context).bottom,
+                ),
+                children: <Widget>[
+                  // Hero : Ember accent + Doto lockup
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: CalmSpace.s7,
+                    ),
+                    child: const _EmberHeroLockup(),
+                  ),
+                  const Gap(CalmSpace.s8),
 
-              // ───── Titre + subhead ─────
-              Text(
-                'Que toutes tes cartes\nchantent à nouveau',
-                style: textTheme.headlineLarge?.copyWith(
-                  color: AppColors.neutral8,
-                  letterSpacing: -0.5,
-                  height: 1.15,
+                  // Titre + subhead
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: CalmSpace.s7,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(
+                          'Que toutes tes cartes\nchantent à nouveau',
+                          style: textTheme.headlineLarge?.copyWith(
+                            color: AppColors.neutral8,
+                            letterSpacing: -0.5,
+                            height: 1.15,
+                          ),
+                        ),
+                        const Gap(CalmSpace.s4),
+                        Text(
+                          'Scan IA sur 100 % de tes trouvailles, et des '
+                          'rappels qui les ramènent aux bonnes heures.',
+                          style: textTheme.bodyLarge
+                              ?.copyWith(color: AppColors.neutral6),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const Gap(CalmSpace.s7),
+
+                  // ───── Testimonials — carrousel horizontal mis en avant ─────
+                  _TestimonialsSection(),
+                  const Gap(CalmSpace.s8),
+
+                  // Bénéfices
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: CalmSpace.s7,
+                    ),
+                    child: const GlassCard(
+                      elevated: false,
+                      child: Column(
+                        children: <Widget>[
+                          _Benefit(
+                            icon: Icons.all_inclusive_rounded,
+                            title: 'Scans illimités',
+                            body: 'Chaque carte devient recherchable.',
+                          ),
+                          _BenefitDivider(),
+                          _Benefit(
+                            icon: Icons.search_rounded,
+                            title: 'Recherche par le sens',
+                            body:
+                                'Retrouve une carte par son idée, pas ses mots.',
+                          ),
+                          _BenefitDivider(),
+                          _Benefit(
+                            icon: Icons.notifications_active_rounded,
+                            title: 'Rappels adaptatifs',
+                            body: 'Au bon moment, groupés par thème.',
+                          ),
+                          _BenefitDivider(),
+                          _Benefit(
+                            icon: Icons.ios_share_rounded,
+                            title: 'Export Notion · Obsidian',
+                            body: 'Ta veille, portable.',
+                          ),
+                          _BenefitDivider(),
+                          _Benefit(
+                            icon: Icons.devices_rounded,
+                            title: 'Sync multi-device',
+                            body: 'iPhone · iPad · Android.',
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const Gap(CalmSpace.s7),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: CalmSpace.s7),
+                    child: _LegalLinks(),
+                  ),
+                ],
+              ),
+
+              // ───── Sticky bottom — pricing compact + CTA ─────
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: _StickyPricingBottom(
+                  selected: _selected,
+                  onSelect: _select,
+                  onPurchase: () => _onTapSubscribe(context, ref, _selected),
                 ),
               ),
-              const Gap(CalmSpace.s4),
-              Text(
-                'Scan IA sur 100 % de tes trouvailles, et des rappels '
-                'qui les ramènent aux bonnes heures.',
-                style: textTheme.bodyLarge?.copyWith(color: AppColors.neutral6),
-              ),
-              const Gap(CalmSpace.s8),
-
-              // ───── Bénéfices — liste iconée Lucide-like ─────
-              GlassCard(
-                elevated: false,
-                child: Column(
-                  children: const <Widget>[
-                    _Benefit(
-                      icon: Icons.all_inclusive_rounded,
-                      title: 'Scans illimités',
-                      body: 'Chaque carte devient recherchable.',
-                    ),
-                    _BenefitDivider(),
-                    _Benefit(
-                      icon: Icons.search_rounded,
-                      title: 'Recherche par le sens',
-                      body: 'Retrouve une carte par son idée, pas ses mots.',
-                    ),
-                    _BenefitDivider(),
-                    _Benefit(
-                      icon: Icons.notifications_active_rounded,
-                      title: 'Rappels adaptatifs',
-                      body: 'Au bon moment, groupés par thème.',
-                    ),
-                    _BenefitDivider(),
-                    _Benefit(
-                      icon: Icons.ios_share_rounded,
-                      title: 'Export Notion · Obsidian',
-                      body: 'Ta veille, portable.',
-                    ),
-                    _BenefitDivider(),
-                    _Benefit(
-                      icon: Icons.devices_rounded,
-                      title: 'Sync multi-device',
-                      body: 'iPhone · iPad · Android.',
-                    ),
-                  ],
-                ),
-              ),
-              const Gap(CalmSpace.s8),
-
-              // ───── Social proof ─────
-              const _SocialProof(),
-              const Gap(CalmSpace.s8),
-
-              // ───── Pricing cards ─────
-              _PricingCard(
-                plan: _Plan.yearly,
-                selected: _selected == _Plan.yearly,
-                onTap: () => _select(_Plan.yearly),
-              ),
-              const Gap(CalmSpace.s4),
-              _PricingCard(
-                plan: _Plan.monthly,
-                selected: _selected == _Plan.monthly,
-                onTap: () => _select(_Plan.monthly),
-              ),
-              const Gap(CalmSpace.s7),
-
-              // ───── Primary CTA — ink flat pill (in-app primary) ─────
-              SquircleButton(
-                label: _selected == _Plan.yearly
-                    ? 'Essayer 7 jours'
-                    : 'Passer Pro · 4,99 €/mois',
-                expand: true,
-                onPressed: () => _onTapSubscribe(context, ref),
-              ),
-              const Gap(CalmSpace.s4),
-
-              // Trust line
-              Text(
-                _selected == _Plan.yearly
-                    ? 'Annulable à tout moment. Paiement après l\u2019essai.'
-                    : 'Annulable à tout moment.',
-                textAlign: TextAlign.center,
-                style: textTheme.bodySmall?.copyWith(color: AppColors.neutral5),
-              ),
-              const Gap(CalmSpace.s5),
-
-              // Legal
-              const _LegalLinks(),
             ],
           ),
         ),
@@ -179,6 +220,17 @@ class _PaywallScreenState extends ConsumerState<PaywallScreen> {
 
   void _select(_Plan plan) {
     HapticFeedback.selectionClick();
+    unawaited(
+      ref
+          .read(analyticsServiceProvider)
+          .track(
+            AnalyticsEvent.paywallPlanSelected,
+            properties: <String, Object>{
+              'plan': plan.name,
+              'product_id': plan.productId,
+            },
+          ),
+    );
     setState(() => _selected = plan);
   }
 }
@@ -215,7 +267,7 @@ class _EmberHeroLockup extends StatelessWidget {
                     Color(0xFFFFB067),
                     Color(0xFFFFB067),
                   ],
-                  stops: <double>[0.0, 0.4, 0.8, 1.0],
+                  stops: <double>[0, 0.4, 0.8, 1],
                 ),
               ),
             ),
@@ -236,7 +288,7 @@ class _EmberHeroLockup extends StatelessWidget {
                       Text(
                         'BEEDLE · PRO',
                         style: AppTypography.mono(
-                          TextStyle(
+                          const TextStyle(
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
                             letterSpacing: 2.5,
@@ -326,76 +378,177 @@ class _BenefitDivider extends StatelessWidget {
 }
 
 // ─────────────────────────────────────────────────────────────────
-// Social proof — star rating (Geist Mono number) + testimonial
+// Testimonials — carrousel horizontal mis en avant.
+//
+// Remplace l'ancien _SocialProof (une seule quote centrée, trop discret).
+// Header fort + rating global en ligne, puis 5 cards scrollables qui
+// débordent jusqu'au bord écran. La bande laisse clairement voir le
+// début de la card suivante → invite au scroll sans flèche.
 // ─────────────────────────────────────────────────────────────────
 
-class _SocialProof extends StatelessWidget {
-  const _SocialProof();
+/// Hauteur réservée pour le bloc sticky bottom (pricing compact + CTA
+/// + trust line). Sert à calculer le padding bottom du scroll pour que
+/// le dernier item ne soit pas masqué.
+const double _kStickyHeight = 244;
 
+class _TestimonialsSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ...List<Widget>.generate(
-              5,
-              (int _) => const Padding(
-                padding: EdgeInsets.symmetric(horizontal: CalmSpace.s1),
-                child: Icon(
-                  Icons.star_rounded,
-                  size: 20,
-                  color: AppColors.ember,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: CalmSpace.s7),
+          child: Row(
+            children: <Widget>[
+              ...List<Widget>.generate(
+                5,
+                (int _) => const Padding(
+                  padding: EdgeInsets.only(right: 2),
+                  child: Icon(
+                    Icons.star_rounded,
+                    size: 18,
+                    color: AppColors.ember,
+                  ),
                 ),
               ),
-            ),
-            const Gap(CalmSpace.s3),
-            Text(
-              '4.8',
-              style: AppTypography.mono(
-                TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.neutral8,
+              const Gap(CalmSpace.s3),
+              Text(
+                '4.8',
+                style: AppTypography.mono(
+                  const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: AppColors.neutral8,
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
-        const Gap(CalmSpace.s5),
-        Text(
-          '« Enfin mes screenshots servent à quelque chose. »',
-          textAlign: TextAlign.center,
-          style: textTheme.bodyMedium?.copyWith(
-            color: AppColors.neutral7,
-            fontStyle: FontStyle.italic,
-            height: 1.5,
+              const Gap(CalmSpace.s3),
+              Text(
+                '· 120 avis',
+                style: textTheme.bodySmall
+                    ?.copyWith(color: AppColors.neutral6),
+              ),
+            ],
           ),
         ),
         const Gap(CalmSpace.s3),
-        Text(
-          'ALEX · DÉVELOPPEUSE',
-          style: textTheme.labelSmall?.copyWith(
-            color: AppColors.neutral5,
-            letterSpacing: 2,
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: CalmSpace.s7),
+          child: Text(
+            'Ils ont arrêté d\u2019oublier',
+            style: textTheme.headlineSmall?.copyWith(
+              color: AppColors.neutral8,
+              fontWeight: FontWeight.w600,
+              letterSpacing: -0.3,
+            ),
           ),
         ),
+        const Gap(CalmSpace.s5),
+        const TestimonialCarousel(),
       ],
     );
   }
 }
 
 // ─────────────────────────────────────────────────────────────────
-// Pricing card — glass.medium selected / glass.soft unselected
+// Sticky bottom — reste visible pendant le scroll.
+//
+// Compose : pills pricing horizontales (3 plans) + CTA + trust line.
+// Glass.strong + blur σ24 pour que le contenu au-dessus soit visible
+// par transparence (indique qu'on peut encore scroller).
 // ─────────────────────────────────────────────────────────────────
 
-enum _Plan { yearly, monthly }
+class _StickyPricingBottom extends StatelessWidget {
+  const _StickyPricingBottom({
+    required this.selected,
+    required this.onSelect,
+    required this.onPurchase,
+  });
 
-class _PricingCard extends StatelessWidget {
-  const _PricingCard({
+  final _Plan selected;
+  final ValueChanged<_Plan> onSelect;
+  final VoidCallback onPurchase;
+
+  @override
+  Widget build(BuildContext context) {
+    final TextTheme textTheme = Theme.of(context).textTheme;
+    final double safeBottom = MediaQuery.paddingOf(context).bottom;
+
+    return ClipRect(
+      child: BackdropFilter(
+        filter: ImageFilter.blur(sigmaX: 24, sigmaY: 24),
+        child: Container(
+          decoration: const BoxDecoration(
+            color: AppColors.glassStrong,
+            border: Border(
+              top: BorderSide(color: AppColors.glassBorder),
+            ),
+          ),
+          padding: EdgeInsets.fromLTRB(
+            CalmSpace.s5,
+            CalmSpace.s5,
+            CalmSpace.s5,
+            CalmSpace.s4 + safeBottom,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  Expanded(
+                    child: _CompactPricingPill(
+                      plan: _Plan.yearly,
+                      selected: selected == _Plan.yearly,
+                      onTap: () => onSelect(_Plan.yearly),
+                    ),
+                  ),
+                  const Gap(CalmSpace.s3),
+                  Expanded(
+                    child: _CompactPricingPill(
+                      plan: _Plan.monthly,
+                      selected: selected == _Plan.monthly,
+                      onTap: () => onSelect(_Plan.monthly),
+                    ),
+                  ),
+                  const Gap(CalmSpace.s3),
+                  Expanded(
+                    child: _CompactPricingPill(
+                      plan: _Plan.lifetime,
+                      selected: selected == _Plan.lifetime,
+                      onTap: () => onSelect(_Plan.lifetime),
+                    ),
+                  ),
+                ],
+              ),
+              const Gap(CalmSpace.s4),
+              SquircleButton(
+                label: _ctaLabelFor(selected),
+                expand: true,
+                onPressed: onPurchase,
+              ),
+              const Gap(CalmSpace.s3),
+              Text(
+                _trustLineFor(selected),
+                textAlign: TextAlign.center,
+                style: textTheme.bodySmall
+                    ?.copyWith(color: AppColors.neutral5),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Pill compact pour le sticky bottom — résume une option en 3 lignes :
+/// label, prix, sub (savings ou sans engagement). Sélection via border
+/// ember 1.5px + fond glass.medium.
+class _CompactPricingPill extends StatelessWidget {
+  const _CompactPricingPill({
     required this.plan,
     required this.selected,
     required this.onTap,
@@ -405,15 +558,49 @@ class _PricingCard extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
+  String get _label {
+    switch (plan) {
+      case _Plan.yearly:
+        return 'Annuel';
+      case _Plan.monthly:
+        return 'Mensuel';
+      case _Plan.lifetime:
+        return 'À vie';
+    }
+  }
+
+  String get _price {
+    switch (plan) {
+      case _Plan.yearly:
+        return '29,99 €';
+      case _Plan.monthly:
+        return '4,99 €';
+      case _Plan.lifetime:
+        return '79,99 €';
+    }
+  }
+
+  String get _sub {
+    switch (plan) {
+      case _Plan.yearly:
+        return '-50 %';
+      case _Plan.monthly:
+        return '/mois';
+      case _Plan.lifetime:
+        return 'une fois';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final TextTheme textTheme = Theme.of(context).textTheme;
-    final bool isYearly = plan == _Plan.yearly;
-
     final SmoothBorderRadius radius = SmoothBorderRadius(
-      cornerRadius: CalmRadius.xl,
-      cornerSmoothing: CalmRadius.smoothingFor(CalmRadius.xl),
+      cornerRadius: CalmRadius.lg,
+      cornerSmoothing: CalmRadius.smoothingFor(CalmRadius.lg),
     );
+    final bool isYearly = plan == _Plan.yearly;
+    final Color subColor =
+        isYearly ? AppColors.ember : AppColors.neutral6;
 
     return Material(
       color: Colors.transparent,
@@ -424,8 +611,8 @@ class _PricingCard extends StatelessWidget {
           duration: CalmDuration.quick,
           curve: CalmCurves.standard,
           padding: const EdgeInsets.symmetric(
-            horizontal: CalmSpace.s6,
-            vertical: CalmSpace.s5,
+            vertical: CalmSpace.s4,
+            horizontal: CalmSpace.s3,
           ),
           decoration: ShapeDecoration(
             color: selected ? AppColors.glassMedium : AppColors.glassSoft,
@@ -439,86 +626,36 @@ class _PricingCard extends StatelessWidget {
               ),
             ),
           ),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              // Radio indicator
-              AnimatedContainer(
-                duration: CalmDuration.quick,
-                curve: CalmCurves.standard,
-                width: 22,
-                height: 22,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(
-                    color: selected ? AppColors.ember : AppColors.neutral4,
-                    width: 2,
-                  ),
-                  color: selected ? AppColors.ember : Colors.transparent,
-                ),
-                child: selected
-                    ? const Icon(
-                        Icons.check_rounded,
-                        size: 14,
-                        color: Colors.white,
-                      )
-                    : null,
-              ),
-              const Gap(CalmSpace.s5),
-              // Title + sub
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Row(
-                      children: <Widget>[
-                        Text(
-                          isYearly ? 'Annuel' : 'Mensuel',
-                          style: textTheme.titleMedium?.copyWith(
-                            color: AppColors.neutral8,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        if (isYearly) ...<Widget>[
-                          const Gap(CalmSpace.s3),
-                          _SavingsBadge(),
-                        ],
-                      ],
-                    ),
-                    const Gap(CalmSpace.s2),
-                    Text(
-                      isYearly
-                          ? 'soit 2,49 € / mois · 7 jours gratuits'
-                          : 'sans engagement',
-                      style: textTheme.bodySmall?.copyWith(
-                        color: AppColors.neutral6,
-                      ),
-                    ),
-                  ],
+              Text(
+                _label,
+                style: textTheme.labelMedium?.copyWith(
+                  color: AppColors.neutral6,
+                  letterSpacing: 0.5,
                 ),
               ),
-              // Price
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: <Widget>[
-                  Text(
-                    isYearly ? '29,99 €' : '4,99 €',
-                    style: AppTypography.mono(
-                      TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.neutral8,
-                        letterSpacing: -0.3,
-                      ),
-                    ),
+              const Gap(2),
+              Text(
+                _price,
+                style: AppTypography.mono(
+                  const TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.neutral8,
+                    letterSpacing: -0.3,
                   ),
-                  Text(
-                    isYearly ? '/an' : '/mois',
-                    style: textTheme.bodySmall?.copyWith(
-                      color: AppColors.neutral5,
-                    ),
-                  ),
-                ],
+                ),
+              ),
+              const Gap(2),
+              Text(
+                _sub,
+                style: textTheme.labelSmall?.copyWith(
+                  color: subColor,
+                  fontWeight: isYearly ? FontWeight.w600 : FontWeight.w400,
+                  letterSpacing: 0.5,
+                ),
               ),
             ],
           ),
@@ -528,30 +665,38 @@ class _PricingCard extends StatelessWidget {
   }
 }
 
-class _SavingsBadge extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(
-        horizontal: CalmSpace.s3,
-        vertical: 2,
-      ),
-      decoration: BoxDecoration(
-        color: AppColors.ember,
-        borderRadius: BorderRadius.circular(CalmRadius.pill),
-      ),
-      child: Text(
-        '-50 %',
-        style: AppTypography.mono(
-          TextStyle(
-            fontSize: 10,
-            fontWeight: FontWeight.w700,
-            color: AppColors.canvas,
-            letterSpacing: 0.5,
-          ),
-        ),
-      ),
-    );
+// ─────────────────────────────────────────────────────────────────
+// Pricing card — glass.medium selected / glass.soft unselected
+// ─────────────────────────────────────────────────────────────────
+
+enum _Plan {
+  yearly('beedle_pro_yearly'),
+  monthly('beedle_pro_monthly'),
+  lifetime('beedle_pro_lifetime');
+
+  const _Plan(this.productId);
+  final String productId;
+}
+
+String _ctaLabelFor(_Plan plan) {
+  switch (plan) {
+    case _Plan.yearly:
+      return 'Essayer 7 jours';
+    case _Plan.monthly:
+      return 'Passer Pro · 4,99 €/mois';
+    case _Plan.lifetime:
+      return 'Acheter à vie · 79,99 €';
+  }
+}
+
+String _trustLineFor(_Plan plan) {
+  switch (plan) {
+    case _Plan.yearly:
+      return 'Annulable à tout moment. Paiement après l\u2019essai.';
+    case _Plan.monthly:
+      return 'Annulable à tout moment.';
+    case _Plan.lifetime:
+      return 'Paiement unique · aucune récurrence.';
   }
 }
 
@@ -603,7 +748,15 @@ class _LegalLinks extends StatelessWidget {
 
 /// Gate l'achat sur l'auth : si l'utilisateur est anonyme, on push
 /// `AuthRoute(required: true)` et on retry l'achat au retour si signed-in.
-Future<void> _onTapSubscribe(BuildContext context, WidgetRef ref) async {
+///
+/// Le [plan] sélectionné donne le productId App Store / Play Console ;
+/// RevenueCat résout le package correspondant dans l'offering `default`.
+Future<void> _onTapSubscribe(
+  BuildContext context,
+  WidgetRef ref,
+  _Plan plan,
+) async {
+  final AnalyticsService analytics = ref.read(analyticsServiceProvider);
   AuthUserEntity? user = ref.read(currentUserProvider);
   if (user == null) {
     await context.router.push(AuthRoute(required: true));
@@ -612,21 +765,35 @@ Future<void> _onTapSubscribe(BuildContext context, WidgetRef ref) async {
     if (user == null) return;
   }
   try {
-    // NB : le plan est lu depuis le state du widget via _selected.
-    // Pour la v1 on force yearly. À rebrancher quand le state sera hoist.
-    await ref.read(subscriptionRepositoryProvider).purchase(
-          'beedle_pro_yearly',
-        );
+    await ref
+        .read(subscriptionRepositoryProvider)
+        .purchase(plan.productId);
+    await analytics.track(
+      AnalyticsEvent.subscribed,
+      properties: <String, Object>{
+        'plan': plan.name,
+        'product_id': plan.productId,
+        'source': 'standalone_paywall',
+      },
+    );
     if (context.mounted) unawaited(context.router.maybePop());
-  } on Exception catch (_) {
+  } on Exception catch (e) {
+    await analytics.track(
+      AnalyticsEvent.subscriptionFailed,
+      properties: <String, Object>{
+        'plan': plan.name,
+        'product_id': plan.productId,
+        'reason': e.runtimeType.toString(),
+      },
+    );
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           backgroundColor: AppColors.ink,
           behavior: SnackBarBehavior.floating,
-          shape: const StadiumBorder(),
-          margin: const EdgeInsets.all(CalmSpace.s5),
-          content: const Text(
+          shape: StadiumBorder(),
+          margin: EdgeInsets.all(CalmSpace.s5),
+          content: Text(
             'Impossible de finaliser l\u2019achat.',
             style: TextStyle(color: AppColors.canvas),
           ),

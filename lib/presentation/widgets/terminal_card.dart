@@ -54,7 +54,6 @@ class TerminalCard extends StatefulWidget {
 class _TerminalCardState extends State<TerminalCard>
     with SingleTickerProviderStateMixin {
   late AnimationController _typingController;
-  String _previousMessage = '';
 
   @override
   void initState() {
@@ -70,7 +69,6 @@ class _TerminalCardState extends State<TerminalCard>
   void didUpdateWidget(covariant TerminalCard oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.currentMessage != widget.currentMessage) {
-      _previousMessage = oldWidget.currentMessage ?? '';
       _typingController
         ..stop()
         ..reset()
@@ -149,13 +147,16 @@ class _TerminalCardState extends State<TerminalCard>
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
+                    // Header persistant — identifie le bloc comme la voix
+                    // de Beedle. Évite que le user voit juste un `>` crypto.
+                    _LogHeader(),
                     if (widget.streakDays != null)
                       _StreakLine(streak: widget.streakDays!),
                     ..._historyLines(historyMono),
                     if (widget.currentMessage != null)
                       _currentLine(currentMono)
                     else
-                      _standbyLine(historyMono),
+                      _StandbyBlock(style: historyMono),
                   ],
                 ),
               ),
@@ -169,7 +170,7 @@ class _TerminalCardState extends State<TerminalCard>
   List<Widget> _historyLines(TextStyle base) {
     // Jusqu'à 3 lignes d'historique en gris (plus vieux = plus fade).
     // Plus vieux = plus transparent sur la base gris neutral5.
-    const List<double> opacities = <double>[1.0, 0.7, 0.4];
+    const List<double> opacities = <double>[1, 0.7, 0.4];
     final List<String> items = widget.history.take(3).toList();
     return <Widget>[
       for (int i = 0; i < items.length; i++)
@@ -223,19 +224,59 @@ class _TerminalCardState extends State<TerminalCard>
     );
   }
 
-  Widget _standbyLine(TextStyle base) {
-    return Text(
-      LocaleKeys.voice_standby.tr(),
-      style: base.copyWith(
-        color: base.color?.withValues(alpha: 0.4),
-      ),
-    );
-  }
-
   String _formatTime(DateTime dt) {
     final String h = dt.hour.toString().padLeft(2, '0');
     final String m = dt.minute.toString().padLeft(2, '0');
     return '$h:$m';
+  }
+}
+
+/// Header compact qui identifie le bloc comme la voix de Beedle.
+/// Couleur ember légèrement atténuée pour ne pas voler la vedette au message
+/// courant, mais bien visible pour "nommer" le widget.
+class _LogHeader extends StatelessWidget {
+  const _LogHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: CalmSpace.s3),
+      child: Text(
+        LocaleKeys.voice_log_header.tr(),
+        style: AppTypography.mono(
+          const TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.w700,
+            color: AppColors.ember,
+            letterSpacing: 1.4,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Bloc standby 2 lignes — remplace le cryptique `> standby. capture
+/// something.` par un message plus parlant qui explique ce que la
+/// TerminalCard fait (veille sur les cartes, déclenche des rappels).
+class _StandbyBlock extends StatelessWidget {
+  const _StandbyBlock({required this.style});
+  final TextStyle style;
+
+  @override
+  Widget build(BuildContext context) {
+    final TextStyle dim = style.copyWith(
+      color: style.color?.withValues(alpha: 0.65),
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Text(LocaleKeys.voice_standby_line_1.tr(), style: style),
+        const SizedBox(height: 4),
+        Text(LocaleKeys.voice_standby_line_2.tr(), style: dim),
+      ],
+    );
   }
 }
 

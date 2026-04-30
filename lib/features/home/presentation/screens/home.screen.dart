@@ -8,8 +8,8 @@ import 'package:beedle/domain/entities/engagement_message.entity.dart';
 import 'package:beedle/domain/entities/gamification_state.entity.dart';
 import 'package:beedle/domain/entities/user_preferences.entity.dart';
 import 'package:beedle/domain/enum/card_intent.enum.dart';
-import 'package:beedle/features/home/presentation/providers/home_intent_filter.provider.dart';
 import 'package:beedle/features/gamification/presentation/widgets/streak_badge.dart';
+import 'package:beedle/features/home/presentation/providers/home_intent_filter.provider.dart';
 import 'package:beedle/features/home/presentation/screens/engagement_home.view_model.dart';
 import 'package:beedle/features/home/presentation/screens/home.state.dart';
 import 'package:beedle/features/home/presentation/screens/home.view_model.dart';
@@ -17,6 +17,7 @@ import 'package:beedle/features/home/presentation/widgets/card_glass_tile.dart';
 import 'package:beedle/features/home/presentation/widgets/empty_home.dart';
 import 'package:beedle/features/home/presentation/widgets/streak_home_card.dart';
 import 'package:beedle/features/home/presentation/widgets/upload_progress_card.dart';
+import 'package:beedle/features/paywall/presentation/widgets/home_pro_upsell_card.dart';
 import 'package:beedle/foundation/routing/app_router.dart';
 import 'package:beedle/generated/locale_keys.g.dart';
 import 'package:beedle/presentation/theme/app_colors.dart';
@@ -126,6 +127,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                       const Gap(CalmSpace.s7),
                       const _TodayLessonBlock(),
+                      // Upsell Pro — visible uniquement pour les users Free.
+                      // Self-hide via le provider isPro si l'user est Pro.
+                      const Gap(CalmSpace.s7),
+                      const HomeProUpsellCard(),
                       const Gap(CalmSpace.s8),
                       if (state.rewatch.isNotEmpty) ...<Widget>[
                         Padding(
@@ -265,7 +270,6 @@ class _TodayLessonBlock extends ConsumerWidget {
         if (card == null) return const SizedBox.shrink();
         return GlassCard(
           onTap: () => context.router.push(const TodayRoute()),
-          cornerRadius: CalmRadius.xl2,
           elevated: false,
           child: Row(
             children: <Widget>[
@@ -658,12 +662,20 @@ class _SuggestionHero extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
-          Text(
-            LocaleKeys.home_suggestion_label.tr().toUpperCase(),
-            style: textTheme.labelSmall?.copyWith(
-              color: AppColors.ember,
-              fontWeight: FontWeight.w700,
-            ),
+          Row(
+            children: <Widget>[
+              Text(
+                LocaleKeys.home_suggestion_label.tr().toUpperCase(),
+                style: textTheme.labelSmall?.copyWith(
+                  color: AppColors.ember,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+              if (card.isNew) ...<Widget>[
+                const Gap(CalmSpace.s3),
+                const _HeroNewBadge(),
+              ],
+            ],
           ),
           const Gap(CalmSpace.s4),
           Text(
@@ -705,6 +717,38 @@ class _SuggestionHero extends StatelessWidget {
 }
 
 /// FAB ink flat — zéro glow, zéro gradient. Pressure scale 0.98.
+/// Badge « NEW » pour la Suggestion Hero — petit pill ember. Variante
+/// visible ici (vs le badge de la list row) car le hero a du room.
+class _HeroNewBadge extends StatelessWidget {
+  const _HeroNewBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: CalmSpace.s3,
+        vertical: 2,
+      ),
+      decoration: BoxDecoration(
+        color: AppColors.ember,
+        borderRadius: BorderRadius.circular(CalmRadius.pill),
+      ),
+      child: Text(
+        'NEW',
+        style: AppTypography.mono(
+          const TextStyle(
+            fontSize: 9,
+            fontWeight: FontWeight.w700,
+            color: AppColors.canvas,
+            letterSpacing: 0.8,
+            height: 1,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
 class _ImportFab extends StatelessWidget {
   const _ImportFab({required this.onTap});
 

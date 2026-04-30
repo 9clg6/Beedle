@@ -36,6 +36,11 @@ target 'Runner' do
   end
 end
 
+# Share Extension — pas de pod dépendance.
+# Le code de RSIShareViewController est inclus directement dans la cible
+# (le pod receive_sharing_intent utilise des APIs app-delegate interdites
+# dans les extensions iOS, donc on ne le linke pas ici).
+
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)

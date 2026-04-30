@@ -20,4 +20,30 @@ final class FirebaseCrashReporterService implements CrashReporterService {
       _log.warn('setUserIdentifier failed: $e');
     }
   }
+
+  @override
+  Future<void> recordError(
+    Object error,
+    StackTrace stackTrace, {
+    String? reason,
+    Map<String, Object>? context,
+  }) async {
+    try {
+      if (context != null) {
+        for (final MapEntry<String, Object> entry in context.entries) {
+          await FirebaseCrashlytics.instance.setCustomKey(
+            entry.key,
+            entry.value,
+          );
+        }
+      }
+      await FirebaseCrashlytics.instance.recordError(
+        error,
+        stackTrace,
+        reason: reason,
+      );
+    } on Exception catch (e) {
+      _log.warn('recordError failed: $e');
+    }
+  }
 }

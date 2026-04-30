@@ -26,7 +26,7 @@ void main() {
       addTearDown(controller.close);
 
       // Démarre l'écoute pour activer le stream.
-      c.listen(authStateProvider, (_, __) {});
+      c.listen(authStateProvider, (_, AsyncValue<AuthUserEntity?> z) {});
 
       // État initial : null (stream pas encore émis).
       expect(c.read(currentUserProvider), isNull);
@@ -35,7 +35,7 @@ void main() {
       final AuthUserEntity entity = AuthUserEntity(
         uid: 'uid-1',
         provider: AuthProvider.google,
-        createdAt: DateTime.utc(2026, 1, 1),
+        createdAt: DateTime.utc(2026),
       );
       controller.add(entity);
       await Future<void>.delayed(Duration.zero);
@@ -66,12 +66,12 @@ void main() {
       final AuthUserEntity e1 = AuthUserEntity(
         uid: 'uid-1',
         provider: AuthProvider.google,
-        createdAt: DateTime.utc(2026, 1, 1),
+        createdAt: DateTime.utc(2026),
       );
       final AuthUserEntity e2 = AuthUserEntity(
         uid: 'uid-2',
         provider: AuthProvider.apple,
-        createdAt: DateTime.utc(2026, 2, 1),
+        createdAt: DateTime.utc(2026, 2),
       );
 
       controller.add(e1);
