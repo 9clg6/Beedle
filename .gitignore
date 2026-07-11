@@ -124,6 +124,11 @@ lib/objectbox-model.json
 .env.*
 !.env.example
 
+# Firebase client configuration — generate locally per environment
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist
+lib/firebase_options.dart
+
 # Worker (Cloudflare)
 worker/node_modules/
 worker/.dev.vars
